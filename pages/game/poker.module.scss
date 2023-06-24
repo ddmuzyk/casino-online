@@ -1,9 +1,28 @@
-$background: green;
+$background: rgb(51, 56, 51);
+$table: #35654d;
+$tableContainer: rgb(39, 26, 10);
+$borderRadius: 400px;
 
 .game{
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
   height: 100vh;
   background-color: $background;
+}
+
+.tableContainer {
+  background-color: $tableContainer;
+  border: solid 40px $tableContainer;
+  border-radius: $borderRadius;
+}
+
+.table {
+  height: 600px;
+  width: 75vw;
+  background-color: $table;
+  border-radius: $borderRadius;
 }
 
 .title {
