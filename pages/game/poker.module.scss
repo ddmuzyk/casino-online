@@ -1,7 +1,7 @@
 $background: rgb(51, 56, 51);
 $table: #35654d;
 $tableContainer: rgb(39, 26, 10);
-$borderRadius: 20vw;
+$borderRadius: 400px;
 
 .game{
   display: flex;
@@ -13,14 +13,16 @@ $borderRadius: 20vw;
 }
 
 .tableContainer {
+  height: 700px;
+  width: 80vw;
   background-color: $tableContainer;
   border: solid 40px $tableContainer;
   border-radius: $borderRadius;
 }
 
 .table {
-  height: 600px;
-  width: 75vw;
+  height: 100%;
+  width: 100%;
   background-color: $table;
   border-radius: $borderRadius;
 }
