@@ -32,11 +32,18 @@ const Poker = (): JSX.Element => {
     setPlayers(newPlayers);
   }, [])
 
+  const getResponse = async() => {
+    const response = await fetch('/api/eval');
+    const data = await response.json();
+    await console.log(data);
+    return data;
+  }
+
   return (
     <Layout siteTitle="Poker">
       <div className={styles.game}>
         <div className={styles.tableContainer}>
-          <div className={styles.table}>
+          <div onClick={getResponse} className={styles.table}>
             {players.map((player) => {
               console.log(player)
               return <Player 

@@ -1,6 +1,5 @@
 // import * as PokerEvaluator from '../../../node_modules/poker-evaluator-ts';
 
-
 export const SUITS = ["c", "s", "d", "h"]
 export const VALUES = [
   "2",
