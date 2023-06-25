@@ -1,8 +1,8 @@
-const PokerEvaluator = require('poker-evaluator');
+// import * as PokerEvaluator from '../../../node_modules/poker-evaluator-ts';
 
 
-const SUITS = ["c", "s", "d", "h"]
-const VALUES = [
+export const SUITS = ["c", "s", "d", "h"]
+export const VALUES = [
   "2",
   "3",
   "4",
@@ -18,7 +18,7 @@ const VALUES = [
   "A"
 ]
 
-const cards = SUITS.flatMap((suite) => {
+export const cards = SUITS.flatMap((suite) => {
   return VALUES.map((value) => {
     return `${value}${suite}`;
   })
@@ -27,7 +27,7 @@ const cards = SUITS.flatMap((suite) => {
 
 
 
-const shuffleCards = (unshuffled) => {
+export const shuffleCards = (unshuffled: Array<string>) : Array<string>  => {
   let cards = [...unshuffled];
   const deck = [];
   while (cards.length) {
@@ -41,18 +41,19 @@ const shuffleCards = (unshuffled) => {
       deck.push(cards.pop());
     }
   }
-  return deck;
+  return deck as Array<string>;
 }
 
-const deck = shuffleCards(cards);
+export const deck = shuffleCards(cards);
 
 // const player1 = {
 //   cards: []
 // }
 
 class Player {
+  cards: Array<string> = [];
+
   constructor() {
-    this.cards = [];
   }
 }
 
@@ -61,7 +62,7 @@ const players = [];
 for (let i = 0; i < 3; i++) {
   let player = new Player();
   for (let i = 0; i < 2; i++) {
-    player.cards.push(deck.pop())
+    player.cards.push(deck.pop() as string)
   }
   players.push(player);
 }

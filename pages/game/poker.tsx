@@ -3,18 +3,22 @@ import { ReactComponentElement, useState, useEffect } from "react";
 import styles from './poker.module.scss';
 import Layout from "@/components/layout";
 import Player from "@/components/poker/Player";
+import { shuffleCards, cards } from "@/lib/poker/poker-logic/poker.ts";
 
  export interface PlayerObject {
   id: number,
   name: string,
   turn: boolean,
-  money: number
+  money: number,
+  // cards: Array<string>
 }
 
 const Poker = (): JSX.Element => {
 
   const [players, setPlayers] = useState<Array<PlayerObject>>([]);
+  const [deck, setDeck] = useState<Array<string>>(shuffleCards(cards))
 
+  // Populate the table with players (later with possibility to choose how many players to play against)
   useEffect(() => {
     let newPlayers = [];
     for (let i = 1; i < 5; i++) {

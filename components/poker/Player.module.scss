@@ -6,24 +6,28 @@
   position: absolute;
   top: 50%;
   left: 0;
+  // transform: translate(-50%, 50%);
 }
 
 .player2 {
   position: absolute;
   top: 0;
   left: 50%;
+  transform: translate(-50%, 0);
 }
 
 .player3 {
   position: absolute;
   top: 50%;
   right: 0;
+  // transform: translate(-50%, 50%);
 }
 
 .player4 {
   position: absolute;
   bottom: 0;
   right: 50%;
+  transform: translate(50%, 0);
 }
 
 .container{
