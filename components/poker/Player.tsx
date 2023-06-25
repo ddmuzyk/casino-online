@@ -6,12 +6,12 @@ import { PlayerObject } from "@/pages/game/poker";
 //   state: object
 // }
 
-const Player: React.FC<PlayerObject>  = (player) => {
+const Player: React.FC<PlayerObject>  = ({id, name, turn, money}) => {
 
-  const classname = `${styles.player}`
+  const classname = `player${id}`;
 
   return (
-    <div className={styles.player1}>
+    <div className={styles[classname]}>
       <p className={styles.container}>Player</p>
     </div>
   )

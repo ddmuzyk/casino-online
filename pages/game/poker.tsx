@@ -28,15 +28,19 @@ const Poker = (): JSX.Element => {
     setPlayers(newPlayers);
   }, [])
 
-  console.log(players)
-
   return (
     <Layout siteTitle="Poker">
       <div className={styles.game}>
         <div className={styles.tableContainer}>
           <div className={styles.table}>
             {players.map((player) => {
-              return <Player player={player} key={player.name}/>
+              console.log(player)
+              return <Player 
+              id={player.id} 
+              name={player.name}
+              turn={player.turn}
+              money={player.money}
+              key={player.name}/>
             })}
           </div>
         </div>
