@@ -1,9 +1,14 @@
-import React, {use, useState} from "react";
+import React, {use, useState, ReactNode} from "react";
 import styles from './Player.module.scss';
+import { PlayerObject } from "@/pages/game/poker";
 
-const Player = () => {
+// interface PlayerProps {
+//   state: object
+// }
 
-  const [money, setMoney] = useState(1000);
+const Player: React.FC<PlayerObject>  = (player) => {
+
+  const classname = `${styles.player}`
 
   return (
     <div className={styles.player1}>

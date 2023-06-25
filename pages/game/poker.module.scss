@@ -21,6 +21,7 @@ $borderRadius: 400px;
 }
 
 .table {
+  position: relative;
   height: 100%;
   width: 100%;
   background-color: $table;

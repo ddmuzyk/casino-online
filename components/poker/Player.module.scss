@@ -1,7 +1,28 @@
+// @mixin player() {
+
+// }
+
 .player1 {
-  // position: absolute;
-  // top: 50%;
+  position: absolute;
+  top: 50%;
   left: 0;
+}
+
+.player2 {
+  position: absolute;
+  top: 0;
+  left: 50%;
+}
+
+.player3 {
+  position: absolute;
+  top: 50%;
+  right: 0;
+}
+
+.player4 {
+  bottom: 0;
+  right: 50%;
 }
 
 .container{

@@ -4,7 +4,7 @@ import styles from './poker.module.scss';
 import Layout from "@/components/layout";
 import Player from "@/components/poker/Player";
 
-interface Player {
+ export interface PlayerObject {
   id: number,
   name: string,
   turn: boolean,
@@ -13,7 +13,7 @@ interface Player {
 
 const Poker = (): JSX.Element => {
 
-  const [players, setPlayers] = useState<Array<Player>>([]);
+  const [players, setPlayers] = useState<Array<PlayerObject>>([]);
 
   useEffect(() => {
     let newPlayers = [];
@@ -36,7 +36,7 @@ const Poker = (): JSX.Element => {
         <div className={styles.tableContainer}>
           <div className={styles.table}>
             {players.map((player) => {
-              return <Player key={player.name}/>
+              return <Player player={player} key={player.name}/>
             })}
           </div>
         </div>
