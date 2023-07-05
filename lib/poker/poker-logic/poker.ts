@@ -69,6 +69,6 @@ for (let i = 0; i < 3; i++) {
 // for (let i = 0; i < 3; i++) {
 //   player1.cards.push(deck.pop());
 // }
-console.log(players[0])
+// console.log(players[0])
 
 // console.log(PokerEvaluator.evalHand(player1.cards))
