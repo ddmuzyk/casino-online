@@ -10,10 +10,11 @@ import { shuffleCards, cards } from "@/lib/poker/poker-logic/poker.ts";
   name: string,
   turn: boolean,
   money: number,
-  // cards: Array<string>
-  cards: any,
+  cards: Array<string>
+  // cards: any,
   smallBlind: number,
-  bigBlind: number
+  bigBlind: number,
+  bet: number
 }
 
 const Poker = (): JSX.Element => {
@@ -21,11 +22,15 @@ const Poker = (): JSX.Element => {
   const [baseDeck, setBaseDeck] = useState<Array<string>>(shuffleCards(cards)); // Base deck of cards
   const [players, setPlayers] = useState<Array<PlayerObject>>([]); // Players in the game
   const [deck, setDeck] = useState<Array<string>>(shuffleCards(cards)); // Deck of cards in play
-  const [smallBlind, setSmallBlind] = useState<number>(1); // Small blind
+  // const [smallBlind, setSmallBlind] = useState<number>(1); // Small blind
+  // const [bigBlind, setBigBlind] = useState<number>(2); // Big blind
+  const [biggestBet, setBiggestBet] = useState<number>(0); // Biggest bet on the table
+  const [pot, setPot] = useState<number>(0); // Pot of money on the table
+  const [currentDealerId, setCurrentDealerId] = useState<number>(0); // Id of the current dealer
 
-  // Populate the table with players (later with possibility to choose how many players to play against)
+  // Populate the table with players (later with possibility to choose how many players to play against
   useEffect(() => {
-    let newPlayers = [];
+    let newPlayers: Array<PlayerObject> = [];
     for (let i = 1; i < 5; i++) {
       let playerCards = [deck.pop(), deck.pop()];
       newPlayers.push({
@@ -33,20 +38,21 @@ const Poker = (): JSX.Element => {
         name: `Player${i}`,
         turn: false,
         money: 1000,
-        cards: playerCards,
+        cards: playerCards as Array<string>,
         smallBlind: 0,
-        bigBlind: 0
+        bigBlind: 0,
+        bet: 0
       })
     }
-    newPlayers = randomlyGiveBlind(newPlayers, smallBlind);
+    newPlayers = randomlyGiveBlind(newPlayers, 1);
     // console.log(deck.length);
     // console.log(baseDeck.length);
     setDeck(deck);
-    setPlayers(newPlayers) as any;
+    setPlayers(newPlayers);
   }, [])
 
   // Give the small blind to a random player, and the big blind to the next player in the array
-  const randomlyGiveBlind = (players: any, smallBlind: number) => {
+  const randomlyGiveBlind = (players: Array<PlayerObject>, smallBlind: number): Array<PlayerObject> => {
     const newPlayers = [...players];
     const length = newPlayers.length;
     let i = Math.floor(Math.random() * length);
@@ -58,6 +64,11 @@ const Poker = (): JSX.Element => {
       newPlayers[i + 1].bigBlind = smallBlind * 2;
       return newPlayers;
     }
+  }
+
+  // Call the big blind if the player has enough money, otherwise call all in
+  const call = (player: PlayerObject, bigBlind: number) => {
+    
   }
 
   // Get the response from the server based on the players hand
@@ -83,7 +94,7 @@ const Poker = (): JSX.Element => {
         <div className={styles.tableContainer}>
           <div onClick={getResponse} className={styles.table}>
             {players.map((player) => {
-              console.log(player)
+              // console.log(player)
               return <Player 
               id={player.id} 
               name={player.name}
@@ -93,9 +104,17 @@ const Poker = (): JSX.Element => {
               cards={player.cards}
               smallBlind={player.smallBlind}
               bigBlind={player.bigBlind}
+              bet={player.bet}
               />             
             })}
           </div>
+        </div>
+        {/* Write me a div that contains player buttons: check, call, raise, all in */}
+        <div className={styles.playerButtons}>
+          <button className={styles.playerBtn}>Check</button>
+          <button className={styles.playerBtn}>Call</button>
+          <button className={styles.playerBtn}>Raise</button>
+          <button className={styles.playerBtn}>All in</button>
         </div>
       </div>
     </Layout>
