@@ -11,31 +11,38 @@ import { shuffleCards, cards } from "@/lib/poker/poker-logic/poker.ts";
   turn: boolean,
   money: number,
   // cards: Array<string>
+  cards: any
 }
 
 const Poker = (): JSX.Element => {
 
+  const [baseDeck, setBaseDeck] = useState<Array<string>>(shuffleCards(cards)); // Base deck of cards
   const [players, setPlayers] = useState<Array<PlayerObject>>([]);
-  const [deck, setDeck] = useState<Array<string>>(shuffleCards(cards))
+  const [deck, setDeck] = useState<Array<string>>(shuffleCards(cards)); // Deck of cards in play
 
   // Populate the table with players (later with possibility to choose how many players to play against)
   useEffect(() => {
     let newPlayers = [];
     for (let i = 1; i < 5; i++) {
+      let playerCards = [deck.pop(), deck.pop()];
       newPlayers.push({
         id: i,
         name: `Player${i}`,
         turn: false,
-        money: 1000
+        money: 1000,
+        cards: playerCards
       })
     }
+    // console.log(deck.length);
+    // console.log(baseDeck.length);
+    setDeck(deck);
     setPlayers(newPlayers);
   }, [])
 
   const getResponse = async() => {
     const response = await fetch('/api/eval');
     const data = await response.json();
-    await console.log(data);
+    // await console.log(data);
     return data;
   }
 
@@ -45,13 +52,16 @@ const Poker = (): JSX.Element => {
         <div className={styles.tableContainer}>
           <div onClick={getResponse} className={styles.table}>
             {players.map((player) => {
-              console.log(player)
+              // console.log(player)
               return <Player 
               id={player.id} 
               name={player.name}
               turn={player.turn}
               money={player.money}
-              key={player.name}/>
+              key={player.name}
+              cards={player.cards}
+              />
+              
             })}
           </div>
         </div>
