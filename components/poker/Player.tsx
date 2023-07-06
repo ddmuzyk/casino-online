@@ -7,7 +7,7 @@ import Image from "next/image";
 //   state: object
 // }
 
-const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, smallBlind}) => {
+const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, smallBlind, bigBlind}) => {
 
   const classname = `player${id}`;
 
