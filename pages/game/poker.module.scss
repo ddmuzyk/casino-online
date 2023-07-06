@@ -56,7 +56,7 @@ $borderRadius: 400px;
   box-shadow: 0 2px 5px 1px rgba(0, 0, 0, 0.589);
   user-select: none;
   cursor: pointer;
-  transition: ease-in-out 0.1s;
+  transition: ease-in-out 0.05s;
   &:hover {
     filter: brightness(0.85);
   }
