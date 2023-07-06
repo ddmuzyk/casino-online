@@ -16,8 +16,9 @@ import { shuffleCards, cards } from "@/lib/poker/poker-logic/poker.ts";
 
 const Poker = (): JSX.Element => {
 
+  const [baseDeck, setBaseDeck] = useState<Array<string>>(shuffleCards(cards)); // Base deck of cards
   const [players, setPlayers] = useState<Array<PlayerObject>>([]);
-  const [deck, setDeck] = useState<Array<string>>(shuffleCards(cards))
+  const [deck, setDeck] = useState<Array<string>>(shuffleCards(cards)); // Deck of cards in play
 
   // Populate the table with players (later with possibility to choose how many players to play against)
   useEffect(() => {
@@ -32,6 +33,8 @@ const Poker = (): JSX.Element => {
         cards: playerCards
       })
     }
+    // console.log(deck.length);
+    // console.log(baseDeck.length);
     setDeck(deck);
     setPlayers(newPlayers);
   }, [])

@@ -2,7 +2,12 @@
 
 // }
 
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+
+$stats-background: rgba(27, 27, 27, 0.89);
+
 .player-container {
+  font-family: Montserrat, sans-serif;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -10,28 +15,46 @@
   height: 200px;
 }
 
-.player1 {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  transform: translate(0, -50%);
+.imgs-container {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+} 
+
+.stats {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  background-color: $stats-background;
+  border-radius: 20px;
+}
+
+.image {
+  margin: 0 2px;
 }
 
 .player2 {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translate(10%, -50%);
+}
+
+.player3 {
   position: absolute;
   top: 0;
   left: 50%;
   transform: translate(-50%, 0);
 }
 
-.player3 {
+.player4 {
   position: absolute;
   top: 50%;
   right: 0;
-  transform: translate(0, -50%);
+  transform: translate(-10%, -50%);
 }
 
-.player4 {
+.player1 {
   position: absolute;
   bottom: 0;
   right: 50%;
@@ -39,6 +62,7 @@
 }
 
 .container{
+  color: white;
   margin: 0;
   text-align: center;
 }

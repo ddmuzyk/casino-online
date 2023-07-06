@@ -49,22 +49,22 @@ export const deck = shuffleCards(cards);
 //   cards: []
 // }
 
-class Player {
-  cards: Array<string> = [];
+// class Player {
+//   cards: Array<string> = [];
 
-  constructor() {
-  }
-}
+//   constructor() {
+//   }
+// }
 
-const players = [];
+// const players = [];
 
-for (let i = 0; i < 3; i++) {
-  let player = new Player();
-  for (let i = 0; i < 2; i++) {
-    player.cards.push(deck.pop() as string)
-  }
-  players.push(player);
-}
+// for (let i = 0; i < 3; i++) {
+//   let player = new Player();
+//   for (let i = 0; i < 2; i++) {
+//     player.cards.push(deck.pop() as string)
+//   }
+//   players.push(player);
+// }
 
 // for (let i = 0; i < 3; i++) {
 //   player1.cards.push(deck.pop());

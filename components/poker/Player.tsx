@@ -13,11 +13,13 @@ const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards}) => {
 
   return (
     <div className={`${styles[classname]} ${styles['player-container']}`}>
-      <p className={styles.container}>Player</p>
-      <div>
+      <div className={styles['imgs-container']}>
         {cards.map((card: string) => {
-          return <Image key={card} src={`/svg-cards/${card}.svg`} alt="Playing card" width={77} height={154}></Image>
+          return <Image className={styles.image} key={card} src={`/svg-cards/${card}.svg`} alt="Playing card" width={77} height={154}></Image>
         })}
+      </div>
+      <div className={styles.stats}>
+        <p className={styles.container}>Player{id} {money}$</p>
       </div>
     </div>
   )
