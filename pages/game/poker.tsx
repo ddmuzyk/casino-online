@@ -52,18 +52,44 @@ const Poker = (): JSX.Element => {
   }, [])
 
   // Give the small blind to a random player, and the big blind to the next player in the array
-  const randomlyGiveBlind = (players: Array<PlayerObject>, smallBlind: number): Array<PlayerObject> => {
-    const newPlayers = [...players];
+  const randomlyGiveBlind = (players: Array<PlayerObject>, smallBlind: number): any => {
+    const newPlayers = players.filter(player => player.money > 0);
     const length = newPlayers.length;
     let i = Math.floor(Math.random() * length);
-    newPlayers[i].smallBlind = smallBlind;
-    if (i === length - 1) {
-      newPlayers[0].bigBlind = smallBlind * 2;
-      return newPlayers;
+    newPlayers[i].money -= smallBlind;
+    newPlayers[i].bet += smallBlind;
+    if (length === 2) {
+      if (i === 1) {
+        // Later add a check if the player has enough money to pay the big blind
+        newPlayers[0].money -= smallBlind * 2;
+        newPlayers[0].bet += smallBlind * 2;
+        setCurrentDealerId(i);
+      } else {
+        newPlayers[1].money -= smallBlind * 2;
+        newPlayers[1].bet += smallBlind * 2;
+        setCurrentDealerId(i);
+      }
     } else {
-      newPlayers[i + 1].bigBlind = smallBlind * 2;
-      return newPlayers;
+      if (i === length - 1) {
+        // Later add a check if the player has enough money to pay the big blind
+        newPlayers[0].money -= smallBlind * 2;
+        newPlayers[0].bet += smallBlind * 2;
+        setCurrentDealerId(1);
+      } else {
+        newPlayers[i + 1].money -= smallBlind * 2;
+        newPlayers[i + 1].bet += smallBlind * 2;
+        newPlayers[i + 2] ? setCurrentDealerId(i + 2) : setCurrentDealerId(0);
+      }
     }
+    setPot(smallBlind * 3);
+    // if (i === length - 1) {
+    //   newPlayers[0].bigBlind = smallBlind * 2;
+    //   return newPlayers;
+    // } else {
+    //   newPlayers[i + 1].bigBlind = smallBlind * 2;
+    //   return newPlayers;
+    // }
+    return newPlayers;
   }
 
   // Call the big blind if the player has enough money, otherwise call all in
