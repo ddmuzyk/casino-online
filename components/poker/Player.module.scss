@@ -35,6 +35,8 @@ $stats-background: rgba(27, 27, 27, 0.89);
 }
 
 .player2 {
+  display: flex;
+  flex-direction: row;
   position: absolute;
   top: 50%;
   left: 0;
@@ -49,6 +51,8 @@ $stats-background: rgba(27, 27, 27, 0.89);
 }
 
 .player4 {
+  display: flex;
+  flex-direction: row;
   position: absolute;
   top: 50%;
   right: 0;
@@ -66,4 +70,11 @@ $stats-background: rgba(27, 27, 27, 0.89);
   color: white;
   margin: 0;
   text-align: center;
+}
+
+.bet {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Montserrat, sans-serif;
 }

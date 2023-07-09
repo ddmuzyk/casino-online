@@ -11,7 +11,6 @@ import { shuffleCards, cards } from "@/lib/poker/poker-logic/poker.ts";
   turn: boolean,
   money: number,
   cards: Array<string>
-  // cards: any,
   smallBlind: number,
   bigBlind: number,
   bet: number
@@ -25,6 +24,7 @@ const Poker = (): JSX.Element => {
   // const [smallBlind, setSmallBlind] = useState<number>(1); // Small blind
   // const [bigBlind, setBigBlind] = useState<number>(2); // Big blind
   const [biggestBet, setBiggestBet] = useState<number>(0); // Biggest bet on the table
+  const [playerWithBiggestBet, setPlayerWithBiggestBet] = useState<number>(0); // Id of the player with the biggest bet
   const [pot, setPot] = useState<number>(0); // Pot of money on the table
   const [currentDealerId, setCurrentDealerId] = useState<number>(0); // Id of the current dealer
 
@@ -52,6 +52,7 @@ const Poker = (): JSX.Element => {
   }, [])
 
   // Give the small blind to a random player, and the big blind to the next player in the array
+  // Also set the current dealer id, the pot and player with the biggest bet (to be added later)
   const randomlyGiveBlind = (players: Array<PlayerObject>, smallBlind: number): any => {
     const newPlayers = players.filter(player => player.money > 0);
     const length = newPlayers.length;
