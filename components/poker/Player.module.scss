@@ -13,6 +13,7 @@ $stats-background: rgba(27, 27, 27, 0.89);
   justify-content: center;
   width: 200px;
   height: 200px;
+  
 }
 
 .imgs-container {
@@ -34,36 +35,48 @@ $stats-background: rgba(27, 27, 27, 0.89);
   // width: 10px;
 }
 
-.player2 {
+.player1 {
+  display: flex;
+  flex-direction: row;
   position: absolute;
   top: 50%;
   left: 0;
   transform: translate(10%, -50%);
 }
 
-.player3 {
+.player2 {
   position: absolute;
   top: 0;
   left: 50%;
-  transform: translate(-50%, 0);
+  transform: translate(-50%, -30%);
 }
 
-.player4 {
+.player3 {
+  display: flex;
+  flex-direction: row;
   position: absolute;
   top: 50%;
   right: 0;
   transform: translate(-10%, -50%);
 }
 
-.player1 {
+.player0 {
   position: absolute;
   bottom: 0;
   right: 50%;
-  transform: translate(50%, 0);
+  transform: translate(50%, 18%);
 }
 
 .container{
   color: white;
   margin: 0;
   text-align: center;
+}
+
+.bet {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Montserrat, sans-serif;
+  color: white;
 }
