@@ -14,7 +14,8 @@ import { shuffleCards, cards } from "@/lib/poker/poker-logic/poker.ts";
   smallBlind: number,
   bigBlind: number,
   bet: number,
-  biggestBet: number,
+  hasFolded: boolean,
+  biggestBet?: number,
   currentDealerId?: number
   // biggestBet: number,
 }
@@ -34,26 +35,7 @@ const Poker = (): JSX.Element => {
 
   // Populate the table with players (later with possibility to choose how many players to play against
   useEffect(() => {
-    let newPlayers: Array<PlayerObject> = [];
-    for (let i = 0; i < 4; i++) {
-      let playerCards = [deck.pop(), deck.pop()];
-      newPlayers.push({
-        id: i,
-        name: `Player${i}`,
-        turn: false,
-        money: 1000,
-        cards: playerCards as Array<string>,
-        smallBlind: 0,
-        bigBlind: 0,
-        bet: 0,
-        biggestBet: biggestBet
-      })
-    }
-    newPlayers = randomlyGiveBlind(newPlayers, 1);
-    // console.log(deck.length);
-    // console.log(baseDeck.length);
-    setDeck(deck);
-    setPlayers(newPlayers);
+    initializeGame(deck);
   }, [])
 
   // Give the small blind to a random player, and the big blind to the next player in the array
@@ -74,10 +56,12 @@ const Poker = (): JSX.Element => {
         // Later add a check if the player has enough money to pay the big blind
         newPlayers[0].money -= smallBlind * 2;
         newPlayers[0].bet += smallBlind * 2;
+        setPlayerWithBiggestBet(0);
         setCurrentDealerId(i);
       } else {
         newPlayers[1].money -= smallBlind * 2;
         newPlayers[1].bet += smallBlind * 2;
+        setPlayerWithBiggestBet(1);
         setCurrentDealerId(i);
       }
     } else {
@@ -86,22 +70,24 @@ const Poker = (): JSX.Element => {
         newPlayers[0].money -= smallBlind * 2;
         newPlayers[0].bet += smallBlind * 2;
         setCurrentDealerId(1);
+        setPlayerWithBiggestBet(0);
       } else {
         newPlayers[i + 1].money -= smallBlind * 2;
         newPlayers[i + 1].bet += smallBlind * 2;
+        setPlayerWithBiggestBet(i + 1);
         newPlayers[i + 2] ? setCurrentDealerId(i + 2) : setCurrentDealerId(0);
       }
     }
     setPot(smallBlind * 3);
     const biggestBet = smallBlind * 2;
     setBiggestBet(smallBlind * 2);
-    for (let player of newPlayers) {
-      player.biggestBet = biggestBet;
-    }
+    // for (let player of newPlayers) {
+    //   player.biggestBet = biggestBet;
+    // }
     return newPlayers;
   }
 
-  // Call the big blind if the player has enough money, otherwise call all in
+  // Call the biggest bet if the player has enough money, otherwise call all in
   const call = (player: PlayerObject, biggestBet: number) => {
     
   }
@@ -123,6 +109,34 @@ const Poker = (): JSX.Element => {
     return data;
   }
 
+  const createPlayers = (deck: Array<string>) => {
+    const newPlayers: Array<PlayerObject> = [];
+    for (let i = 0; i < 4; i++) {
+      let playerCards = [deck.pop(), deck.pop()];
+      newPlayers.push({
+        id: i,
+        name: `Player${i}`,
+        turn: false,
+        money: 1000,
+        cards: playerCards as Array<string>,
+        smallBlind: 0,
+        bigBlind: 0,
+        bet: 0,
+        hasFolded: false,
+      })
+    }
+    
+    return newPlayers;
+  }
+
+  // Function that starts the game
+  const initializeGame = (deck: Array<string>) => {
+    let newPlayers: Array<PlayerObject> = createPlayers(deck);
+    newPlayers = randomlyGiveBlind(newPlayers, 1);
+    setDeck(deck);
+    setPlayers(newPlayers);
+  }
+
   return (
     <Layout siteTitle="Poker">
       <div className={styles.game}>
@@ -130,7 +144,7 @@ const Poker = (): JSX.Element => {
           <div onClick={() => console.log(players)} className={styles.table}>
             <div className={styles.pot}>Pot: {pot}$</div>
             {players.map((player) => {
-              console.log(player)
+              // console.log(player)
               return <Player 
               id={player.id} 
               name={player.name}
@@ -141,6 +155,7 @@ const Poker = (): JSX.Element => {
               smallBlind={player.smallBlind}
               bigBlind={player.bigBlind}
               bet={player.bet}
+              hasFolded={player.hasFolded}
               biggestBet={biggestBet}
               currentDealerId={currentDealerId}
               />             
