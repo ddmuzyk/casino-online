@@ -58,14 +58,12 @@ const Poker = (): JSX.Element => {
         newPlayers[1].money -= smallBlind * 2;
         newPlayers[1].bet += smallBlind * 2;
         setPlayerWithBiggestBet(1);
-        setCurrentDealerId(0);
       } else {
         newPlayers[1].money -= smallBlind;
         newPlayers[1].bet += smallBlind;
         newPlayers[0].money -= smallBlind * 2;
         newPlayers[0].bet += smallBlind * 2;
         setPlayerWithBiggestBet(0);
-        setCurrentDealerId(1);
       }
     } else {
       // Here, unlike in randomlyGiveBlind, we pass the blinds to players that are before the current dealer in the array
@@ -76,6 +74,7 @@ const Poker = (): JSX.Element => {
         newPlayers[turn-2] ? newPlayers[turn-2].bet += smallBlind : newPlayers[length-2].bet += smallBlind;
         newPlayers[turn-1] ? setPlayerWithBiggestBet(turn-1) : setPlayerWithBiggestBet(length-1); 
     }
+    setCurrentDealerId(turn);
     setPot(smallBlind*3);
     setTableMoney(smallBlind*3);
     setBiggestBet(smallBlind*2);
@@ -187,7 +186,11 @@ const Poker = (): JSX.Element => {
     <Layout siteTitle="Poker">
       <div className={styles.game}>
         <div className={styles.tableContainer}>
-          <div onClick={() => console.log(players)} className={styles.table}>
+          <div onClick={() => {
+            console.log(players)
+            console.log('turn: ', turn);
+            console.log('currentDealerId: ', currentDealerId);
+            }} className={styles.table}>
             <div className={styles.pot}>Pot: {pot}$</div>
             {players.map((player) => {
               // console.log(player)
