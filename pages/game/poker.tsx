@@ -13,7 +13,10 @@ import { shuffleCards, cards } from "@/lib/poker/poker-logic/poker.ts";
   cards: Array<string>
   smallBlind: number,
   bigBlind: number,
-  bet: number
+  bet: number,
+  biggestBet: number,
+  currentDealerId?: number
+  // biggestBet: number,
 }
 
 const Poker = (): JSX.Element => {
@@ -27,11 +30,12 @@ const Poker = (): JSX.Element => {
   const [playerWithBiggestBet, setPlayerWithBiggestBet] = useState<number>(0); // Id of the player with the biggest bet
   const [pot, setPot] = useState<number>(0); // Pot of money on the table
   const [currentDealerId, setCurrentDealerId] = useState<number>(0); // Id of the current dealer
+  const [tableMoney, setTableMoney] = useState<number>(0); // Money on the table in the current round
 
   // Populate the table with players (later with possibility to choose how many players to play against
   useEffect(() => {
     let newPlayers: Array<PlayerObject> = [];
-    for (let i = 1; i < 5; i++) {
+    for (let i = 0; i < 4; i++) {
       let playerCards = [deck.pop(), deck.pop()];
       newPlayers.push({
         id: i,
@@ -41,7 +45,8 @@ const Poker = (): JSX.Element => {
         cards: playerCards as Array<string>,
         smallBlind: 0,
         bigBlind: 0,
-        bet: 0
+        bet: 0,
+        biggestBet: biggestBet
       })
     }
     newPlayers = randomlyGiveBlind(newPlayers, 1);
@@ -54,7 +59,12 @@ const Poker = (): JSX.Element => {
   // Give the small blind to a random player, and the big blind to the next player in the array
   // Also set the current dealer id, the pot and player with the biggest bet (to be added later)
   const randomlyGiveBlind = (players: Array<PlayerObject>, smallBlind: number): any => {
-    const newPlayers = players.filter(player => player.money > 0);
+    // Creating a copy of the players array to avoid mutating the state
+    const newPlayers = players.filter(player => player.money > 0).map((player) => {
+      return {
+        ...player,
+      }
+    })
     const length = newPlayers.length;
     let i = Math.floor(Math.random() * length);
     newPlayers[i].money -= smallBlind;
@@ -83,18 +93,16 @@ const Poker = (): JSX.Element => {
       }
     }
     setPot(smallBlind * 3);
-    // if (i === length - 1) {
-    //   newPlayers[0].bigBlind = smallBlind * 2;
-    //   return newPlayers;
-    // } else {
-    //   newPlayers[i + 1].bigBlind = smallBlind * 2;
-    //   return newPlayers;
-    // }
+    const biggestBet = smallBlind * 2;
+    setBiggestBet(smallBlind * 2);
+    for (let player of newPlayers) {
+      player.biggestBet = biggestBet;
+    }
     return newPlayers;
   }
 
   // Call the big blind if the player has enough money, otherwise call all in
-  const call = (player: PlayerObject, bigBlind: number) => {
+  const call = (player: PlayerObject, biggestBet: number) => {
     
   }
 
@@ -119,9 +127,10 @@ const Poker = (): JSX.Element => {
     <Layout siteTitle="Poker">
       <div className={styles.game}>
         <div className={styles.tableContainer}>
-          <div onClick={getResponse} className={styles.table}>
+          <div onClick={() => console.log(players)} className={styles.table}>
+            <div className={styles.pot}>Pot: {pot}$</div>
             {players.map((player) => {
-              // console.log(player)
+              console.log(player)
               return <Player 
               id={player.id} 
               name={player.name}
@@ -132,6 +141,8 @@ const Poker = (): JSX.Element => {
               smallBlind={player.smallBlind}
               bigBlind={player.bigBlind}
               bet={player.bet}
+              biggestBet={biggestBet}
+              currentDealerId={currentDealerId}
               />             
             })}
           </div>

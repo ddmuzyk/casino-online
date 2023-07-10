@@ -7,9 +7,10 @@ import Image from "next/image";
 //   state: object
 // }
 
-const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, smallBlind, bigBlind, bet}) => {
+const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, smallBlind, bigBlind, bet, biggestBet}) => {
 
   const classname = `player${id}`;
+  console.log('player: ', biggestBet)
 
   return (
     <div className={`${styles[classname]}`}>
