@@ -14,7 +14,8 @@ import { shuffleCards, cards } from "@/lib/poker/poker-logic/poker.ts";
   smallBlind: number,
   bigBlind: number,
   bet: number,
-  biggestBet: number,
+  hasFolded: boolean,
+  biggestBet?: number,
   currentDealerId?: number
   // biggestBet: number,
 }
@@ -46,7 +47,8 @@ const Poker = (): JSX.Element => {
         smallBlind: 0,
         bigBlind: 0,
         bet: 0,
-        biggestBet: biggestBet
+        hasFolded: false,
+        // biggestBet: biggestBet
       })
     }
     newPlayers = randomlyGiveBlind(newPlayers, 1);
@@ -74,10 +76,12 @@ const Poker = (): JSX.Element => {
         // Later add a check if the player has enough money to pay the big blind
         newPlayers[0].money -= smallBlind * 2;
         newPlayers[0].bet += smallBlind * 2;
+        setPlayerWithBiggestBet(0);
         setCurrentDealerId(i);
       } else {
         newPlayers[1].money -= smallBlind * 2;
         newPlayers[1].bet += smallBlind * 2;
+        setPlayerWithBiggestBet(1);
         setCurrentDealerId(i);
       }
     } else {
@@ -86,18 +90,20 @@ const Poker = (): JSX.Element => {
         newPlayers[0].money -= smallBlind * 2;
         newPlayers[0].bet += smallBlind * 2;
         setCurrentDealerId(1);
+        setPlayerWithBiggestBet(0);
       } else {
         newPlayers[i + 1].money -= smallBlind * 2;
         newPlayers[i + 1].bet += smallBlind * 2;
+        setPlayerWithBiggestBet(i + 1);
         newPlayers[i + 2] ? setCurrentDealerId(i + 2) : setCurrentDealerId(0);
       }
     }
     setPot(smallBlind * 3);
     const biggestBet = smallBlind * 2;
     setBiggestBet(smallBlind * 2);
-    for (let player of newPlayers) {
-      player.biggestBet = biggestBet;
-    }
+    // for (let player of newPlayers) {
+    //   player.biggestBet = biggestBet;
+    // }
     return newPlayers;
   }
 
@@ -130,7 +136,7 @@ const Poker = (): JSX.Element => {
           <div onClick={() => console.log(players)} className={styles.table}>
             <div className={styles.pot}>Pot: {pot}$</div>
             {players.map((player) => {
-              console.log(player)
+              // console.log(player)
               return <Player 
               id={player.id} 
               name={player.name}
@@ -141,6 +147,7 @@ const Poker = (): JSX.Element => {
               smallBlind={player.smallBlind}
               bigBlind={player.bigBlind}
               bet={player.bet}
+              hasFolded={player.hasFolded}
               biggestBet={biggestBet}
               currentDealerId={currentDealerId}
               />             
