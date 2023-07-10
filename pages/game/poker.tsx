@@ -35,27 +35,7 @@ const Poker = (): JSX.Element => {
 
   // Populate the table with players (later with possibility to choose how many players to play against
   useEffect(() => {
-    let newPlayers: Array<PlayerObject> = [];
-    for (let i = 0; i < 4; i++) {
-      let playerCards = [deck.pop(), deck.pop()];
-      newPlayers.push({
-        id: i,
-        name: `Player${i}`,
-        turn: false,
-        money: 1000,
-        cards: playerCards as Array<string>,
-        smallBlind: 0,
-        bigBlind: 0,
-        bet: 0,
-        hasFolded: false,
-        // biggestBet: biggestBet
-      })
-    }
-    newPlayers = randomlyGiveBlind(newPlayers, 1);
-    // console.log(deck.length);
-    // console.log(baseDeck.length);
-    setDeck(deck);
-    setPlayers(newPlayers);
+    initializeGame(deck);
   }, [])
 
   // Give the small blind to a random player, and the big blind to the next player in the array
@@ -107,7 +87,7 @@ const Poker = (): JSX.Element => {
     return newPlayers;
   }
 
-  // Call the big blind if the player has enough money, otherwise call all in
+  // Call the biggest bet if the player has enough money, otherwise call all in
   const call = (player: PlayerObject, biggestBet: number) => {
     
   }
@@ -127,6 +107,34 @@ const Poker = (): JSX.Element => {
     const data = await response.json();
     console.log(data);
     return data;
+  }
+
+  const createPlayers = (deck: Array<string>) => {
+    const newPlayers: Array<PlayerObject> = [];
+    for (let i = 0; i < 4; i++) {
+      let playerCards = [deck.pop(), deck.pop()];
+      newPlayers.push({
+        id: i,
+        name: `Player${i}`,
+        turn: false,
+        money: 1000,
+        cards: playerCards as Array<string>,
+        smallBlind: 0,
+        bigBlind: 0,
+        bet: 0,
+        hasFolded: false,
+      })
+    }
+    
+    return newPlayers;
+  }
+
+  // Function that starts the game
+  const initializeGame = (deck: Array<string>) => {
+    let newPlayers: Array<PlayerObject> = createPlayers(deck);
+    newPlayers = randomlyGiveBlind(newPlayers, 1);
+    setDeck(deck);
+    setPlayers(newPlayers);
   }
 
   return (
