@@ -32,11 +32,57 @@ const Poker = (): JSX.Element => {
   const [pot, setPot] = useState<number>(0); // Pot of money on the table
   const [currentDealerId, setCurrentDealerId] = useState<number>(0); // Id of the current dealer
   const [tableMoney, setTableMoney] = useState<number>(0); // Money on the table in the current round
+  const [turn, setTurn] = useState<number>(Math.floor(Math.random() * 4)); // Id of the player whose turn it is, randomly chosen at the start of the game
 
   // Populate the table with players (later with possibility to choose how many players to play against
   useEffect(() => {
     initializeGame(deck);
   }, [])
+
+  
+  const giveBlind = (players: Array<PlayerObject>, smallBlind: number, turn: number): any => {
+    // This function mimics randomlyGiveBlind, but it gives blind based on the turn of the player
+    // Creating a copy of the players array to avoid mutating the state
+    const newPlayers = players.filter(player => player.money > 0).map((player) => { 
+      return {
+        ...player,
+      }
+    })
+
+    const length = newPlayers.length;
+    if (length === 2) {
+      if (turn === 0) {
+        // Later add a check if the player has enough money to pay the big blind
+        newPlayers[0].money -= smallBlind;
+        newPlayers[0].bet += smallBlind;
+        newPlayers[1].money -= smallBlind * 2;
+        newPlayers[1].bet += smallBlind * 2;
+        setPlayerWithBiggestBet(1);
+        setCurrentDealerId(0);
+      } else {
+        newPlayers[1].money -= smallBlind;
+        newPlayers[1].bet += smallBlind;
+        newPlayers[0].money -= smallBlind * 2;
+        newPlayers[0].bet += smallBlind * 2;
+        setPlayerWithBiggestBet(0);
+        setCurrentDealerId(1);
+      }
+    } else {
+      // Here, unlike in randomlyGiveBlind, we pass the blinds to players that are before the current dealer in the array
+    
+        newPlayers[turn-1] ? newPlayers[turn-1].money -= smallBlind*2 : newPlayers[length-1].money -= smallBlind*2;
+        newPlayers[turn-1] ? newPlayers[turn-1].bet += smallBlind*2 : newPlayers[length-1].bet += smallBlind*2;
+        newPlayers[turn-2] ? newPlayers[turn-2].money -= smallBlind : newPlayers[length-2].money -= smallBlind;
+        newPlayers[turn-2] ? newPlayers[turn-2].bet += smallBlind : newPlayers[length-2].bet += smallBlind;
+        newPlayers[turn-1] ? setPlayerWithBiggestBet(turn-1) : setPlayerWithBiggestBet(length-1); 
+    }
+    setPot(smallBlind*3);
+    setTableMoney(smallBlind*3);
+    setBiggestBet(smallBlind*2);
+
+    return newPlayers;
+
+  }
 
   // Give the small blind to a random player, and the big blind to the next player in the array
   // Also set the current dealer id, the pot and player with the biggest bet (to be added later)
@@ -132,7 +178,7 @@ const Poker = (): JSX.Element => {
   // Function that starts the game
   const initializeGame = (deck: Array<string>) => {
     let newPlayers: Array<PlayerObject> = createPlayers(deck);
-    newPlayers = randomlyGiveBlind(newPlayers, 1);
+    newPlayers = giveBlind(newPlayers, 1, turn);
     setDeck(deck);
     setPlayers(newPlayers);
   }
