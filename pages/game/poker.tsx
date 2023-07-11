@@ -40,7 +40,7 @@ const Poker = (): JSX.Element => {
   }, [])
 
   
-  const giveBlind = (players: Array<PlayerObject>, smallBlind: number, turn: number): any => {
+  const giveBlind = (players: Array<PlayerObject>, smallBlind: number, turn: number) => {
     // This function mimics randomlyGiveBlind, but it gives blind based on the turn of the player
     // Creating a copy of the players array to avoid mutating the state
     const newPlayers = players.filter(player => player.money > 0).map((player) => { 
@@ -68,11 +68,33 @@ const Poker = (): JSX.Element => {
     } else {
       // Here, unlike in randomlyGiveBlind, we pass the blinds to players that are before the current dealer in the array
     
-        newPlayers[turn-1] ? newPlayers[turn-1].money -= smallBlind*2 : newPlayers[length-1].money -= smallBlind*2;
-        newPlayers[turn-1] ? newPlayers[turn-1].bet += smallBlind*2 : newPlayers[length-1].bet += smallBlind*2;
-        newPlayers[turn-2] ? newPlayers[turn-2].money -= smallBlind : newPlayers[length-2].money -= smallBlind;
-        newPlayers[turn-2] ? newPlayers[turn-2].bet += smallBlind : newPlayers[length-2].bet += smallBlind;
-        newPlayers[turn-1] ? setPlayerWithBiggestBet(turn-1) : setPlayerWithBiggestBet(length-1); 
+        // newPlayers[turn-1 || length-1].money -= smallBlind*2;
+        // This logic doesn't work... I'll make just an if statement for now
+        // turn !== 0 ? newPlayers[turn-1].money -= smallBlind*2 : newPlayers[length-1].money -= smallBlind*2;
+        // turn !== 0 ? newPlayers[turn-1].bet += smallBlind*2 : newPlayers[length-1].bet += smallBlind*2;
+        // newPlayers[turn-2] ? newPlayers[turn-2].money -= smallBlind : newPlayers[length-2].money -= smallBlind;
+        // newPlayers[turn-2] ? newPlayers[turn-2].bet += smallBlind : newPlayers[length-2].bet += smallBlind;
+        // turn !== 0 ? setPlayerWithBiggestBet(turn-1) : setPlayerWithBiggestBet(length-1); 
+
+        if (turn === 0) {
+          newPlayers[length-1].money -= smallBlind*2;
+          newPlayers[length-1].bet += smallBlind*2;
+          newPlayers[length-2].money -= smallBlind;
+          newPlayers[length-2].bet += smallBlind;
+          setPlayerWithBiggestBet(length-1);
+        } else if (turn === 1) {
+          newPlayers[0].money -= smallBlind*2;
+          newPlayers[0].bet += smallBlind*2;
+          newPlayers[length-1].money -= smallBlind;
+          newPlayers[length-1].bet += smallBlind;
+          setPlayerWithBiggestBet(0);
+        } else {
+          newPlayers[turn-1].money -= smallBlind*2;
+          newPlayers[turn-1].bet += smallBlind*2;
+          newPlayers[turn-2].money -= smallBlind;
+          newPlayers[turn-2].bet += smallBlind;
+          setPlayerWithBiggestBet(turn-1);
+        }
     }
     setCurrentDealerId(turn);
     setPot(smallBlind*3);
