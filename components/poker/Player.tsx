@@ -19,7 +19,14 @@ const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, smallBli
       <div className={`${styles['player-container']}`}>
         <div className={styles['imgs-container']}>
           {cards.map((card: string) => {
-            return <img onClick={() => {console.log(biggestBet)}} className={`${styles.image} ${turn === id ? styles.turn : ""}`} key={card} src={`/svg-cards/${card}.svg`} alt="Playing card" width={77} height={154}></img>
+            return <img onClick={() => {console.log(biggestBet)}} 
+            className={`${styles.image} ${turn === id ? styles.turn : ""}`} 
+            key={card} 
+            src={`/svg-cards/${card}.svg`} 
+            alt="Playing card" 
+            width={77} 
+            height={154}>
+            </img>
           })}
         </div>
         <div className={styles.stats}>
