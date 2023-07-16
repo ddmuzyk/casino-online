@@ -31,8 +31,9 @@ $stats-background: rgba(27, 27, 27, 0.89);
 }
 
 .image {
-  margin: 0 2px;
-  // width: 10px;
+  margin: 10px 2px;
+  width: 77px;
+  height: auto;
 }
 
 .player1 {
@@ -79,4 +80,8 @@ $stats-background: rgba(27, 27, 27, 0.89);
   align-items: center;
   font-family: Montserrat, sans-serif;
   color: white;
+}
+
+.turn {
+  box-shadow: 0 0px 10px 3px rgba(245, 248, 62, 0.699);
 }

@@ -5,19 +5,19 @@ import Layout from "@/components/layout";
 import Player from "@/components/poker/Player";
 import { shuffleCards, cards } from "@/lib/poker/poker-logic/poker.ts";
 
- export interface PlayerObject {
-  id: number,
-  name: string,
-  turn: boolean,
-  money: number,
-  cards: Array<string>
-  smallBlind: number,
-  bigBlind: number,
-  bet: number,
-  hasFolded: boolean,
-  biggestBet?: number,
-  currentDealerId?: number
-  // biggestBet: number,
+export interface PlayerObject {
+id: number,
+name: string,
+money: number,
+cards: Array<string>
+smallBlind: number,
+bigBlind: number,
+bet: number,
+hasFolded: boolean,
+biggestBet?: number,
+currentDealerId?: number
+turn?: number,
+// biggestBet: number,
 }
 
 type Stage = 'pre-flop' | 'flop' | 'turn' | 'river';
@@ -215,15 +215,14 @@ const Poker = (): JSX.Element => {
     return data;
   }
 
-  const createPlayers = (deck: Array<string>) => {
+  const createPlayers = (deck: Array<string>, numOfPlayers: number) => {
     const newDeck = [...deck];
     const newPlayers: Array<PlayerObject> = [];
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < numOfPlayers; i++) {
       let playerCards = [newDeck.pop(), newDeck.pop()];
       newPlayers.push({
         id: i,
         name: `Player${i}`,
-        turn: false,
         money: 1000,
         cards: playerCards as Array<string>,
         smallBlind: 0,
@@ -240,7 +239,7 @@ const Poker = (): JSX.Element => {
   // Function that starts the game
   const initializeGame = (deck: Array<string>) => {
     const newDeck = [...deck]
-    const newPlayers: Array<PlayerObject> = giveBlind(createPlayers(newDeck), 1, turn);
+    const newPlayers: Array<PlayerObject> = giveBlind(createPlayers(newDeck, 4), 1, turn);
     setPlayers(() => newPlayers);
   }
 
@@ -250,14 +249,14 @@ const Poker = (): JSX.Element => {
         <div className={styles.tableContainer}>
           <div onClick={() => {
             passTurnToNextPlayer(turn, players);
-            }} className={styles.table}>
+            }} 
+            className={styles.table}>
             <div className={styles.pot}>Pot: {pot}$</div>
             {players.map((player) => {
               // console.log(player)
               return <Player 
               id={player.id} 
               name={player.name}
-              turn={player.turn}
               money={player.money}
               key={player.name}
               cards={player.cards}
@@ -267,6 +266,7 @@ const Poker = (): JSX.Element => {
               hasFolded={player.hasFolded}
               biggestBet={biggestBet}
               currentDealerId={currentDealerId}
+              turn={turn}
               />             
             })}
           </div>
