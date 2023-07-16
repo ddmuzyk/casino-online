@@ -5,19 +5,19 @@ import Layout from "@/components/layout";
 import Player from "@/components/poker/Player";
 import { shuffleCards, cards } from "@/lib/poker/poker-logic/poker.ts";
 
- export interface PlayerObject {
-  id: number,
-  name: string,
-  turn: boolean,
-  money: number,
-  cards: Array<string>
-  smallBlind: number,
-  bigBlind: number,
-  bet: number,
-  hasFolded: boolean,
-  biggestBet?: number,
-  currentDealerId?: number
-  // biggestBet: number,
+export interface PlayerObject {
+id: number,
+name: string,
+money: number,
+cards: Array<string>
+smallBlind: number,
+bigBlind: number,
+bet: number,
+hasFolded: boolean,
+biggestBet?: number,
+currentDealerId?: number
+turn?: number,
+// biggestBet: number,
 }
 
 type Stage = 'pre-flop' | 'flop' | 'turn' | 'river';
@@ -29,6 +29,7 @@ const Poker = (): JSX.Element => {
   const [deck, setDeck] = useState(shuffleCards(cards)); // Deck of cards in play
   // const [smallBlind, setSmallBlind] = useState<number>(1); // Small blind
   // const [bigBlind, setBigBlind] = useState<number>(2); // Big blind
+  const [playerWithBigBlind, setPlayerWithBigBlind] = useState<number>(0); // Id of the player with the big blind 
   const [biggestBet, setBiggestBet] = useState(0); // Biggest bet on the table
   const [playerWithBiggestBet, setPlayerWithBiggestBet] = useState(0); // Id of the player with the biggest bet
   const [pot, setPot] = useState(0); // Pot of money on the table
@@ -36,7 +37,7 @@ const Poker = (): JSX.Element => {
   const [tableMoney, setTableMoney] = useState(0); // Money on the table in the current round
   const [turn, setTurn] = useState(Math.floor(Math.random() * 4)); // Id of the player whose turn it is, randomly chosen at the start of the game
   const [communityCards, setCommunityCards] = useState<Array<string>>([]); // Community cards on the table
-  const [currentStage, setCurrentStage] = useState('pre-flop'); // Current stage of the game
+  const [currentStage, setCurrentStage] = useState<Stage>('flop'); // Current stage of the game
 
   // Populate the table with players (later with possibility to choose how many players to play against
   useEffect(() => {
@@ -62,13 +63,15 @@ const Poker = (): JSX.Element => {
         newPlayers[0].bet += smallBlind;
         newPlayers[1].money -= smallBlind * 2;
         newPlayers[1].bet += smallBlind * 2;
-        setPlayerWithBiggestBet(1);
+        setPlayerWithBiggestBet(() => 1);
+        setPlayerWithBigBlind(() => 1);
       } else {
         newPlayers[1].money -= smallBlind;
         newPlayers[1].bet += smallBlind;
         newPlayers[0].money -= smallBlind * 2;
         newPlayers[0].bet += smallBlind * 2;
-        setPlayerWithBiggestBet(0);
+        setPlayerWithBiggestBet(() => 0);
+        setPlayerWithBigBlind(() => 0);
       }
     } else {
       // Here, unlike in randomlyGiveBlind, we pass the blinds to players that are before the current dealer in the array
@@ -78,25 +81,28 @@ const Poker = (): JSX.Element => {
           newPlayers[length-1].bet += smallBlind*2;
           newPlayers[length-2].money -= smallBlind;
           newPlayers[length-2].bet += smallBlind;
-          setPlayerWithBiggestBet(length-1);
+          setPlayerWithBiggestBet(() => length-1);
+          setPlayerWithBigBlind(() => length-1);
         } else if (turn === 1) {
           newPlayers[0].money -= smallBlind*2;
           newPlayers[0].bet += smallBlind*2;
           newPlayers[length-1].money -= smallBlind;
           newPlayers[length-1].bet += smallBlind;
-          setPlayerWithBiggestBet(0);
+          setPlayerWithBiggestBet(() => 0);
+          setPlayerWithBigBlind(() => 0);
         } else {
           newPlayers[turn-1].money -= smallBlind*2;
           newPlayers[turn-1].bet += smallBlind*2;
           newPlayers[turn-2].money -= smallBlind;
           newPlayers[turn-2].bet += smallBlind;
-          setPlayerWithBiggestBet(turn-1);
+          setPlayerWithBiggestBet(() => turn-1);
+          setPlayerWithBigBlind(() => turn-1);
         }
     }
-    setCurrentDealerId(turn);
-    setPot(smallBlind*3);
-    setTableMoney(smallBlind*3);
-    setBiggestBet(smallBlind*2);
+    setCurrentDealerId(() => turn);
+    setPot(() => smallBlind*3);
+    setTableMoney(() => smallBlind*3);
+    setBiggestBet(() => smallBlind*2);
 
     return newPlayers;
 
@@ -120,13 +126,13 @@ const Poker = (): JSX.Element => {
         // Later add a check if the player has enough money to pay the big blind
         newPlayers[0].money -= smallBlind * 2;
         newPlayers[0].bet += smallBlind * 2;
-        setPlayerWithBiggestBet(0);
-        setCurrentDealerId(i);
+        setPlayerWithBiggestBet(() => 0);
+        setCurrentDealerId(() => i);
       } else {
         newPlayers[1].money -= smallBlind * 2;
         newPlayers[1].bet += smallBlind * 2;
-        setPlayerWithBiggestBet(1);
-        setCurrentDealerId(i);
+        setPlayerWithBiggestBet(() => 1);
+        setCurrentDealerId(() => i);
       }
     } else {
       if (i === length - 1) {
@@ -138,17 +144,23 @@ const Poker = (): JSX.Element => {
       } else {
         newPlayers[i + 1].money -= smallBlind * 2;
         newPlayers[i + 1].bet += smallBlind * 2;
-        setPlayerWithBiggestBet(i + 1);
-        newPlayers[i + 2] ? setCurrentDealerId(i + 2) : setCurrentDealerId(0);
+        setPlayerWithBiggestBet(() => i + 1);
+        newPlayers[i + 2] ? setCurrentDealerId(() => i + 2) : setCurrentDealerId(() => 0);
       }
     }
-    setPot(smallBlind * 3);
+    setPot(() => smallBlind * 3);
     const biggestBet = smallBlind * 2;
-    setBiggestBet(smallBlind * 2);
+    setBiggestBet(() => smallBlind * 2);
     // for (let player of newPlayers) {
     //   player.biggestBet = biggestBet;
     // }
     return newPlayers;
+  }
+
+  const passTurnToNextPlayer = (turn: number, players: Array<PlayerObject>) => {
+    const newTurn = turn === players.length - 1 ? 0 : turn + 1;
+    setTurn(() => newTurn);
+    console.log('turn: ', newTurn);
   }
 
   // Call the biggest bet if the player has enough money, otherwise call all in
@@ -156,17 +168,33 @@ const Poker = (): JSX.Element => {
     
   }
 
+  const check = (turn: number, players: Array<PlayerObject>, playerWithBiggestBet: number, stage: Stage) => {
+    // The only time the player with the biggest bet can do something is in the pre-flop stage
+    if (turn === playerWithBigBlind && stage === 'flop') {
+      // Deal cards or if there are 5 cards on the table, show the winner and go to the next round
+    }
+    if (turn === players.length - 1) {
+      setTurn(() => 0);
+    } else { 
+      setTurn(() => turn + 1);
+    }
+  }
+
   // Deal the flop, turn and river
   const dealCommunityCards = (communityCards: Array<string> , deck: Array<string>, stage: Stage) => {
     const deckCopy = [...deck];
     const communityCardsCopy = [...communityCards];
     const cardsToDeal = stage === 'flop' ? 3 : stage === 'turn' || 'river' ? 1 : 0;
+    const nextStage = stage === 'flop' ? 'turn' : stage === 'turn' ? 'river' : stage === 'river' ? 'flop' : 'flop';
+
+
     for (let i = 0; i < cardsToDeal; i++) {
       communityCardsCopy.push(deckCopy.pop() as string);
     }
 
-    setCommunityCards(communityCardsCopy);
-    setDeck(deckCopy);
+    setCommunityCards(() => communityCardsCopy);
+    setDeck(() => deckCopy);
+    setCurrentStage(() => nextStage);
 
   }
 
@@ -187,15 +215,14 @@ const Poker = (): JSX.Element => {
     return data;
   }
 
-  const createPlayers = (deck: Array<string>) => {
+  const createPlayers = (deck: Array<string>, numOfPlayers: number) => {
     const newDeck = [...deck];
     const newPlayers: Array<PlayerObject> = [];
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < numOfPlayers; i++) {
       let playerCards = [newDeck.pop(), newDeck.pop()];
       newPlayers.push({
         id: i,
         name: `Player${i}`,
-        turn: false,
         money: 1000,
         cards: playerCards as Array<string>,
         smallBlind: 0,
@@ -205,15 +232,15 @@ const Poker = (): JSX.Element => {
       })
 
     }
-    setDeck(newDeck);
+    setDeck(() => newDeck);
     return newPlayers;
   }
 
   // Function that starts the game
   const initializeGame = (deck: Array<string>) => {
     const newDeck = [...deck]
-    const newPlayers: Array<PlayerObject> = giveBlind(createPlayers(newDeck), 1, turn);
-    setPlayers(newPlayers);
+    const newPlayers: Array<PlayerObject> = giveBlind(createPlayers(newDeck, 4), 1, turn);
+    setPlayers(() => newPlayers);
   }
 
   return (
@@ -221,20 +248,15 @@ const Poker = (): JSX.Element => {
       <div className={styles.game}>
         <div className={styles.tableContainer}>
           <div onClick={() => {
-            // console.log(getResponse());
-            console.log('deck: ', deck)
-            dealCommunityCards(communityCards, deck, 'flop');
-            // console.log(players)
-            // console.log('turn: ', turn);
-            // console.log('currentDealerId: ', currentDealerId);
-            }} className={styles.table}>
+            passTurnToNextPlayer(turn, players);
+            }} 
+            className={styles.table}>
             <div className={styles.pot}>Pot: {pot}$</div>
             {players.map((player) => {
               // console.log(player)
               return <Player 
               id={player.id} 
               name={player.name}
-              turn={player.turn}
               money={player.money}
               key={player.name}
               cards={player.cards}
@@ -244,6 +266,7 @@ const Poker = (): JSX.Element => {
               hasFolded={player.hasFolded}
               biggestBet={biggestBet}
               currentDealerId={currentDealerId}
+              turn={turn}
               />             
             })}
           </div>
