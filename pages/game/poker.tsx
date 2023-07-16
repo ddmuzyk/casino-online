@@ -20,21 +20,23 @@ import { shuffleCards, cards } from "@/lib/poker/poker-logic/poker.ts";
   // biggestBet: number,
 }
 
+type Stage = 'pre-flop' | 'flop' | 'turn' | 'river';
+
 const Poker = (): JSX.Element => {
 
   const [baseDeck, setBaseDeck] = useState<Array<string>>(cards); // Base deck of cards
   const [players, setPlayers] = useState<Array<PlayerObject>>([]); // Players in the game
-  const [deck, setDeck] = useState<Array<string>>(shuffleCards(cards)); // Deck of cards in play
+  const [deck, setDeck] = useState(shuffleCards(cards)); // Deck of cards in play
   // const [smallBlind, setSmallBlind] = useState<number>(1); // Small blind
   // const [bigBlind, setBigBlind] = useState<number>(2); // Big blind
-  const [biggestBet, setBiggestBet] = useState<number>(0); // Biggest bet on the table
-  const [playerWithBiggestBet, setPlayerWithBiggestBet] = useState<number>(0); // Id of the player with the biggest bet
-  const [pot, setPot] = useState<number>(0); // Pot of money on the table
-  const [currentDealerId, setCurrentDealerId] = useState<number>(0); // Id of the current dealer
-  const [tableMoney, setTableMoney] = useState<number>(0); // Money on the table in the current round
-  const [turn, setTurn] = useState<number>(Math.floor(Math.random() * 4)); // Id of the player whose turn it is, randomly chosen at the start of the game
+  const [biggestBet, setBiggestBet] = useState(0); // Biggest bet on the table
+  const [playerWithBiggestBet, setPlayerWithBiggestBet] = useState(0); // Id of the player with the biggest bet
+  const [pot, setPot] = useState(0); // Pot of money on the table
+  const [currentDealerId, setCurrentDealerId] = useState(0); // Id of the current dealer
+  const [tableMoney, setTableMoney] = useState(0); // Money on the table in the current round
+  const [turn, setTurn] = useState(Math.floor(Math.random() * 4)); // Id of the player whose turn it is, randomly chosen at the start of the game
   const [communityCards, setCommunityCards] = useState<Array<string>>([]); // Community cards on the table
-  const [currentStage, setCurrentStage] = useState<string>('pre-flop'); // Current stage of the game
+  const [currentStage, setCurrentStage] = useState('pre-flop'); // Current stage of the game
 
   // Populate the table with players (later with possibility to choose how many players to play against
   useEffect(() => {
@@ -155,16 +157,17 @@ const Poker = (): JSX.Element => {
   }
 
   // Deal the flop, turn and river
-  const dealCommunityCards = (communityCards: Array<string> , deck: Array<string>, stage: string) => {
+  const dealCommunityCards = (communityCards: Array<string> , deck: Array<string>, stage: Stage) => {
     const deckCopy = [...deck];
     const communityCardsCopy = [...communityCards];
-    const currentStage = stage === 'flop' ? 3 : stage === 'turn' || 'river' ? 1 : 0;
-    const flop = [] as Array<string>;
-    for (let i = 0; i < currentStage; i++) {
-      flop.push(deckCopy.pop() as string);
+    const cardsToDeal = stage === 'flop' ? 3 : stage === 'turn' || 'river' ? 1 : 0;
+    for (let i = 0; i < cardsToDeal; i++) {
+      communityCardsCopy.push(deckCopy.pop() as string);
     }
-    
-    setCommunityCards(communityCardsCopy.concat(flop));
+
+    setCommunityCards(communityCardsCopy);
+    setDeck(deckCopy);
+
   }
 
   // Get the response from the server based on the players hand
@@ -176,7 +179,7 @@ const Poker = (): JSX.Element => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        cards: ['Ac', 'As', '2c']
+        cards: ['Ac', 'Js', 'Jc']
       })
     });
     const data = await response.json();
@@ -218,8 +221,9 @@ const Poker = (): JSX.Element => {
       <div className={styles.game}>
         <div className={styles.tableContainer}>
           <div onClick={() => {
-            console.log(getResponse());
-            // console.log('deck: ', deck)
+            // console.log(getResponse());
+            console.log('deck: ', deck)
+            dealCommunityCards(communityCards, deck, 'flop');
             // console.log(players)
             // console.log('turn: ', turn);
             // console.log('currentDealerId: ', currentDealerId);
