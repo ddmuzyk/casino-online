@@ -26,6 +26,7 @@ const Poker = (): JSX.Element => {
 
   const [baseDeck, setBaseDeck] = useState<Array<string>>(cards); // Base deck of cards
   const [players, setPlayers] = useState<Array<PlayerObject>>([]); // Players in the game
+  const [activePlayers, setActivePlayers] = useState<Array<PlayerObject>>([]); // Players that didn't fold yet
   const [deck, setDeck] = useState(shuffleCards(cards)); // Deck of cards in play
   // const [smallBlind, setSmallBlind] = useState<number>(1); // Small blind
   // const [bigBlind, setBigBlind] = useState<number>(2); // Big blind
@@ -170,7 +171,7 @@ const Poker = (): JSX.Element => {
   }
 
   const getNextTurn = (turn: number, players: Array<PlayerObject>) => {
-    const newTurn = turn === players.length - 1 ? 0 : turn + 1;
+    let newTurn = turn === players.length - 1 ? 0 : turn + 1;
     return newTurn;
   }
 
@@ -249,6 +250,7 @@ const Poker = (): JSX.Element => {
   const initializeGame = (deck: Array<string>) => {
     const newDeck = [...deck]
     const newPlayers: Array<PlayerObject> = giveBlind(createPlayers(newDeck, 4), 1, turn);
+    setActivePlayers(() => newPlayers);
     setPlayers(() => newPlayers);
   }
 
