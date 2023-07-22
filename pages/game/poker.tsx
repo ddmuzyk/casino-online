@@ -33,8 +33,10 @@ const Poker = (): JSX.Element => {
   const [playerWithBigBlind, setPlayerWithBigBlind] = useState<number>(0); // Id of the player with the big blind 
   const [biggestBet, setBiggestBet] = useState(0); // Biggest bet on the table
   const [playerWithBiggestBet, setPlayerWithBiggestBet] = useState(0); // Id of the player with the biggest bet
+  const [playerThatShouldntMove, setPlayerThatShouldntMove] = useState<number>(0); // Id of the player that shouldn't move (the player raised and everyone called him, so he can't do anything anymore)
   const [pot, setPot] = useState(0); // Pot of money on the table
   const [currentDealerId, setCurrentDealerId] = useState<number>(10); // Id of the current dealer
+  const [playerThatBegins, setPlayerThatBegins] = useState<number>(10); // Id of the player that begins the game (if current dealer has folded)
   const [tableMoney, setTableMoney] = useState(0); // Money on the table in the current round
   const [turn, setTurn] = useState(Math.floor(Math.random() * 4)); // Id of the player whose turn it is, randomly chosen at the start of the game
   const [communityCards, setCommunityCards] = useState<Array<string>>([]); // Community cards on the table
@@ -105,6 +107,7 @@ const Poker = (): JSX.Element => {
         }
     }
     setCurrentDealerId(() => turn);
+    setPlayerThatBegins(() => turn);
     setPot(() => smallBlind*3);
     setTableMoney(() => smallBlind*3);
     setBiggestBet(() => smallBlind*2);
@@ -149,25 +152,14 @@ const Poker = (): JSX.Element => {
   }
 
   const checkIfCardsShouldBeDealt = (
-    players: Array<PlayerObject>, 
     turn: number, 
     stage: Stage, 
     tableMoney: number,
-    playerWithBigBlind: number,
     playerWithBiggestBet: number,
-    currentDealerId: number,
-    biggestBet: number,
-    communityCards: Array<string>,
+    playerThatBegins: number,
     ) => {
-      const player = players[turn];
-      if ((turn !== playerWithBigBlind && player.bet === biggestBet) || 
-      (turn === playerWithBiggestBet) || 
-      (turn === currentDealerId && !tableMoney) ||
-      communityCards.length < 5) {
-        return true;
-      } else {
-        return false;
-      }
+      return (turn === playerWithBiggestBet || (!tableMoney && turn === playerThatBegins)) &&
+      stage !== 'river';
   }
 
   const getNextTurn = (turn: number, players: Array<PlayerObject>) => {
