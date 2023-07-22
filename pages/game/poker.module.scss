@@ -76,3 +76,17 @@ $borderRadius: 400px;
   transform: translate(-50%, -140px);
   user-select: none;
 }
+
+.communityCards {
+  display: flex;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.image {
+  margin: 10px 2px;
+  width: 77px;
+  height: auto;
+}
