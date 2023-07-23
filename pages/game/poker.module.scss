@@ -89,7 +89,47 @@ $borderRadius: 400px;
 }
 
 .image {
+  animation: show 1000ms cubic-bezier(.91,.55,.7,.56) forwards;
   margin: 10px 2px;
   width: 77px;
   height: auto;
+  // transition: all 1s;
+  opacity: 0;
 }
+
+@keyframes show {
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.visible {
+  opacity: 1;
+}
+
+.hidden {
+  opacity: 0;
+}
+
+// .card-enter {
+//   opacity: 0;
+//   transform: scale(0.5);
+// }
+
+// .card-enter-active {
+//   opacity: 1;
+//   transform: scale(1);
+//   transition: all 2s;
+// }
+
+// .card-exit {
+//   opacity: 1;
+//   transform: scale(1);
+// }
+
+// .card-exit-active {
+//   opacity: 0;
+//   transform: scale(0.5);
+//   transition: all 2s
+// }

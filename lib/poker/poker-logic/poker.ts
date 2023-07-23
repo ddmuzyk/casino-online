@@ -43,7 +43,7 @@ export const shuffleCards = (unshuffled: Array<string>) : Array<string>  => {
   return deck as Array<string>;
 }
 
-export const deck = shuffleCards(cards);
+export const decky = shuffleCards(cards);
 
 // const player1 = {
 //   cards: []
