@@ -79,6 +79,9 @@ $borderRadius: 400px;
 
 .communityCards {
   display: flex;
+  flex-direction: row;
+  width: 410px;
+  justify-content: flex-start;
   position: absolute;
   top: 50%;
   left: 50%;

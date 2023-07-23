@@ -164,6 +164,7 @@ const Poker = (): JSX.Element => {
       // If there's no money to call, check
       const cardsShouldBeDealt = checkIfCardsShouldBeDealt(turn, stage, tableMoney, playerWithBiggestBet, playerThatBegins);
       if (cardsShouldBeDealt) {
+        // Maybe actually make a check if the next player is shouldnt move, and if he is, deel the cards
         dealCommunityCards(communityCards, deck, stage);
         setPot(() => pot + tableMoney);
         setTableMoney(() => 0);
@@ -178,7 +179,7 @@ const Poker = (): JSX.Element => {
         setPlayers(() => newPlayers);
         // await sleep(200);
         setTurn(() => playerThatBegins);
-        return;
+        // return;
       }
 
       if (turn !== 0 && players.length > 0) {
@@ -190,7 +191,7 @@ const Poker = (): JSX.Element => {
           }
         });
         const player = playersCopy[turn];
-        console.log(player)
+        // console.log(player)
         const moneyToCall = biggestBet - player.bet;
         if (moneyToCall > 0) {
           call(turn, playersCopy, biggestBet, moneyToCall, tableMoney);
@@ -207,8 +208,8 @@ const Poker = (): JSX.Element => {
     playerWithBiggestBet: PlayerWithBiggestBet,
     playerThatBegins: number,
     ) => {
-      console.log('turn :', turn);
-      console.log('playerWithBiggestBet: ', playerWithBiggestBet);
+      // console.log('turn :', turn);
+      // console.log('playerWithBiggestBet: ', playerWithBiggestBet);
       return (turn === playerWithBiggestBet || (!tableMoney && turn === playerThatBegins)) &&
       stage !== 'river';
   }
