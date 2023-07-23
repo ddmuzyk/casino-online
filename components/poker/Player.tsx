@@ -7,7 +7,7 @@ import Image from "next/image";
 //   state: object
 // }
 
-const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, smallBlind, bigBlind, bet, biggestBet}) => {
+const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, smallBlind, bigBlind, bet, biggestBet, cardsAreDealt}) => {
 
   const classname = `player${id}`;
   // console.log('player: ', biggestBet)
@@ -20,7 +20,7 @@ const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, smallBli
         <div className={styles['imgs-container']}>
           {cards.map((card: string) => {
             return <img onClick={() => {console.log(biggestBet)}} 
-            className={`${styles.image} ${turn === id ? styles.turn : ""}`} 
+            className={`${styles.image} ${turn === id && !cardsAreDealt ? styles.turn : ""}`} 
             key={card} 
             src={`/svg-cards/${card}.svg`} 
             alt="Playing card" 
