@@ -6,6 +6,7 @@ import Player from "@/components/poker/Player";
 import { shuffleCards, cards, decky } from "@/lib/poker/poker-logic/poker.ts";
 import { time } from "console";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
+import { get } from "http";
 
 export interface PlayerObject {
 id: number,
@@ -16,11 +17,19 @@ smallBlind: number,
 bigBlind: number,
 bet: number,
 hasFolded: boolean,
+evaledHand?: EvaledHand,
 biggestBet?: number,
 currentDealerId?: number
 turn?: number,
 cardsAreDealt?: boolean,
 // biggestBet: number,
+}
+
+interface EvaledHand {
+  handName: string,
+  handRank: number,
+  handType: number,
+  value: number,
 }
 
 type Stage = 'pre-flop' | 'flop' | 'turn' | 'river';
@@ -64,7 +73,6 @@ const Poker = (): JSX.Element => {
   }, [])
 
   useEffect(() => {
-    console.log(turn)
     if (turn !== null) startGameLoop(players, biggestBet, tableMoney, currentStage, playerWithBiggestBet, pot, currentDealerId, playerWithBigBlind, playerThatBegins);
   }, [turn, didGameStart]);
 
@@ -75,6 +83,8 @@ const Poker = (): JSX.Element => {
     const newPlayers = players.filter(player => player.money > 0).map((player) => { 
       return {
         ...player,
+        cards: [...player.cards],
+        evaledHand: {...player.evaledHand as EvaledHand},
       }
     })
 
@@ -138,21 +148,30 @@ const Poker = (): JSX.Element => {
   
 
   const makeComputerMove = async(turn: number, players: Array<PlayerObject>, biggestBet: number, tableMoney: number, playerWithBiggestBet: NumOrNull, stage: Stage) => {
-      await sleep(1000);
-
-      const playersCopy = players.map((player) => {
-        return {
-          ...player,
-        }
-      });
-      const player = playersCopy[turn];
-      // console.log(player)
-      const moneyToCall = biggestBet - player.bet;
-      if (moneyToCall > 0) {
-        call(turn, playersCopy, biggestBet, moneyToCall, tableMoney);
-      } else {
-        check(turn, playersCopy, playerWithBiggestBet, stage);  
+    const playersCopy = players.map((player) => {
+      return {
+        ...player,
+        cards: [...player.cards],
+        evaledHand: {...player.evaledHand as EvaledHand}
       }
+    });
+    const player = playersCopy[turn];
+
+    const evaledHand = await getEvaluation(player);
+    player.evaledHand = evaledHand;
+
+    console.log(player)
+    
+    await sleep(1000);
+
+    // console.log('Hand: ', player.evaledHand);
+
+    const moneyToCall = biggestBet - player.bet;
+    if (moneyToCall > 0) {
+      call(turn, playersCopy, biggestBet, moneyToCall, tableMoney);
+    } else {
+      check(turn, playersCopy, playerWithBiggestBet, stage);  
+    }
   }
 
   const startGameLoop = async (
@@ -219,12 +238,15 @@ const Poker = (): JSX.Element => {
     const newPlayers = players.map((player) => {
       return {
         ...player,
+        cards: [...player.cards],
+        evaledHand: {...player.evaledHand as EvaledHand}
         }
     });
     if (playerWithBiggestBet === null) {
       setPlayerWithBiggestBet(() => turn);
     }
     const player = newPlayers[turn];
+    console.log('copy of player: ', player);
     player.money -= moneyToCall;
     player.bet += moneyToCall;
     setPlayers(() => newPlayers);
@@ -233,6 +255,7 @@ const Poker = (): JSX.Element => {
   }
 
   const check = (turn: number, players: Array<PlayerObject>, playerWithBiggestBet: NumOrNull, stage: Stage) => {
+    setPlayers(() => players);
     const newTurn = getNextTurn(turn, players);
     setTurn(() => newTurn);
   }
@@ -257,18 +280,18 @@ const Poker = (): JSX.Element => {
 
   // Get the response from the server based on the players hand
 
-  const getResponse = async() => {
+  const getEvaluation = async(player: PlayerObject) => {
+    
     const response = await fetch('/api/eval', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        cards: ['Ac', 'Js', 'Jc']
+        cards: player.cards.concat('4d'), //temporary solution
       })
     });
     const data = await response.json();
-    console.log(data);
     return data;
   }
 
@@ -317,6 +340,7 @@ const Poker = (): JSX.Element => {
       <div className={styles.game}>
         <div className={styles.tableContainer}>
           <div onClick={() => {
+              console.log(players);
             }} 
             className={styles.table}>
             <div className={styles.pot}>Pot: {pot}$</div>
@@ -352,10 +376,10 @@ const Poker = (): JSX.Element => {
         {/* Write me a div that contains player buttons: check, call, raise, all in */}
         <div className={styles.playerButtons}>
           <button onClick={() => {
-            check(turn as number, players, playerWithBiggestBet, currentStage);
+            if (turn === 0) check(turn as number, players, playerWithBiggestBet, currentStage);
           }} className={styles.playerBtn}>Check</button>
           <button onClick={() => {
-            call(turn as number, players, biggestBet, biggestBet - players[turn as number].bet, tableMoney)
+            if (turn === 0) call(turn as number, players, biggestBet, biggestBet - players[turn as number].bet, tableMoney)
           }} className={styles.playerBtn}>Call</button>
           <button className={styles.playerBtn}>Raise</button>
           <button className={styles.playerBtn}>All in</button>
