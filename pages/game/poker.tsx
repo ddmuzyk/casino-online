@@ -53,7 +53,7 @@ const Poker = (): JSX.Element => {
   const [currentDealerId, setCurrentDealerId] = useState<NumOrNull>(null); // Id of the current dealer
   const [playerThatBegins, setPlayerThatBegins] = useState<NumOrNull>(null); // Id of the player that begins the game (if current dealer has folded)
   const [tableMoney, setTableMoney] = useState(0); // Money on the table in the current round
-  const [turn, setTurn] = useState<NumOrNull>(1); // Id of the player whose turn it is, randomly chosen at the start of the game
+  const [turn, setTurn] = useState<NumOrNull>(2); // Id of the player whose turn it is, randomly chosen at the start of the game
   const [communityCards, setCommunityCards] = useState<Array<string>>([]); // Community cards on the table
   const [currentStage, setCurrentStage] = useState<Stage>('pre-flop'); // Current stage of the game
   const [didGameStart, setDidGameStart] = useState(false); // Boolean that checks if the game has started
@@ -251,6 +251,7 @@ const Poker = (): JSX.Element => {
       const nextTurn = getNextTurn(turn as number, players);
       const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney, playerWithBiggestBet, playerThatBegins as number);
       if (cardsShouldBeDealt) {
+        console.log(stage)
         setCardsAreDealt(() => true);
         playersCopy = resetRoundState();
         setPlayers(() => playersCopy);
