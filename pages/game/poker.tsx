@@ -53,7 +53,7 @@ const Poker = (): JSX.Element => {
   const [currentDealerId, setCurrentDealerId] = useState<NumOrNull>(null); // Id of the current dealer
   const [playerThatBegins, setPlayerThatBegins] = useState<NumOrNull>(null); // Id of the player that begins the game (if current dealer has folded)
   const [tableMoney, setTableMoney] = useState(0); // Money on the table in the current round
-  const [turn, setTurn] = useState<NumOrNull>(2); // Id of the player whose turn it is, randomly chosen at the start of the game
+  const [turn, setTurn] = useState<NumOrNull>(1); // Id of the player whose turn it is, randomly chosen at the start of the game
   const [communityCards, setCommunityCards] = useState<Array<string>>([]); // Community cards on the table
   const [currentStage, setCurrentStage] = useState<Stage>('pre-flop'); // Current stage of the game
   const [didGameStart, setDidGameStart] = useState(false); // Boolean that checks if the game has started
@@ -75,12 +75,12 @@ const Poker = (): JSX.Element => {
   }, [])
 
   useEffect(() => {
-    console.log('players changed to: ', players);
+    // console.log('players changed to: ', players);
     if ((turn !== 0 && players.length && !cardsAreDealt)) startGameLoop(players, turn, biggestBet, tableMoney, currentStage, playerWithBiggestBet, playerThatBegins as number);
   }, [players, cardsAreDealt]);
 
   useEffect(() => {
-    console.log('isComputerMove changed to: ', isComputerMove)
+    // console.log('isComputerMove changed to: ', isComputerMove)
   }, [isComputerMove]);
 
   
@@ -154,7 +154,7 @@ const Poker = (): JSX.Element => {
   // Also set the current dealer id, the pot and player with the biggest bet (to be added later)
 
   const makeUserMove = async(turn: number, players: Array<PlayerObject>, biggestBet: number, tableMoney: number, playerWithBiggestBet: NumOrNull, stage: Stage) => {
-    setIsComputerMove(() => false);
+    // setIsComputerMove(() => false);
     let playersCopy = players.map((player) => {
       return {
         ...player,
@@ -172,8 +172,9 @@ const Poker = (): JSX.Element => {
 
     if (cardsShouldBeDealt) {
       setCardsAreDealt(() => true);
-      playersCopy = resetRoundState();
+      playersCopy = resetRoundState(playersCopy);
       setPlayers(() => playersCopy);
+      console.log('playersCopy: ', playersCopy);
       dealCommunityCards(communityCards, deck, currentStage);
       await sleep(1000);
       setTurn(() => null)
@@ -186,12 +187,11 @@ const Poker = (): JSX.Element => {
       setTurn(() => nextTurn);
       setPlayers(() => playersCopy);
     }
-
   }
 
   // Need to add something similar when the user makes a move
   const makeComputerMove = async(turn: number, players: Array<PlayerObject>, biggestBet: number, tableMoney: number, playerWithBiggestBet: NumOrNull, stage: Stage) => {
-    setIsComputerMove(() => true);
+    // setIsComputerMove(() => true);
 
     const playersCopy = players.map((player) => {
       return {
@@ -240,20 +240,19 @@ const Poker = (): JSX.Element => {
         }
       });
       if (turn && players.length > 0) {
-        console.log(turn)
-        playersCopy = await makeComputerMove(turn as number, playersCopy, biggestBet, tableMoney, playerWithBiggestBet, currentStage);
+        playersCopy = await makeComputerMove(turn as number, playersCopy, biggestBet, tableMoney, playerWithBiggestBet, stage);
       }
 
       // players = newFellas;
 
       // setPlayers(() => players);
       
-      const nextTurn = getNextTurn(turn as number, players);
+      const nextTurn = getNextTurn(turn as number, playerz);
       const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney, playerWithBiggestBet, playerThatBegins as number);
       if (cardsShouldBeDealt) {
         console.log(stage)
         setCardsAreDealt(() => true);
-        playersCopy = resetRoundState();
+        playersCopy = resetRoundState(playersCopy);
         setPlayers(() => playersCopy);
         dealCommunityCards(communityCards, deck, currentStage);
         await sleep(1000);
@@ -270,7 +269,7 @@ const Poker = (): JSX.Element => {
 
   }
 
-  const resetRoundState = () => {
+  const resetRoundState = (players: Array<PlayerObject>) => {
     setPot(() => pot + tableMoney);
     setTableMoney(() => 0);
     setPlayerWithBiggestBet(() => null);
