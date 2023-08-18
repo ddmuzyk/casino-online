@@ -48,19 +48,19 @@ const Poker = (): JSX.Element => {
   const [playerWithBigBlind, setPlayerWithBigBlind] = useState<number>(10); // Id of the player with the big blind 
   const [biggestBet, setBiggestBet] = useState(0); // Biggest bet on the table
   const [playerWithBiggestBet, setPlayerWithBiggestBet] = useState<NumOrNull>(null); // Id of the player with the biggest bet
-  const [playerThatShouldntMove, setPlayerThatShouldntMove] = useState<number>(10); // Id of the player that shouldn't move (the player raised and everyone called him, so he can't do anything anymore)
+  // const [playerThatShouldntMove, setPlayerThatShouldntMove] = useState<number>(10); // Id of the player that shouldn't move (the player raised and everyone called him, so he can't do anything anymore)
   const [pot, setPot] = useState(0); // Pot of money on the table
   const [currentDealerId, setCurrentDealerId] = useState<NumOrNull>(null); // Id of the current dealer
   const [playerThatBegins, setPlayerThatBegins] = useState<NumOrNull>(null); // Id of the player that begins the game (if current dealer has folded)
   const [tableMoney, setTableMoney] = useState(0); // Money on the table in the current round
-  const [turn, setTurn] = useState<NumOrNull>(1); // Id of the player whose turn it is, randomly chosen at the start of the game
+  const [turn, setTurn] = useState<NumOrNull>(3); // Id of the player whose turn it is, randomly chosen at the start of the game
   const [communityCards, setCommunityCards] = useState<Array<string>>([]); // Community cards on the table
   const [currentStage, setCurrentStage] = useState<Stage>('pre-flop'); // Current stage of the game
-  const [didGameStart, setDidGameStart] = useState(false); // Boolean that checks if the game has started
-  const [cardsClassname, setCardsClassname] = useState('hidden'); // Classname of the cards (hidden or visible)
-  const [isVisible, setIsVisible] = useState(false); // Boolean that checks if the cards are visible or not
+  // const [didGameStart, setDidGameStart] = useState(false); // Boolean that checks if the game has started
+  // const [cardsClassname, setCardsClassname] = useState('hidden'); // Classname of the cards (hidden or visible)
+  // const [isVisible, setIsVisible] = useState(false); // Boolean that checks if the cards are visible or not
   const [cardsAreDealt, setCardsAreDealt] = useState(false); // Boolean that checks if the cards are dealt or not
-  const [triggerStartGameLoop, setTriggerStartGameLoop] = useState(false); // Boolean that triggers the game loop
+  // const [triggerStartGameLoop, setTriggerStartGameLoop] = useState(false); // Boolean that triggers the game loop
   const [isComputerMove, setIsComputerMove] = useState(turn === 0 ? false : true); // Boolean that checks if the computer is making a move
 
   function timeout(ms: number) {
@@ -188,8 +188,7 @@ const Poker = (): JSX.Element => {
       setPlayers(() => playersCopy);
     }
   }
-
-  // Need to add something similar when the user makes a move
+  
   const makeComputerMove = async(turn: number, players: Array<PlayerObject>, biggestBet: number, tableMoney: number, playerWithBiggestBet: NumOrNull, stage: Stage) => {
     // setIsComputerMove(() => true);
 
@@ -219,7 +218,7 @@ const Poker = (): JSX.Element => {
   }
 
   const startGameLoop = async (
-    playerz: Array<PlayerObject>, 
+    players: Array<PlayerObject>, 
     turn: NumOrNull, 
     biggestBet: number, 
     tableMoney: number,
@@ -232,7 +231,7 @@ const Poker = (): JSX.Element => {
     ) => {
       // Maybe add this check to the player after to be able to trigger a rerender with setTurn to PlayerThatBegins
       
-      let playersCopy: Array<PlayerObject> = playerz.map((player) => {
+      let playersCopy: Array<PlayerObject> = players.map((player) => {
         return {
           ...player,
           cards: [...player.cards],
@@ -247,7 +246,7 @@ const Poker = (): JSX.Element => {
 
       // setPlayers(() => players);
       
-      const nextTurn = getNextTurn(turn as number, playerz);
+      const nextTurn = getNextTurn(turn as number, players);
       const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney, playerWithBiggestBet, playerThatBegins as number);
       if (cardsShouldBeDealt) {
         console.log(stage)
