@@ -62,6 +62,7 @@ const Poker = (): JSX.Element => {
   const [cardsAreDealt, setCardsAreDealt] = useState(false); // Boolean that checks if the cards are dealt or not
   // const [triggerStartGameLoop, setTriggerStartGameLoop] = useState(false); // Boolean that triggers the game loop
   const [isComputerMove, setIsComputerMove] = useState(turn === 0 ? false : true); // Boolean that checks if the computer is making a move
+  const [winner, setWinner] = useState<NumOrNull>(null); // Id of the winner of the game
 
   function timeout(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -171,17 +172,23 @@ const Poker = (): JSX.Element => {
     const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney, playerWithBiggestBet, playerThatBegins as number);
 
     if (cardsShouldBeDealt) {
-      setCardsAreDealt(() => true);
-      playersCopy = resetRoundState(playersCopy);
-      setPlayers(() => playersCopy);
-      console.log('playersCopy: ', playersCopy);
-      dealCommunityCards(communityCards, deck, currentStage);
-      await sleep(1000);
-      setTurn(() => null)
-      // await sleep(1000);
-      setTurn(playerThatBegins);
-      setCardsAreDealt(() => false);
-      
+      if (stage === 'river') {
+        const winners = getArrayOfWinners(playersCopy);
+        console.log('winners: ', winners);
+        setTurn(() => null);
+
+      } else {
+        setCardsAreDealt(() => true);
+        playersCopy = resetRoundState(playersCopy);
+        setPlayers(() => playersCopy);
+        console.log('playersCopy: ', playersCopy);
+        dealCommunityCards(communityCards, deck, currentStage);
+        await sleep(1000);
+        setTurn(() => null)
+        // await sleep(1000);
+        setTurn(playerThatBegins);
+        setCardsAreDealt(() => false);
+      }   
     } 
     else {
       setTurn(() => nextTurn);
@@ -249,17 +256,21 @@ const Poker = (): JSX.Element => {
       const nextTurn = getNextTurn(turn as number, players);
       const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney, playerWithBiggestBet, playerThatBegins as number);
       if (cardsShouldBeDealt) {
-        console.log(stage)
-        setCardsAreDealt(() => true);
-        playersCopy = resetRoundState(playersCopy);
-        setPlayers(() => playersCopy);
-        dealCommunityCards(communityCards, deck, currentStage);
-        await sleep(1000);
-        setTurn(() => null)
-        // await sleep(1000);
-        setTurn(playerThatBegins);
-        setCardsAreDealt(() => false);
-        
+        if (stage === 'river') {
+          const winners = getArrayOfWinners(playersCopy);
+          console.log('winners: ', winners);
+          setTurn(() => null);
+        } else {
+          setCardsAreDealt(() => true);
+          playersCopy = resetRoundState(playersCopy);
+          setPlayers(() => playersCopy);
+          dealCommunityCards(communityCards, deck, currentStage);
+          await sleep(1000);
+          setTurn(() => null)
+          // await sleep(1000);
+          setTurn(playerThatBegins);
+          setCardsAreDealt(() => false);
+        }
       } 
       else {
         setTurn(() => nextTurn);
@@ -294,8 +305,10 @@ const Poker = (): JSX.Element => {
     ) => {
       // console.log('turn :', turn);
       // console.log('playerWithBiggestBet: ', playerWithBiggestBet);
-      return (turn === playerWithBiggestBet || (!tableMoney && turn === playerThatBegins)) &&
-      stage !== 'river';
+      return (turn === playerWithBiggestBet || (!tableMoney && turn === playerThatBegins)) 
+
+      // && stage !== 'river';
+      // Here I can remove the check if the stage is river, instead add a check in other functions and if it's river, we determine the winner
   }
 
   const getNextTurn = (turn: number, players: Array<PlayerObject>) => {
@@ -374,6 +387,35 @@ const Poker = (): JSX.Element => {
     });
     const data = await response.json();
     return data;
+  }
+
+  // Create array of pseudo players to test the getArrayOfWinners function
+  const pseudoPlayers = [
+    {evaledHand: {value: 1, name: 'High Card'}, hasFolded: false},
+    {evaledHand: {value: 1, name: 'High Card'}, hasFolded: false},
+    {evaledHand: {value: 2, name: 'High Card'}, hasFolded: false},
+    {evaledHand: {value: 3, name: 'High Card'}, hasFolded: false},
+  ] as Array<any>;
+
+  const getArrayOfWinners = (players: Array<PlayerObject>) => {
+    // This array will contain the index of the players with the highest hand, there can be more than one if they have the same hand
+    const highestHands: Array<number> = [];
+    let highestValue = 0;
+    for (let player of players) {
+      let playersHand = player.evaledHand as EvaledHand;
+      if (!player.hasFolded && playersHand.value > highestValue) {
+        highestValue = playersHand.value;
+      }
+    }
+    for (let i = 0; i < players.length; i++) {
+      let playersHand = players[i].evaledHand as EvaledHand;
+
+      if (!players[i].hasFolded && playersHand.value === highestValue) {
+        highestHands.push(i);
+      }
+    }
+
+    return highestHands;
   }
 
   const createPlayers = (deck: Array<string>, numOfPlayers: number) => {
