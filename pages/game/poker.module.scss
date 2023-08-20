@@ -77,6 +77,11 @@ $borderRadius: 400px;
   user-select: none;
 }
 
+.potValue {
+  animation: show 1000ms cubic-bezier(.91,.55,.7,.56) forwards;
+  transition: all 1s;
+}
+
 .communityCards {
   display: flex;
   flex-direction: row;
