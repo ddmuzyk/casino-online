@@ -3,7 +3,7 @@ import { ReactComponentElement, useState, useEffect, use } from "react";
 import styles from './poker.module.scss';
 import Layout from "@/components/layout";
 import Player from "@/components/poker/Player";
-import { shuffleCards, cards, decky } from "@/lib/poker/poker-logic/poker.ts";
+import { shuffleCards, cards, decky, SUITS, VALUES } from "@/lib/poker/poker-logic/poker.ts";
 import { time } from "console";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { get } from "http";
@@ -53,7 +53,7 @@ const Poker = (): JSX.Element => {
   const [currentDealerId, setCurrentDealerId] = useState<NumOrNull>(null); // Id of the current dealer
   const [playerThatBegins, setPlayerThatBegins] = useState<NumOrNull>(null); // Id of the player that begins the game (if current dealer has folded)
   const [tableMoney, setTableMoney] = useState(0); // Money on the table in the current round
-  const [turn, setTurn] = useState<NumOrNull>(3); // Id of the player whose turn it is, randomly chosen at the start of the game
+  const [turn, setTurn] = useState<NumOrNull>(0); // Id of the player whose turn it is, randomly chosen at the start of the game
   const [communityCards, setCommunityCards] = useState<Array<string>>([]); // Community cards on the table
   const [currentStage, setCurrentStage] = useState<Stage>('pre-flop'); // Current stage of the game
   // const [didGameStart, setDidGameStart] = useState(false); // Boolean that checks if the game has started
@@ -165,7 +165,7 @@ const Poker = (): JSX.Element => {
     });
     const player = playersCopy[turn];
 
-    const evaledHand = await getEvaluation(player);
+    const evaledHand = await getEvaluation(player, communityCards);
     player.evaledHand = evaledHand;
 
     const nextTurn = getNextTurn(turn as number, players);
@@ -208,7 +208,7 @@ const Poker = (): JSX.Element => {
     });
     const player = playersCopy[turn];
     
-    const evaledHand = await getEvaluation(player);
+    const evaledHand = await getEvaluation(player, communityCards);
     player.evaledHand = evaledHand;
     
     // console.log(playersCopy)
@@ -359,7 +359,7 @@ const Poker = (): JSX.Element => {
     const cardsToDeal = stage === 'pre-flop' ? 3 : stage === 'flop' || 'turn' ? 1 : 0;
     const nextStage = stage === 'pre-flop' ? 'flop' : stage === 'flop' ? 'turn' : stage === 'turn' ? 'river' : 'pre-flop';
 
-    console.log('cards to deal: ',cardsToDeal)
+    // console.log('cards to deal: ',cardsToDeal)
 
     for (let i = 0; i < cardsToDeal; i++) {
       communityCardsCopy.push(deckCopy.pop() as string);
@@ -373,16 +373,31 @@ const Poker = (): JSX.Element => {
 
   // Get the response from the server based on the players hand
 
-  const getEvaluation = async(player: PlayerObject) => {
+  const getEvaluation = async(player: PlayerObject, communityCards: Array<string>) => {
     
     // console.log(player)
+    const playerCards: Array<string> = [...player.cards];
+    if (!communityCards.length) {
+      // Here I have to make a pseudo card so that the server can evaluate the hand
+      const suit = SUITS[Math.floor(Math.random() * SUITS.length)];
+      for (let i  = Math.floor(Math.random() * 8); i < VALUES.length; i++) {
+        if (VALUES[i] !== playerCards[0][0] && VALUES[i] !== playerCards[1][0]) {
+          const card = VALUES[i] + suit;
+          playerCards.push(card); 
+          break;
+        }
+      }
+    } else {
+      playerCards.push(...communityCards);
+    }
+
     const response = await fetch('/api/eval', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        cards: player.cards.concat(['4d']), //temporary solution
+        cards: playerCards, //temporary solution
       })
     });
     const data = await response.json();
