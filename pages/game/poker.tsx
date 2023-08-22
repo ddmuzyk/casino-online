@@ -53,12 +53,12 @@ const Poker = (): JSX.Element => {
   const [currentDealerId, setCurrentDealerId] = useState<NumOrNull>(null); // Id of the current dealer
   const [playerThatBegins, setPlayerThatBegins] = useState<NumOrNull>(null); // Id of the player that begins the game (if current dealer has folded)
   const [tableMoney, setTableMoney] = useState(0); // Money on the table in the current round
-  const [turn, setTurn] = useState<NumOrNull>(0); // Id of the player whose turn it is, randomly chosen at the start of the game
+  const [turn, setTurn] = useState<NumOrNull>(2); // Id of the player whose turn it is, randomly chosen at the start of the game
   const [communityCards, setCommunityCards] = useState<Array<string>>([]); // Community cards on the table
   const [currentStage, setCurrentStage] = useState<Stage>('pre-flop'); // Current stage of the game
   // const [didGameStart, setDidGameStart] = useState(false); // Boolean that checks if the game has started
   // const [cardsClassname, setCardsClassname] = useState('hidden'); // Classname of the cards (hidden or visible)
-  // const [isVisible, setIsVisible] = useState(false); // Boolean that checks if the cards are visible or not
+  // const [isVisible, setIsVisible] = useState(false); 
   const [cardsAreDealt, setCardsAreDealt] = useState(false); // Boolean that checks if the cards are dealt or not
   // const [triggerStartGameLoop, setTriggerStartGameLoop] = useState(false); // Boolean that triggers the game loop
   const [isComputerMove, setIsComputerMove] = useState(turn === 0 ? false : true); // Boolean that checks if the computer is making a move
@@ -267,6 +267,7 @@ const Poker = (): JSX.Element => {
         const winners = getArrayOfWinners(playersCopy);
         playersCopy = giveMoneyToWinners(playersCopy, winners, pot);
         setPot(() => 0);
+        setCommunityCards(() => []);
         setPlayers(() => playersCopy);
         console.log('winners: ', winners);
         setTurn(() => null);
@@ -502,11 +503,32 @@ const Poker = (): JSX.Element => {
             <div className={styles.pot}>Pot: <span className={styles.potValue} key={pot}>{pot}$</span></div>
             <div className={styles.communityCards}>
               {communityCards.map((card, id) => {
-                return <img 
-                className={`${styles.image}`} 
-                src={`/svg-cards/${card}.svg`} 
-                alt="community card" 
-                key={card}></img>
+                return (
+                <CSSTransition
+                in={true}
+                timeout={200}
+                classNames={{
+                  appearDone: styles.imageAppearDone,
+                  enterActive: styles.imageEnterActive,
+                  enterDone: styles.imageEnterDone,
+                  exit: styles.imageExit,
+                  exitActive: styles.imageExitActive,
+                  exitDone: styles.imageExitDone,
+                }
+                }
+                key={id}
+                // unmountOnExit={true}
+                appear={true}
+                // unmountOnExit={true}
+                >
+                  <img 
+                  className={`${styles.image}`} 
+                  src={`/svg-cards/${card}.svg`} 
+                  alt="community card" 
+                  key={card}>
+                  </img>
+                </CSSTransition>
+                )
               })} 
             </div>
               {players.map((player) => {
