@@ -90,15 +90,50 @@ $borderRadius: 400px;
   position: absolute;
   top: 50%;
   left: 50%;
+  transition: opacity 1s;
   transform: translate(-50%, -50%);
 }
 
+.communityCardsHidden {
+  opacity: 0;
+}
+
 .image {
-  animation: show 1000ms cubic-bezier(.91,.55,.7,.56) forwards;
+  // animation: show 1000ms cubic-bezier(.91,.55,.7,.56) forwards;
   margin: 10px 2px;
   width: 77px;
   height: auto;
-  // transition: all 1s;
+  transition: all 1s;
+  opacity: 0;
+}
+
+.imageEnter {
+  opacity: 0;
+}
+
+.imageAppearDone {
+  opacity: 0;
+}
+
+.imageEnterActive {
+  opacity: 0;
+  transition: opacity 1s;
+}
+
+.imageEnterDone {
+  opacity: 1;
+}
+
+.imageExit {
+  opacity: 1;
+}
+
+.imageExitActive {
+  opacity: 1;
+  transition: opacity 1s;
+}
+
+.imageExitDone {
   opacity: 0;
 }
 
