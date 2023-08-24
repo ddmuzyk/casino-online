@@ -12,8 +12,7 @@ $stats-background: rgba(27, 27, 27, 0.89);
   flex-direction: column;
   justify-content: center;
   width: 200px;
-  height: 200px;
-  
+  // height: 200px;
 }
 
 .imgs-container {
@@ -75,6 +74,8 @@ $stats-background: rgba(27, 27, 27, 0.89);
   text-align: center;
 }
 
+
+
 .bet {
   display: flex;
   justify-content: center;
@@ -85,4 +86,16 @@ $stats-background: rgba(27, 27, 27, 0.89);
 
 .turn {
   box-shadow: 0 0px 10px 3px rgba(245, 248, 62, 0.699);
+}
+
+@keyframes action {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
