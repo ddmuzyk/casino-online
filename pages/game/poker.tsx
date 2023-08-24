@@ -289,6 +289,8 @@ const Poker = (): JSX.Element => {
       }
   }
 
+  // 
+
   const resetRoundState = (players: Array<PlayerObject>) => {
     // setPot(() => pot + tableMoney);
     setTableMoney(() => 0);
