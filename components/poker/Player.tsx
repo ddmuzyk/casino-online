@@ -1,15 +1,17 @@
 import React, {use, useState, ReactNode} from "react";
 import styles from './Player.module.scss';
 import { PlayerObject } from "@/pages/game/poker";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
 import Image from "next/image";
 
 // interface PlayerProps {
 //   state: object
 // }
 
-const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, smallBlind, bigBlind, bet, biggestBet, cardsAreDealt}) => {
+const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, action, actionVisible, smallBlind, bigBlind, bet, biggestBet, cardsAreDealt}) => {
 
   const classname = `player${id}`;
+  const actionClass = `action${id}`;
   // console.log('player: ', biggestBet)
   // const turnBackground = turn === id ? 'turn' : '';
 
@@ -30,9 +32,12 @@ const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, smallBli
           })}
         </div>
         <div className={styles.stats}>
-          <p className={styles.container}>Player{id} {money}$</p>
+          <p className={styles.container}>Player{id} <span>{money}$</span></p>
         </div>
       </div>
+        <div className={styles.actionContainer}>
+          <p className={styles.action}>{action}</p>
+        </div>
       {id === 1 || id === 2 ? <p className={styles.bet}>{bet}$</p> : null}
     </div>
   )

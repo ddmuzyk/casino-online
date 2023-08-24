@@ -17,11 +17,14 @@ smallBlind: number,
 bigBlind: number,
 bet: number,
 hasFolded: boolean,
+action: string,
+actionVisible?: boolean,
 evaledHand?: EvaledHand,
 biggestBet?: number,
 currentDealerId?: number
 turn?: NumOrNull,
 cardsAreDealt?: boolean,
+
 // biggestBet: number,
 }
 
@@ -64,6 +67,7 @@ const Poker = (): JSX.Element => {
   // const [triggerStartGameLoop, setTriggerStartGameLoop] = useState(false); // Boolean that triggers the game loop
   const [isComputerMove, setIsComputerMove] = useState(turn === 0 ? false : true); // Boolean that checks if the computer is making a move
   const [winner, setWinner] = useState<NumOrNull>(null); // Id of the winner of the game
+  const [actionVisibility, setActionVisibility] = useState<Array<boolean>>([]); // Boolean that checks if the actions are visible or not
 
   function timeout(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -144,7 +148,7 @@ const Poker = (): JSX.Element => {
     }
     setCurrentDealerId(() => turn);
     setPlayerThatBegins(() => turn);
-    // setPot(() => smallBlind*3);
+    setPot(() => smallBlind*3);
     setTableMoney(() => smallBlind*3);
     setBiggestBet(() => smallBlind*2);
 
@@ -290,7 +294,7 @@ const Poker = (): JSX.Element => {
   }
 
   const resetRoundState = (players: Array<PlayerObject>) => {
-    setPot(() => pot + tableMoney);
+    // setPot(() => pot + tableMoney);
     setTableMoney(() => 0);
     setPlayerWithBiggestBet(() => null);
     setBiggestBet(() => 0);
@@ -317,12 +321,7 @@ const Poker = (): JSX.Element => {
     playerWithBiggestBet: NumOrNull,
     playerThatBegins: number,
     ) => {
-      // console.log('turn :', turn);
-      // console.log('playerWithBiggestBet: ', playerWithBiggestBet);
-      return (turn === playerWithBiggestBet || (!tableMoney && turn === playerThatBegins)) 
-
-      // && stage !== 'river';
-      // Here I can remove the check if the stage is river, instead add a check in other functions and if it's river, we determine the winner
+      return (turn === playerWithBiggestBet || (!tableMoney && turn === playerThatBegins));
   }
 
   const getNextTurn = (turn: number, players: Array<PlayerObject>) => {
@@ -346,24 +345,53 @@ const Poker = (): JSX.Element => {
     // console.log('copy of player: ', player);
     player.money -= moneyToCall;
     player.bet += moneyToCall;
+    player.action = 'CALL';
     // setPlayers(() => newPlayers);
     setTableMoney(() => tableMoney + moneyToCall);
+    setPot(() => pot + moneyToCall);
+    // setActionVisibility(() => {
+    //   const newActions = [...actionVisibility];
+    //   newActions[turn] = true;
+    //   return newActions;
+    // })
+
+    // setTimeout(() => { 
+    //   setActionVisibility(() => {
+    //     const newActions = [...actionVisibility];
+    //     newActions[turn] = false;
+    //     return newActions;
+    //   })
+    // }, 1000);
     return newPlayers;
     // setTurn(() => getNextTurn(turn, players));
   }
 
   const check = (turn: number, players: Array<PlayerObject>, playerWithBiggestBet: NumOrNull, stage: Stage) => {
-    // console.log('turn: ', turn);
-    // console.log(players)
-    return players.map((player) => { 
+
+    const newPlayers = players.map((player) => {
       return {
         ...player,
         cards: [...player.cards],
         evaledHand: {...player.evaledHand as EvaledHand}
-      } 
+        }
     });
-    // const newTurn = getNextTurn(turn, players);
-    // setTurn(() => newTurn);
+
+    newPlayers[turn].action = 'CHECK';
+    // setActionVisibility(() => {
+    //   const newActions = [...actionVisibility];
+    //   newActions[turn] = true;
+    //   return newActions;
+    // })
+
+    // setTimeout(() => { 
+    //   setActionVisibility(() => {
+    //     const newActions = [...actionVisibility];
+    //     newActions[turn] = false;
+    //     return newActions;
+    //   })
+    // }, 1000);
+
+    return newPlayers;
   }
 
   // Deal the flop, turn and river
@@ -469,6 +497,7 @@ const Poker = (): JSX.Element => {
 
   const createPlayers = (deck: Array<string>, numOfPlayers: number) => {
     const newDeck = [...deck];
+    const actions: Array<boolean> = [];
     const newPlayers: Array<PlayerObject> = [];
     for (let i = 0; i < numOfPlayers; i++) {
       let playerCards = [newDeck.pop(), newDeck.pop()];
@@ -477,15 +506,17 @@ const Poker = (): JSX.Element => {
         name: `Player${i}`,
         money: 1000,
         cards: playerCards as Array<string>,
+        action: '',
         evaledHand: {} as EvaledHand,
         smallBlind: 0,
         bigBlind: 0,
         bet: 0,
         hasFolded: false,
       })
-
+      actions.push(false);
     }
     setDeck(() => newDeck);
+    setActionVisibility(() => actions);
     return newPlayers;
   }
 
@@ -522,7 +553,6 @@ const Poker = (): JSX.Element => {
                 }
                 }
                 key={id}
-                // unmountOnExit={true}
                 appear={true}
                 // unmountOnExit={true}
                 >
@@ -544,6 +574,8 @@ const Poker = (): JSX.Element => {
                 money={player.money}
                 key={player.name}
                 cards={player.cards}
+                action={player.action}
+                actionVisible={actionVisibility[player.id]}
                 smallBlind={player.smallBlind}
                 bigBlind={player.bigBlind}
                 bet={player.bet}
