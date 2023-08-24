@@ -342,25 +342,23 @@ const Poker = (): JSX.Element => {
     // console.log('copy of player: ', player);
     player.money -= moneyToCall;
     player.bet += moneyToCall;
-    player.action = 'CALL';
+
+    let currentAction = newPlayers[turn].action;
+
+    if (currentAction === 'CALL') {
+      currentAction = 'call';
+    } else if (currentAction === 'call') {
+      currentAction = 'CALL';
+    } else {
+      currentAction = 'CALL';
+    }
+
+    player.action = currentAction;
     // setPlayers(() => newPlayers);
     setTableMoney(() => tableMoney + moneyToCall);
     setPot(() => pot + moneyToCall);
-    // setActionVisibility(() => {
-    //   const newActions = [...actionVisibility];
-    //   newActions[turn] = true;
-    //   return newActions;
-    // })
-
-    // setTimeout(() => { 
-    //   setActionVisibility(() => {
-    //     const newActions = [...actionVisibility];
-    //     newActions[turn] = false;
-    //     return newActions;
-    //   })
-    // }, 1000);
+   
     return newPlayers;
-    // setTurn(() => getNextTurn(turn, players));
   }
 
   const check = (turn: number, players: Array<PlayerObject>, playerWithBiggestBet: NumOrNull, stage: Stage) => {
@@ -373,7 +371,19 @@ const Poker = (): JSX.Element => {
         }
     });
 
-    newPlayers[turn].action = 'CHECK';
+    let currentAction = newPlayers[turn].action;
+
+    if (currentAction === 'CHECK') {
+      currentAction = 'check';
+    } else if (currentAction === 'check') {
+      currentAction = 'CHECK';
+    } else {
+      currentAction = 'CHECK';
+    }
+
+    newPlayers[turn].action = currentAction;
+
+    // newPlayers[turn].action = 'CHECK';
 
     return newPlayers;
   }

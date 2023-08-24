@@ -37,7 +37,7 @@ const ActionMessage: React.FC<ActionMessageProps> = ({action}) => {
         exitDone: styles.exitDone,
       }}
       >
-        <p className={styles.action}>{`${action}`}</p>
+        <p className={styles.action}>{`${action.toUpperCase()}`}</p>
       </CSSTransition>
     </div>
   )
