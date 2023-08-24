@@ -74,22 +74,7 @@ $stats-background: rgba(27, 27, 27, 0.89);
   text-align: center;
 }
 
-.actionContainer {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  margin-top: auto;
-  transform: translate(-50%, 0%);
-  // animation: action 2000ms ease-in-out;
-}
 
-.action {
-  margin: 0 0 15px 0;
-  text-align: center;
-  color: white;
-  opacity: 1;
-  transition: opacity 1s;
-}
 
 .bet {
   display: flex;

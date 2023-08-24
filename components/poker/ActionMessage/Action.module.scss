@@ -1,0 +1,60 @@
+.actionContainer {
+  // position: absolute;
+  // bottom: 0;
+  // left: 50%;
+  font-family: Montserrat, sans-serif;
+  margin-top: auto;
+  // transform: translate(-50%, 0%);
+  // animation: action 2000ms ease-in-out;
+}
+
+.action {
+  margin: 0 0 15px 0;
+  text-align: center;
+  color: white;
+  opacity: 0;
+  // transition: opacity 1s;
+}
+
+// .hidden {
+//   opacity: 0;
+// }
+
+.appear {
+  opacity: 0;
+}
+
+.appearActive {
+  opacity: 1;
+  transition: opacity 1s;
+}
+
+.appearDone {
+  opacity: 1;
+}
+
+.enter {
+  opacity: 0;
+}
+
+.enterActive {
+  opacity: 1;
+  transition: opacity 1s;
+}
+
+.enterDone {
+  opacity: 1;
+}
+
+.exit {
+  opacity: 1;
+}
+
+.exitActive {
+  opacity: 0;
+  transition: opacity 1s;
+}
+
+.exitDone {
+  opacity: 0;
+}

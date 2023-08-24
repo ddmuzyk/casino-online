@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ReactComponentElement, useState, useEffect, use } from "react";
 import styles from './poker.module.scss';
 import Layout from "@/components/layout";
-import Player from "@/components/poker/Player";
+import Player from "@/components/poker/Player/Player";
 import { shuffleCards, cards, decky, SUITS, VALUES } from "@/lib/poker/poker-logic/poker.ts";
 import { time } from "console";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
@@ -18,7 +18,7 @@ bigBlind: number,
 bet: number,
 hasFolded: boolean,
 action: string,
-actionVisible?: boolean,
+// actionVisible?: boolean,
 evaledHand?: EvaledHand,
 biggestBet?: number,
 currentDealerId?: number
@@ -56,7 +56,7 @@ const Poker = (): JSX.Element => {
   const [currentDealerId, setCurrentDealerId] = useState<NumOrNull>(null); // Id of the current dealer
   const [playerThatBegins, setPlayerThatBegins] = useState<NumOrNull>(null); // Id of the player that begins the game (if current dealer has folded)
   const [tableMoney, setTableMoney] = useState(0); // Money on the table in the current round
-  const [turn, setTurn] = useState<NumOrNull>(2); // Id of the player whose turn it is, randomly chosen at the start of the game
+  const [turn, setTurn] = useState<NumOrNull>(0); // Id of the player whose turn it is, randomly chosen at the start of the game
   const [communityCards, setCommunityCards] = useState<Array<string>>([]); // Community cards on the table
   const [cardsVisible, setCardsVisible] = useState(true); // Boolean that checks if the cards are visible or not
   const [currentStage, setCurrentStage] = useState<Stage>('pre-flop'); // Current stage of the game
@@ -238,10 +238,6 @@ const Poker = (): JSX.Element => {
       if (turn && players.length > 0) {
         playersCopy = await makeComputerMove(turn as number, playersCopy, biggestBet, tableMoney, playerWithBiggestBet, stage);
       }
-
-      // players = newFellas;
-
-      // setPlayers(() => players);
       
       const nextTurn = getNextTurn(turn as number, players);
       const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney, playerWithBiggestBet, playerThatBegins as number);
@@ -306,7 +302,6 @@ const Poker = (): JSX.Element => {
         evaledHand: {...player.evaledHand as EvaledHand}
       }
     })
-    // setPlayers(() => newPlayers);
     return newPlayers;
   }
 
@@ -377,19 +372,6 @@ const Poker = (): JSX.Element => {
     });
 
     newPlayers[turn].action = 'CHECK';
-    // setActionVisibility(() => {
-    //   const newActions = [...actionVisibility];
-    //   newActions[turn] = true;
-    //   return newActions;
-    // })
-
-    // setTimeout(() => { 
-    //   setActionVisibility(() => {
-    //     const newActions = [...actionVisibility];
-    //     newActions[turn] = false;
-    //     return newActions;
-    //   })
-    // }, 1000);
 
     return newPlayers;
   }
@@ -486,9 +468,9 @@ const Poker = (): JSX.Element => {
     }
 
     if (moneyLeft) {
-      const moneyToGive = Math.floor(moneyLeft / winners.length);
+      // const moneyToGive = Math.floor(moneyLeft / winners.length);
       for (let i = 0; i < winners.length; i++) {
-        newPlayers[winners[i]].money += moneyToGive;
+        newPlayers[winners[i]].money += moneyLeft;
       }
     }
     
@@ -575,7 +557,7 @@ const Poker = (): JSX.Element => {
                 key={player.name}
                 cards={player.cards}
                 action={player.action}
-                actionVisible={actionVisibility[player.id]}
+                // actionVisible={actionVisibility[player.id]}
                 smallBlind={player.smallBlind}
                 bigBlind={player.bigBlind}
                 bet={player.bet}
