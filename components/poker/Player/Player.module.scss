@@ -12,7 +12,7 @@ $stats-background: rgba(27, 27, 27, 0.89);
   flex-direction: column;
   justify-content: center;
   width: 200px;
-  // height: 200px;
+  height: 200px;
 }
 
 .imgs-container {
@@ -49,7 +49,7 @@ $stats-background: rgba(27, 27, 27, 0.89);
   position: absolute;
   top: 0;
   left: 50%;
-  transform: translate(-50%, -30%);
+  transform: translate(-50%, -15%);
 }
 
 .player3 {

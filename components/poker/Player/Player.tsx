@@ -35,9 +35,12 @@ const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, action, 
         <div className={styles.stats}>
           <p className={styles.container}>Player{id} <span>{money}$</span></p>
         </div>
+        {id === 2 ? <p className={styles.bet}>{bet}$</p> : null}
+        {/* {id !== 2 ? <ActionMessage action={action}/> : null} */}
         <ActionMessage action={action}/>
       </div>
-      {id === 1 || id === 2 ? <p className={styles.bet}>{bet}$</p> : null}
+      {id === 1 ? <p className={styles.bet}>{bet}$</p> : null}
+      {/* {id === 2 ? <ActionMessage action={action}/> : null} */}
     </div>
   )
 }

@@ -20,11 +20,11 @@ const ActionMessage: React.FC<ActionMessageProps> = ({action}) => {
   
 
   return (
-    <div>
+    <div className={styles.actionContainer}>
       <CSSTransition
-      in={isVisible}
+      in={isVisible && action !== ""}
       appear={true}
-      timeout={1000}
+      timeout={500}
       classNames={{
         appear: styles.appear,
         appearActive: styles.appearActive,
