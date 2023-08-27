@@ -5,18 +5,19 @@ $table: #35654d;
 $tableContainer: rgb(39, 26, 10);
 $borderRadius: 400px;
 
+
 .game{
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
   background-color: $background;
 }
 
 .tableContainer {
-  height: 700px;
+  height: 74vh;
   width: 80vw;
   background-color: $tableContainer;
   border: solid 40px $tableContainer;
@@ -173,3 +174,15 @@ $borderRadius: 400px;
 //   transform: scale(0.5);
 //   transition: all 2s
 // }
+
+@media screen and (max-width: 1290px) {
+
+  .communityCards {
+    width: 32vw;
+  }
+
+  .image {
+    width: 6vw;
+    height: auto;
+  }
+}
