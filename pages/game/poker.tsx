@@ -118,7 +118,6 @@ const Poker = (): JSX.Element => {
 
   const setInitialValues = (players: Array<PlayerObject>, smallBlind: number, currentDealerId: number) => {
     setCurrentDealerId(() => currentDealerId);
-    setTurn(() => currentDealerId);
     setPlayerThatBegins(() => currentDealerId);
     setPlayerWithBiggestBet(() => null);
     setPot(() => smallBlind*3);
@@ -308,6 +307,8 @@ const Poker = (): JSX.Element => {
       setCardsVisible(() => false);
       await sleep(1000);
       setInitialValues(playersCopy, 1, newCurrentDealerId);
+      await sleep(1000);
+      setTurn(() => newCurrentDealerId);
       setCardsAreDealt(false);
       // setCardsAreDealt(() => false);
 
@@ -551,6 +552,7 @@ const Poker = (): JSX.Element => {
     setPlayers(() => newPlayers);
     setInitialValues(newPlayers, 1, currentDealerId as number);
     setGameInitialized(() => true);
+    setTurn(() => currentDealerId);
     setCardsAreDealt(() => false);
   }
 
