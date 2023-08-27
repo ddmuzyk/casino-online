@@ -93,7 +93,7 @@ const Poker = (): JSX.Element => {
   const giveBlind = (players: Array<PlayerObject>, smallBlind: number, turn: number) => {
     // This function mimics randomlyGiveBlind, but it gives blind based on the turn of the player
     // Creating a copy of the players array to avoid mutating the state
-    const newPlayers = players.filter(player => player.money > 0).map((player) => { 
+    const newPlayers = players.map((player) => { 
       return {
         ...player,
         cards: [...player.cards],
@@ -103,49 +103,14 @@ const Poker = (): JSX.Element => {
 
     const length = newPlayers.length;
 
-    if (length === 2) {
-      if (turn === 0) {
-        // Later add a check if the player has enough money to pay the big blind
-        newPlayers[0].money -= smallBlind;
-        newPlayers[0].bet += smallBlind;
-        newPlayers[1].money -= smallBlind * 2;
-        newPlayers[1].bet += smallBlind * 2;
-        // setPlayerWithBiggestBet(() => 1);
-        setPlayerWithBigBlind(() => 1);
-      } else {
-        newPlayers[1].money -= smallBlind;
-        newPlayers[1].bet += smallBlind;
-        newPlayers[0].money -= smallBlind * 2;
-        newPlayers[0].bet += smallBlind * 2;
-        // setPlayerWithBiggestBet(() => 0);
-        setPlayerWithBigBlind(() => 0);
-      }
-    } else {
-      // Here, unlike in randomlyGiveBlind, we pass the blinds to players that are before the current dealer in the array
+    const bigBlindTurn = getPreviousTurn(turn, newPlayers);
+    const smallBlindTurn = getPreviousTurn(bigBlindTurn, newPlayers);
 
-        if (turn === 0) {
-          newPlayers[length-1].money -= smallBlind*2;
-          newPlayers[length-1].bet += smallBlind*2;
-          newPlayers[length-2].money -= smallBlind;
-          newPlayers[length-2].bet += smallBlind;
-          // setPlayerWithBiggestBet(() => length-1);
-          setPlayerWithBigBlind(() => length-1);
-        } else if (turn === 1) {
-          newPlayers[0].money -= smallBlind*2;
-          newPlayers[0].bet += smallBlind*2;
-          newPlayers[length-1].money -= smallBlind;
-          newPlayers[length-1].bet += smallBlind;
-          // setPlayerWithBiggestBet(() => 0);
-          setPlayerWithBigBlind(() => 0);
-        } else {
-          newPlayers[turn-1].money -= smallBlind*2;
-          newPlayers[turn-1].bet += smallBlind*2;
-          newPlayers[turn-2].money -= smallBlind;
-          newPlayers[turn-2].bet += smallBlind;
-          // setPlayerWithBiggestBet(() => turn-1);
-          setPlayerWithBigBlind(() => turn-1);
-        }
-    }
+    newPlayers[smallBlindTurn].money -= smallBlind;
+    newPlayers[smallBlindTurn].bet += smallBlind;
+    newPlayers[bigBlindTurn].money -= smallBlind*2;
+    newPlayers[bigBlindTurn].bet += smallBlind*2;
+
     setCurrentDealerId(() => turn);
     setPlayerThatBegins(() => turn);
     setPot(() => smallBlind*3);
@@ -155,9 +120,6 @@ const Poker = (): JSX.Element => {
     return newPlayers;
 
   }
-
-  // Give the small blind to a random player, and the big blind to the next player in the array
-  // Also set the current dealer id, the pot and player with the biggest bet (to be added later)
 
   const makeUserMove = async(turn: number, players: Array<PlayerObject>, biggestBet: number, tableMoney: number, playerWithBiggestBet: NumOrNull, stage: Stage, pot: number) => {
     // setIsComputerMove(() => false);
@@ -269,13 +231,10 @@ const Poker = (): JSX.Element => {
         playersCopy = giveMoneyToWinners(playersCopy, winners, pot);
         setPot(() => 0);
         setTurn(() => null);
+        setTableMoney(() => 0);
         setPlayers(() => playersCopy);
-        await sleep(1000);
-        setCardsVisible(() => false);
-        await sleep(1000);
-        setCommunityCards(() => []);
-        setCardsVisible(() => true);
         console.log('winners: ', winners);
+        resetGameState(playersCopy);
       } else {
         setCardsAreDealt(() => true);
         playersCopy = resetRoundState(playersCopy);
@@ -307,9 +266,53 @@ const Poker = (): JSX.Element => {
     return newPlayers;
   }
 
-  const resetGame = () => {
+  const resetGameState = async (players: Array<PlayerObject>) => {
     
+      let playersCopy = players.map((player) => {
+        return {
+          ...player,
+          cards: [...player.cards],
+          evaledHand: {} as EvaledHand,
+          hasFolded: false,
+          bet: 0,
+
+        }
+      });
+
+      const newDeck = shuffleCards([...baseDeck]);
+
+      for (let player of playersCopy) {
+         if (player.money > 0) player.cards = [newDeck.pop() as string, newDeck.pop() as string];
+      }
+
+  
+      await sleep(1000);
+      setCardsVisible(() => false);
+      await sleep(1000);
+      setCommunityCards(() => []);
+      setCardsVisible(() => true);
+      setDeck(() => newDeck);
+      setPlayers(() => playersCopy);
+      // setCardsAreDealt(() => false);
+
   }
+
+  const checkIfOnePlayerLeft = (players: Array<PlayerObject>) => {
+    let brokePlayers = 0;
+    for (let player of players) {
+      if (player.money === 0) brokePlayers++;
+    }
+
+    if (brokePlayers === players.length - 1) {
+      return true;
+    }
+  }
+
+  const checkIfUserLoses = (players: Array<PlayerObject>) => {
+    return players[0].money === 0;
+  }
+
+
 
   const checkIfCardsShouldBeDealt = (
     turn: number, 
@@ -322,7 +325,22 @@ const Poker = (): JSX.Element => {
   }
 
   const getNextTurn = (turn: number, players: Array<PlayerObject>) => {
-    const newTurn = turn === players.length - 1 ? 0 : turn + 1;
+    let newTurn = turn === players.length - 1 ? 0 : turn + 1;
+
+    while (players[turn]?.hasFolded || players[turn]?.money === 0) {
+      newTurn = newTurn === players.length - 1 ? 0 : newTurn + 1;
+    }
+
+    return newTurn;
+  }
+
+  const getPreviousTurn = (turn: number, players: Array<PlayerObject>) => {
+    let newTurn = turn === 0 ? players.length - 1 : turn - 1;
+
+    while (players[turn]?.hasFolded || players[turn]?.money === 0) {
+      newTurn = newTurn === 0 ? players.length - 1 : newTurn - 1;
+    }
+
     return newTurn;
   }
 
@@ -410,8 +428,7 @@ const Poker = (): JSX.Element => {
   // Get the response from the server based on the players hand
 
   const getEvaluation = async(player: PlayerObject, communityCards: Array<string>) => {
-    
-    // console.log(player)
+
     const playerCards: Array<string> = [...player.cards];
     if (!communityCards.length) {
       // Here I have to make a pseudo card so that the server can evaluate the hand
@@ -437,8 +454,6 @@ const Poker = (): JSX.Element => {
       })
     });
     const data = await response.json();
-
-    // console.log(`${player.name}'s hand: `, data);
 
     return data;
   }
@@ -510,7 +525,6 @@ const Poker = (): JSX.Element => {
       actions.push(false);
     }
     setDeck(() => newDeck);
-    setActionVisibility(() => actions);
     return newPlayers;
   }
 

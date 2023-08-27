@@ -32,7 +32,7 @@ $stats-background: rgba(27, 27, 27, 0.89);
 .image {
   margin: 10px 2px;
   width: 77px;
-  height: auto;
+  height: 112px;
   transition: all 0.5s;
 }
 
@@ -42,7 +42,7 @@ $stats-background: rgba(27, 27, 27, 0.89);
   position: absolute;
   top: 50%;
   left: 0;
-  transform: translate(10%, -50%);
+  transform: translate(10%, -30%);
 }
 
 .player2 {
@@ -58,7 +58,7 @@ $stats-background: rgba(27, 27, 27, 0.89);
   position: absolute;
   top: 50%;
   right: 0;
-  transform: translate(-10%, -50%);
+  transform: translate(-10%, -30%);
 }
 
 .player0 {
@@ -77,6 +77,7 @@ $stats-background: rgba(27, 27, 27, 0.89);
 
 
 .bet {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -97,5 +98,25 @@ $stats-background: rgba(27, 27, 27, 0.89);
   }
   100% {
     opacity: 0;
+  }
+}
+
+@media screen and (max-width: 1290px) {
+  .image {
+    width: 6vw;
+  }
+
+  .player-container {
+    font-size: 1.2vw;
+    width: auto;
+  }
+
+  .bet {
+    font-size: 1.2vw;
+    // height: 10vw;
+  }
+
+  .player0 {
+    transform: translate(50%, 30%);
   }
 }
