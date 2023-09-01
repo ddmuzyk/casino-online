@@ -11,6 +11,7 @@ import ActionMessage from "../ActionMessage/Action";
 
 const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, action, smallBlind, bigBlind, bet, biggestBet, cardsAreDealt}) => {
 
+
   const classname = `player${id}`;
   const actionClass = `action${id}`;
   // console.log('player: ', biggestBet)
@@ -21,7 +22,7 @@ const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, action, 
       {id === 3 ? <p className={styles.bet} style={{bottom: "30px"}}>{bet}$</p> : null}
       {id === 0 ? <p className={styles.bet}>{bet}$</p> : null}
       <div className={`${styles['player-container']}`}
-      style={{height: id === 2 ? "230px" : "200px"}}
+      // style={{height: id === 2 ? "230px" : "200px"}}
       >
         <div className={styles['imgs-container']}>
           {cards.map((card: string, i) => {
