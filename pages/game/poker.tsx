@@ -304,7 +304,7 @@ const Poker = (): JSX.Element => {
 
       console.log('new current dealer id: ', newCurrentDealerId)
 
-      playersCopy = giveBlind(playersCopy, 1, newCurrentDealerId);
+      playersCopy = giveBlind(playersCopy, smallBlind, newCurrentDealerId);
 
       for (let player of playersCopy) {
         player.won = false;
@@ -314,7 +314,7 @@ const Poker = (): JSX.Element => {
       await sleep(5000);
       setCardsVisible(() => false);
       await sleep(1000);
-      setInitialValues(playersCopy, 1, newCurrentDealerId);
+      setInitialValues(playersCopy, smallBlind, newCurrentDealerId);
       let newTurn = getNextTurn(newCurrentDealerId, playersCopy);
       while (playersCopy[newTurn].bet > 0) {
         newTurn = getNextTurn(newTurn, playersCopy);
@@ -575,7 +575,7 @@ const Poker = (): JSX.Element => {
       newTurn = getNextTurn(newTurn, newPlayers);
     }
     setPlayers(() => newPlayers);
-    setInitialValues(newPlayers, 1, currentDealerId as number);
+    setInitialValues(newPlayers, smallBlind, currentDealerId as number);
     setGameInitialized(() => true);
     setTurn(() => newTurn);
     setCardsAreDealt(() => false);
@@ -586,7 +586,7 @@ const Poker = (): JSX.Element => {
       <div className={styles.game}>
         <div className={styles.tableContainer}>
           <div onClick={() => {
-              console.log('player that begins: ', playerThatBegins);
+              console.log(players);
             }} 
             className={styles.table}>
             <div className={styles.pot}>Pot: <span className={styles.potValue} key={pot}>{pot}$</span></div>
