@@ -3,6 +3,7 @@ import { ReactComponentElement, useState, useEffect, useRef } from "react";
 import styles from './poker.module.scss';
 import Layout from "@/components/layout";
 import Player from "@/components/poker/Player/Player";
+import Slider from "@/components/poker/Slider/Slider";
 import { shuffleCards, cards, decky, SUITS, VALUES } from "@/lib/poker/poker-logic/poker.ts";
 import { time } from "console";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
@@ -19,6 +20,7 @@ bet: number,
 hasFolded: boolean,
 action: string,
 // actionVisible?: boolean,
+won: boolean,
 evaledHand?: EvaledHand,
 biggestBet?: number,
 currentDealerId?: number
@@ -54,7 +56,7 @@ const Poker = (): JSX.Element => {
   const [playerWithBiggestBet, setPlayerWithBiggestBet] = useState<NumOrNull>(null); // Id of the player with the biggest bet
   // const [playerThatShouldntMove, setPlayerThatShouldntMove] = useState<number>(10); // Id of the player that shouldn't move (the player raised and everyone called him, so he can't do anything anymore)
   const [pot, setPot] = useState(0); // Pot of money on the table
-  const [currentDealerId, setCurrentDealerId] = useState<NumOrNull>(0); // Id of the current dealer
+  const [currentDealerId, setCurrentDealerId] = useState<NumOrNull>(1); // Id of the current dealer
   const [playerThatBegins, setPlayerThatBegins] = useState<NumOrNull>(null); // Id of the player that begins the game (if current dealer has folded)
   const [tableMoney, setTableMoney] = useState(0); // Money on the table in the current round
   const [turn, setTurn] = useState<NumOrNull>(null); // Id of the player whose turn it is, randomly chosen at the start of the game
@@ -304,6 +306,10 @@ const Poker = (): JSX.Element => {
 
       playersCopy = giveBlind(playersCopy, 1, newCurrentDealerId);
 
+      for (let player of playersCopy) {
+        player.won = false;
+      }
+
   
       await sleep(5000);
       setCardsVisible(() => false);
@@ -474,7 +480,7 @@ const Poker = (): JSX.Element => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        cards: playerCards, //temporary solution
+        cards: playerCards, 
       })
     });
     const data = await response.json();
@@ -482,8 +488,11 @@ const Poker = (): JSX.Element => {
     return data;
   }
 
+  // Change it to return new players object
   const getArrayOfWinners = (players: Array<PlayerObject>) => {
     // This array will contain the index of the players with the highest hand, there can be more than one if they have the same hand
+
+
     const highestHands: Array<number> = [];
     let highestValue = 0;
     for (let player of players) {
@@ -518,6 +527,8 @@ const Poker = (): JSX.Element => {
 
     for (let i = 0; i < winners.length; i++) {
       newPlayers[winners[i]].money += moneyToGive;
+      newPlayers[winners[i]].won = true;
+      newPlayers[winners[i]].action = 'WON';
     }
 
     if (moneyLeft) {
@@ -547,6 +558,7 @@ const Poker = (): JSX.Element => {
         bigBlind: 0,
         bet: 0,
         hasFolded: false,
+        won: false,
       })
       actions.push(false);
     }
@@ -616,6 +628,7 @@ const Poker = (): JSX.Element => {
                 key={player.name}
                 cards={player.cards}
                 action={player.action}
+                won={player.won}
                 // actionVisible={actionVisibility[player.id]}
                 smallBlind={player.smallBlind}
                 bigBlind={player.bigBlind}
@@ -644,7 +657,12 @@ const Poker = (): JSX.Element => {
               makeUserMove(turn as number, newPlayers, biggestBet, tableMoney, playerWithBiggestBet, currentStage, pot)
             }
           }} className={styles.playerBtn}>Call</button>
-          <button className={styles.playerBtn}>Raise</button>
+          <div>
+            <button className={styles.playerBtn}>Raise</button>
+            <Slider 
+            step="1"
+            />
+          </div>
           <button className={styles.playerBtn}>Fold</button>
         </div>
       </div>

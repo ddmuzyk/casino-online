@@ -9,7 +9,7 @@ import ActionMessage from "../ActionMessage/Action";
 //   state: object
 // }
 
-const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, action, smallBlind, bigBlind, bet, biggestBet, cardsAreDealt}) => {
+const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, action, smallBlind, bigBlind, bet, biggestBet, cardsAreDealt, won, currentDealerId}) => {
 
 
   const classname = `player${id}`;
@@ -19,8 +19,8 @@ const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, action, 
 
   return (
     <div className={`${styles[classname]}`}>
-      {id === 3 ? <p className={styles.bet} style={{bottom: "30px"}}>{bet}$</p> : null}
-      {id === 0 ? <p className={styles.bet}>{bet}$</p> : null}
+        {id === 3 ? <p className={styles.bet} style={{bottom: "30px"}}>{bet}$</p> : null}
+        {id === 0 ? <p className={styles.bet}>{bet}$</p> : null}
       <div className={`${styles['player-container']}`}
       // style={{height: id === 2 ? "230px" : "200px"}}
       >
@@ -28,7 +28,7 @@ const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, action, 
           {cards.map((card: string, i) => {
             return (
               <img onClick={() => {console.log(biggestBet)}} 
-                className={`${styles.image} ${turn === id && !cardsAreDealt ? styles.turn : ""}`} 
+                className={`${styles.image} ${turn === id && !cardsAreDealt ? styles.turn : ""}  ${won ? styles.won : ""}`} 
                 key={`${card}`} 
                 src={card !== 'null' ? `/svg-cards/${card}.svg` : "/svg-cards/backside.svg"} 
                 alt="Playing card" 
@@ -39,7 +39,7 @@ const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, action, 
           })}
         </div>
         <div className={styles.stats}>
-          <p className={styles.container}>Player{id} <span>{money}$</span></p>
+          <p className={styles.container}>Player{id} <span>{money}$ <span className={styles.dealerBtn}>{id === currentDealerId ? "D" : null}</span></span></p>
         </div>
         {id === 2 ? <p className={styles.bet}>{bet}$</p> : null}
         {/* {id !== 2 ? <ActionMessage action={action}/> : null} */}
