@@ -8,7 +8,7 @@ interface ActionMessageProps {
 
 const ActionMessage: React.FC<ActionMessageProps> = ({action}) => {
 
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     setIsVisible(true);
@@ -22,7 +22,7 @@ const ActionMessage: React.FC<ActionMessageProps> = ({action}) => {
   return (
     <div className={styles.actionContainer}>
       <CSSTransition
-      in={isVisible && action !== ""}
+      in={isVisible && action !== "" && action !== '-'}
       appear={true}
       timeout={500}
       classNames={{

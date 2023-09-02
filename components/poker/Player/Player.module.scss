@@ -32,7 +32,7 @@ $stats-background: rgba(27, 27, 27, 0.89);
 .image {
   margin: 10px 2px;
   width: 77px;
-  height: 112px;
+  height: auto;
   transition: all 0.5s;
 }
 
@@ -85,8 +85,20 @@ $stats-background: rgba(27, 27, 27, 0.89);
   color: white;
 }
 
+.bet-container {
+  display: flex;
+}
+
 .turn {
   box-shadow: 0 0px 10px 3px rgba(245, 248, 62, 0.699);
+}
+
+.won {
+  box-shadow: 0 0px 10px 3px rgba(62, 248, 62, 0.699);
+}
+
+.dealerBtn {
+  color: rgb(248, 228, 48);
 }
 
 @keyframes action {

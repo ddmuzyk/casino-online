@@ -3,6 +3,7 @@ import { ReactComponentElement, useState, useEffect, useRef } from "react";
 import styles from './poker.module.scss';
 import Layout from "@/components/layout";
 import Player from "@/components/poker/Player/Player";
+import Slider from "@/components/poker/Slider/Slider";
 import { shuffleCards, cards, decky, SUITS, VALUES } from "@/lib/poker/poker-logic/poker.ts";
 import { time } from "console";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
@@ -19,6 +20,7 @@ bet: number,
 hasFolded: boolean,
 action: string,
 // actionVisible?: boolean,
+won: boolean,
 evaledHand?: EvaledHand,
 biggestBet?: number,
 currentDealerId?: number
@@ -54,7 +56,7 @@ const Poker = (): JSX.Element => {
   const [playerWithBiggestBet, setPlayerWithBiggestBet] = useState<NumOrNull>(null); // Id of the player with the biggest bet
   // const [playerThatShouldntMove, setPlayerThatShouldntMove] = useState<number>(10); // Id of the player that shouldn't move (the player raised and everyone called him, so he can't do anything anymore)
   const [pot, setPot] = useState(0); // Pot of money on the table
-  const [currentDealerId, setCurrentDealerId] = useState<NumOrNull>(0); // Id of the current dealer
+  const [currentDealerId, setCurrentDealerId] = useState<NumOrNull>(1); // Id of the current dealer
   const [playerThatBegins, setPlayerThatBegins] = useState<NumOrNull>(null); // Id of the player that begins the game (if current dealer has folded)
   const [tableMoney, setTableMoney] = useState(0); // Money on the table in the current round
   const [turn, setTurn] = useState<NumOrNull>(null); // Id of the player whose turn it is, randomly chosen at the start of the game
@@ -67,7 +69,7 @@ const Poker = (): JSX.Element => {
   const [cardsAreDealt, setCardsAreDealt] = useState(true); // Boolean that checks if the cards are dealt or not
   // const [triggerStartGameLoop, setTriggerStartGameLoop] = useState(false); // Boolean that triggers the game loop
   const [isComputerMove, setIsComputerMove] = useState(turn === 0 ? false : true); // Boolean that checks if the computer is making a move
-  const [winner, setWinner] = useState<NumOrNull>(null); // Id of the winner of the game
+  const [winners, setWinners] = useState<Array<number>>([]); // Id of the winner of the game
   const [actionVisibility, setActionVisibility] = useState<Array<boolean>>([]); // Boolean that checks if the actions are visible or not
 
   const abilityToMove = useRef(true); // Ref that checks if the player can move or not
@@ -104,8 +106,8 @@ const Poker = (): JSX.Element => {
       }
     })
 
-    const bigBlindTurn = getPreviousTurn(currentDealerId, newPlayers);
-    const smallBlindTurn = getPreviousTurn(bigBlindTurn, newPlayers);
+    const smallBlindTurn = getNextTurn(currentDealerId, newPlayers);
+    const bigBlindTurn = getNextTurn(smallBlindTurn, newPlayers);
 
     newPlayers[smallBlindTurn].money -= smallBlind;
     newPlayers[smallBlindTurn].bet += smallBlind;
@@ -116,10 +118,10 @@ const Poker = (): JSX.Element => {
 
   }
 
-  const setInitialValues = (players: Array<PlayerObject>, smallBlind: number, currentDealerId: number) => {
-    setCurrentDealerId(() => currentDealerId);
-    setTurn(() => currentDealerId);
-    setPlayerThatBegins(() => currentDealerId);
+  const setInitialValues = (players: Array<PlayerObject>, smallBlind: number, newCurrentDealerId: number) => {
+    abilityToMove.current = true;
+    setCurrentDealerId(() => newCurrentDealerId);
+    setPlayerThatBegins(() => getNextTurn(newCurrentDealerId, players));
     setPlayerWithBiggestBet(() => null);
     setPot(() => smallBlind*3);
     setTableMoney(() => smallBlind*3);
@@ -161,7 +163,7 @@ const Poker = (): JSX.Element => {
   
   const makeComputerMove = async(turn: number, players: Array<PlayerObject>, biggestBet: number, tableMoney: number, playerWithBiggestBet: NumOrNull, stage: Stage) => {
     // setIsComputerMove(() => true);
-    abilityToMove.current = true;
+    // abilityToMove.current = true;
 
     const playersCopy = players.map((player) => {
       return {
@@ -202,6 +204,7 @@ const Poker = (): JSX.Element => {
     playerThatBegins: number,
     ) => {
       // Maybe add this check to the player after to be able to trigger a rerender with setTurn to PlayerThatBegins
+      abilityToMove.current = true;
       
       let playersCopy: Array<PlayerObject> = players.map((player) => {
         return {
@@ -291,7 +294,7 @@ const Poker = (): JSX.Element => {
         }
       });
 
-      const newDeck = shuffleCards([...baseDeck]);
+      const newDeck = shuffleCards(baseDeck);
 
       for (let player of playersCopy) {
          if (player.money > 0) player.cards = [newDeck.pop() as string, newDeck.pop() as string];
@@ -303,11 +306,21 @@ const Poker = (): JSX.Element => {
 
       playersCopy = giveBlind(playersCopy, 1, newCurrentDealerId);
 
+      for (let player of playersCopy) {
+        player.won = false;
+      }
+
   
-      await sleep(1000);
+      await sleep(5000);
       setCardsVisible(() => false);
       await sleep(1000);
       setInitialValues(playersCopy, 1, newCurrentDealerId);
+      let newTurn = getNextTurn(newCurrentDealerId, playersCopy);
+      while (playersCopy[newTurn].bet > 0) {
+        newTurn = getNextTurn(newTurn, playersCopy);
+      }
+      await sleep(1000);
+      setTurn(() => newTurn);
       setCardsAreDealt(false);
       // setCardsAreDealt(() => false);
 
@@ -343,6 +356,7 @@ const Poker = (): JSX.Element => {
   const getNextTurn = (turn: number, players: Array<PlayerObject>) => {
     let newTurn = turn === players.length - 1 ? 0 : turn + 1;
 
+    // Maybe I should add a variable hasLost to player object
     while (players[newTurn]?.hasFolded || players[newTurn]?.money === 0) {
       newTurn = newTurn === players.length - 1 ? 0 : newTurn + 1;
     }
@@ -447,7 +461,7 @@ const Poker = (): JSX.Element => {
 
     const playerCards: Array<string> = [...player.cards];
     if (!communityCards.length) {
-      // Here I have to make a pseudo card so that the server can evaluate the hand
+      // Here I have to make a pseudo card so that the server can evaluate the hand (it can't evaluate 2 cards hand)
       const suit = SUITS[Math.floor(Math.random() * SUITS.length)];
       for (let i  = Math.floor(Math.random() * 10); i < VALUES.length; i++) {
         if (VALUES[i] !== playerCards[0][0] && VALUES[i] !== playerCards[1][0]) {
@@ -466,7 +480,7 @@ const Poker = (): JSX.Element => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        cards: playerCards, //temporary solution
+        cards: playerCards, 
       })
     });
     const data = await response.json();
@@ -474,8 +488,11 @@ const Poker = (): JSX.Element => {
     return data;
   }
 
+  // Change it to return new players object
   const getArrayOfWinners = (players: Array<PlayerObject>) => {
     // This array will contain the index of the players with the highest hand, there can be more than one if they have the same hand
+
+
     const highestHands: Array<number> = [];
     let highestValue = 0;
     for (let player of players) {
@@ -491,6 +508,8 @@ const Poker = (): JSX.Element => {
         highestHands.push(i);
       }
     }
+
+    setWinners(() => highestHands);
 
     return highestHands;
   }
@@ -508,6 +527,8 @@ const Poker = (): JSX.Element => {
 
     for (let i = 0; i < winners.length; i++) {
       newPlayers[winners[i]].money += moneyToGive;
+      newPlayers[winners[i]].won = true;
+      newPlayers[winners[i]].action = 'WON';
     }
 
     if (moneyLeft) {
@@ -531,12 +552,13 @@ const Poker = (): JSX.Element => {
         name: `Player${i}`,
         money: 1000,
         cards: playerCards as Array<string>,
-        action: '',
+        action: '-',
         evaledHand: {} as EvaledHand,
         smallBlind: 0,
         bigBlind: 0,
         bet: 0,
         hasFolded: false,
+        won: false,
       })
       actions.push(false);
     }
@@ -548,9 +570,14 @@ const Poker = (): JSX.Element => {
   const initializeGame = (deck: Array<string>) => {
     const newDeck = [...deck]
     const newPlayers: Array<PlayerObject> = giveBlind(createPlayers(newDeck, 4), 1, currentDealerId as number);
+    let newTurn = getNextTurn(currentDealerId as number, newPlayers);
+    while (newPlayers[newTurn].bet > 0) {
+      newTurn = getNextTurn(newTurn, newPlayers);
+    }
     setPlayers(() => newPlayers);
     setInitialValues(newPlayers, 1, currentDealerId as number);
     setGameInitialized(() => true);
+    setTurn(() => newTurn);
     setCardsAreDealt(() => false);
   }
 
@@ -559,7 +586,7 @@ const Poker = (): JSX.Element => {
       <div className={styles.game}>
         <div className={styles.tableContainer}>
           <div onClick={() => {
-              console.log('current dealer id: ', currentDealerId);
+              console.log('player that begins: ', playerThatBegins);
             }} 
             className={styles.table}>
             <div className={styles.pot}>Pot: <span className={styles.potValue} key={pot}>{pot}$</span></div>
@@ -601,6 +628,7 @@ const Poker = (): JSX.Element => {
                 key={player.name}
                 cards={player.cards}
                 action={player.action}
+                won={player.won}
                 // actionVisible={actionVisibility[player.id]}
                 smallBlind={player.smallBlind}
                 bigBlind={player.bigBlind}
@@ -629,7 +657,12 @@ const Poker = (): JSX.Element => {
               makeUserMove(turn as number, newPlayers, biggestBet, tableMoney, playerWithBiggestBet, currentStage, pot)
             }
           }} className={styles.playerBtn}>Call</button>
-          <button className={styles.playerBtn}>Raise</button>
+          <div>
+            <button className={styles.playerBtn}>Raise</button>
+            <Slider 
+            step="1"
+            />
+          </div>
           <button className={styles.playerBtn}>Fold</button>
         </div>
       </div>
