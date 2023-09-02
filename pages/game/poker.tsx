@@ -49,7 +49,7 @@ const Poker = (): JSX.Element => {
   const [players, setPlayers] = useState<Array<PlayerObject>>([]); // Players in the game
   const [activePlayers, setActivePlayers] = useState<Array<PlayerObject>>([]); // Players that didn't fold yet
   const [deck, setDeck] = useState(decky); // Deck of cards in play
-  const [smallBlind, setSmallBlind] = useState<number>(1); // Small blind
+  const [smallBlind, setSmallBlind] = useState<number>(5); // Small blind
   // const [bigBlind, setBigBlind] = useState<number>(2); // Big blind
   const [playerWithBigBlind, setPlayerWithBigBlind] = useState<number>(10); // Id of the player with the big blind 
   const [biggestBet, setBiggestBet] = useState(0); // Biggest bet on the table
@@ -569,7 +569,7 @@ const Poker = (): JSX.Element => {
   // Function that starts the game
   const initializeGame = (deck: Array<string>) => {
     const newDeck = [...deck]
-    const newPlayers: Array<PlayerObject> = giveBlind(createPlayers(newDeck, 4), 1, currentDealerId as number);
+    const newPlayers: Array<PlayerObject> = giveBlind(createPlayers(newDeck, 4), smallBlind, currentDealerId as number);
     let newTurn = getNextTurn(currentDealerId as number, newPlayers);
     while (newPlayers[newTurn].bet > 0) {
       newTurn = getNextTurn(newTurn, newPlayers);
@@ -645,25 +645,34 @@ const Poker = (): JSX.Element => {
         {/* Write me a div that contains player buttons: check, call, raise, all in */}
         {/* ISSUE IS WITH THE FUNCTION FROM PLAYER I GUESS */}
         <div className={styles.playerButtons}>
-          <button onClick={() => {
-            if (turn === 0 && abilityToMove.current) {
-              const newPlayers = check(turn as number, players, playerWithBiggestBet, currentStage);
-              makeUserMove(turn as number, newPlayers, biggestBet, tableMoney, playerWithBiggestBet, currentStage, pot)
-            };
-          }} className={styles.playerBtn}>Check</button>
-          <button onClick={() => {
-            if (turn === 0 && abilityToMove.current) {
-              const newPlayers = call(turn as number, players, biggestBet, biggestBet - players[turn as number].bet, tableMoney)
-              makeUserMove(turn as number, newPlayers, biggestBet, tableMoney, playerWithBiggestBet, currentStage, pot)
-            }
-          }} className={styles.playerBtn}>Call</button>
+          <div>
+            <button className={styles.playerBtn}>Fold</button>
+          </div>
+          <div>
+            <button onClick={() => {
+              if (turn === 0 && abilityToMove.current) {
+                const newPlayers = check(turn as number, players, playerWithBiggestBet, currentStage);
+                makeUserMove(turn as number, newPlayers, biggestBet, tableMoney, playerWithBiggestBet, currentStage, pot)
+              };
+            }} className={styles.playerBtn}>Check</button>
+
+          </div>
+          <div>
+            <button onClick={() => {
+              if (turn === 0 && abilityToMove.current) {
+                const newPlayers = call(turn as number, players, biggestBet, biggestBet - players[turn as number].bet, tableMoney)
+                makeUserMove(turn as number, newPlayers, biggestBet, tableMoney, playerWithBiggestBet, currentStage, pot)
+              }
+            }} className={styles.playerBtn}>Call</button>
+
+          </div>
           <div>
             <button className={styles.playerBtn}>Raise</button>
             <Slider 
-            step="1"
+            step={smallBlind.toString()}
+            max={players[0]?.money ? players[0].money : 1000}
             />
           </div>
-          <button className={styles.playerBtn}>Fold</button>
         </div>
       </div>
     </Layout>

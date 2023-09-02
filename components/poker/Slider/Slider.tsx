@@ -1,10 +1,12 @@
 import React, {useState} from "react";
+import styles from './Slider.module.scss';
 
 interface SliderProps {
-  step: string
+  step: string,
+  max: number,
 }
 
-const Slider: React.FC<SliderProps> = ({step}) => {
+const Slider: React.FC<SliderProps> = ({step, max}) => {
   const [value, setValue] = useState(0);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -13,8 +15,8 @@ const Slider: React.FC<SliderProps> = ({step}) => {
 
   return (
     <div>
-      <input type="range" min="0" max="100" step={step} value={value} onChange={handleChange}/>
-      <p>{value}</p>
+      <input className={styles.input} type="range" min="0" max={max} step={step} value={value} onChange={handleChange}/>
+      <p className={styles.value}>{value}$</p>
     </div>
   )
 }
