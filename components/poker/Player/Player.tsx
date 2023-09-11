@@ -19,7 +19,7 @@ const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, action, 
 
   return (
     <div className={`${styles[classname]}`}>
-        {id === 3 ? <p className={styles.bet} style={{bottom: "30px"}}>{bet}$</p> : null}
+        {id === 3 ? <p className={styles.bet} style={{bottom: "30px", width:"10px"}}>{bet}$</p> : null}
         {id === 0 ? <p className={styles.bet}>{bet}$</p> : null}
       <div className={`${styles['player-container']}`}
       // style={{height: id === 2 ? "230px" : "200px"}}
@@ -45,7 +45,7 @@ const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, action, 
         {/* {id !== 2 ? <ActionMessage action={action}/> : null} */}
         <ActionMessage action={action}/>
       </div>
-      {id === 1 ? <p className={styles.bet} style={{bottom: "30px"}}>{bet}$</p> : null}
+      {id === 1 ? <p className={styles.bet} style={{bottom: "30px", width: '10px'}}>{bet}$</p> : null}
       {/* {id === 2 ? <ActionMessage action={action}/> : null} */}
     </div>
   )
