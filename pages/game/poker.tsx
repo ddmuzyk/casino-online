@@ -195,7 +195,6 @@ const Poker = (): JSX.Element => {
     // playerWithBigBlind: number,
     playerThatBegins: number,
     ) => {
-      // Maybe add this check to the player after to be able to trigger a rerender with setTurn to PlayerThatBegins
       abilityToMove.current = true;
       
       let playersCopy: Array<PlayerObject> = players.map((player) => {
@@ -231,6 +230,8 @@ const Poker = (): JSX.Element => {
           evaledHand: {...player.evaledHand as EvaledHand}
         }
       });
+
+      setBetValue(() => "0");
 
       if (stage === 'river') {
         setIsShowdown(() => true);
@@ -378,6 +379,28 @@ const Poker = (): JSX.Element => {
       setPlayerThatBegins(() => getNextTurn(playerThatBegins as number, newPlayers));
     }
   
+    return newPlayers;
+  }
+
+  const playerRaise = (turn: number, players: Array<PlayerObject>, biggestBet: number, moneyToRaise: string, tableMoney: number, pot: number) => {
+    
+    let betValue = parseInt(moneyToRaise);
+    
+    const newPlayers = players.map((player) => {
+      return {
+        ...player,
+        cards: [...player.cards],
+        evaledHand: {...player.evaledHand as EvaledHand}
+        }
+    });
+    const player = newPlayers[turn];
+    player.money -= betValue;
+    player.bet += betValue;
+    setTableMoney(() => tableMoney + betValue);
+    setPot(() => pot + betValue);
+    setBiggestBet(() => player.bet);
+    setPlayerWithBiggestBet(() => turn);
+
     return newPlayers;
   }
 
@@ -534,7 +557,13 @@ const Poker = (): JSX.Element => {
 
           </div>
           <div>
-            <button className={styles.playerBtn}>Raise</button>
+            <button onClick={() => {
+            if (turn === 0 && abilityToMove.current) {
+              const newPlayers = playerRaise(turn as number, players, biggestBet, betValue, tableMoney, pot);
+              makeUserMove(turn as number, newPlayers, biggestBet, tableMoney, playerWithBiggestBet, currentStage, pot)
+            }
+          }}
+            className={styles.playerBtn}>Raise</button>
             <Slider 
             step={smallBlind.toString()}
             max={players[0]?.money ? players[0].money : 1000}
