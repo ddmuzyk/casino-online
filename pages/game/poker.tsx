@@ -11,7 +11,7 @@ import { get } from "http";
 import { getNextTurn, getPreviousTurn } from "@/lib/poker/poker-logic/functions/turns";
 import { giveBlind } from "@/lib/poker/poker-logic/functions/blind";
 import { getEvaluation, giveMoneyToWinners, getArrayOfWinners } from "@/lib/poker/poker-logic/functions/evaluation";
-import { check, fold } from "@/lib/poker/poker-logic/functions/actions";
+import { check} from "@/lib/poker/poker-logic/functions/actions";
 import { checkIfCardsShouldBeDealt, checkIfOnePlayerLeft, checkIfUserLoses } from "@/lib/poker/poker-logic/functions/checks";
 
 export interface PlayerObject {
@@ -352,6 +352,25 @@ const Poker = (): JSX.Element => {
     return newPlayers;
   }
 
+  const fold = (turn: number, players: Array<PlayerObject>, playerThatBegins: NumOrNull) => {
+    const newPlayers = players.map((player) => {
+      return {
+        ...player,
+        cards: [...player.cards],
+        evaledHand: {...player.evaledHand as EvaledHand}
+        }
+    });
+  
+    newPlayers[turn].hasFolded = true;
+    newPlayers[turn].action = 'FOLD';
+
+    if (turn === playerThatBegins) {
+      setPlayerThatBegins(() => getNextTurn(playerThatBegins as number, newPlayers));
+    }
+  
+    return newPlayers;
+  }
+
   // Deal the flop, turn and river
   const dealCommunityCards = (communityCards: Array<string> , deck: Array<string>, stage: Stage) => {
     const deckCopy = [...deck];
@@ -478,7 +497,7 @@ const Poker = (): JSX.Element => {
           <div>
             <button onClick={() => {
               if (turn === 0 && abilityToMove.current) {
-                const newPlayers = fold(turn as number, players);
+                const newPlayers = fold(turn as number, players, playerThatBegins) as Array<PlayerObject>;
                 makeUserMove(turn as number, newPlayers, biggestBet, tableMoney, playerWithBiggestBet, currentStage, pot)
               }
             }
