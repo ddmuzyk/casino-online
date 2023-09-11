@@ -23,6 +23,7 @@ export const checkIfCardsShouldBeDealt = (
   tableMoney: number,
   playerWithBiggestBet: NumOrNull,
   playerThatBegins: number,
+  players: Array<PlayerObject>
   ) => {
     return (turn === playerWithBiggestBet || (!tableMoney && turn === playerThatBegins));
 }
@@ -44,5 +45,19 @@ const checkForDuplicates = (deck: Array<string>, players: Array<PlayerObject>) =
       }
     }
   }
+  return false;
+}
+
+export const checkForCalls = (players: Array<PlayerObject>) => {
+  let biggestBet = 0;
+  for (let player of players) {
+    if (player.bet > biggestBet) biggestBet = player.bet;
+  }
+
+  // let possibleCalls = 0;
+  for (let player of players) { 
+    if (player.money > 0 && player.bet < biggestBet) return true;
+  }
+
   return false;
 }

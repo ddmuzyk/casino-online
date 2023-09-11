@@ -81,6 +81,7 @@ const Poker = (): JSX.Element => {
   const [betValue, setBetValue] = useState("0"); // Value of the bet
 
   const abilityToMove = useRef(true); // Ref that checks if the player can move or not
+  // const biggestBet = useRef<NumOrNull>(0); // Ref that checks the biggest bet on the table
 
   function timeout(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -143,7 +144,7 @@ const Poker = (): JSX.Element => {
     player.evaledHand = evaledHand;
 
     const nextTurn = getNextTurn(turn as number, players);
-    const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney, playerWithBiggestBet, playerThatBegins as number);
+    const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney, playerWithBiggestBet, playerThatBegins as number, playersCopy);
 
     if (cardsShouldBeDealt) {
       onRoundEnd(playersCopy, stage, pot, playerThatBegins);   
@@ -209,7 +210,7 @@ const Poker = (): JSX.Element => {
       }
       
       const nextTurn = getNextTurn(turn as number, players);
-      const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney, playerWithBiggestBet, playerThatBegins as number);
+      const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney, playerWithBiggestBet, playerThatBegins as number, playersCopy);
       if (cardsShouldBeDealt) {
         onRoundEnd(playersCopy, stage, pot, playerThatBegins);
       } 
@@ -393,7 +394,16 @@ const Poker = (): JSX.Element => {
         evaledHand: {...player.evaledHand as EvaledHand}
         }
     });
+
+
     const player = newPlayers[turn];
+
+    if (player.action === 'RAISE') {
+      player.action = 'raise';
+    } else {
+      player.action = 'RAISE';
+    }
+
     player.money -= betValue;
     player.bet += betValue;
     setTableMoney(() => tableMoney + betValue);
