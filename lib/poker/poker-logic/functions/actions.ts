@@ -26,19 +26,3 @@ export const check = (turn: number, players: Array<PlayerObject>, playerWithBigg
 
   return newPlayers;
 }
-
-export const fold = (turn: number, players: Array<PlayerObject>) => {
-  const newPlayers = players.map((player) => {
-    return {
-      ...player,
-      cards: [...player.cards],
-      evaledHand: {...player.evaledHand as EvaledHand}
-      }
-  });
-
-  newPlayers[turn].hasFolded = true;
-
-  newPlayers[turn].action = 'FOLD';
-
-  return newPlayers;
-}
