@@ -31,6 +31,7 @@ biggestBet?: number,
 currentDealerId?: number
 turn?: NumOrNull,
 cardsAreDealt?: boolean,
+isShowdown?: boolean,
 
 // biggestBet: number,
 }
@@ -68,6 +69,7 @@ const Poker = (): JSX.Element => {
   const [communityCards, setCommunityCards] = useState<Array<string>>([]); // Community cards on the table
   const [cardsVisible, setCardsVisible] = useState(true); // Boolean that checks if the cards are visible or not
   const [currentStage, setCurrentStage] = useState<Stage>('pre-flop'); // Current stage of the game
+  const [isShowdown, setIsShowdown] = useState(false); // Boolean that checks if the game is in the showdown stage
   // const [didGameStart, setDidGameStart] = useState(false); // Boolean that checks if the game has started
   // const [cardsClassname, setCardsClassname] = useState('hidden'); // Classname of the cards (hidden or visible)
   // const [isVisible, setIsVisible] = useState(false); 
@@ -115,6 +117,7 @@ const Poker = (): JSX.Element => {
     setCardsVisible(() => true);
     setCurrentStage(() => 'pre-flop');
     setPlayers(() => players);
+    setIsShowdown(() => false);
   }
 
   const setTurnAndPlayers = (players: Array<PlayerObject>, turn: number) => {
@@ -230,13 +233,15 @@ const Poker = (): JSX.Element => {
       });
 
       if (stage === 'river') {
+        setIsShowdown(() => true);
         setCardsAreDealt(() => true);
+        await sleep(1000);
         const winners = getArrayOfWinners(playersCopy);
         playersCopy = giveMoneyToWinners(playersCopy, winners, pot);
         setPot(() => 0);
         setTurn(() => null);
         setPlayers(() => playersCopy);
-        console.log('winners: ', winners);
+        // console.log('winners: ', winners);
         resetGameState(playersCopy);
       } else {
         setCardsAreDealt(() => true);
@@ -293,7 +298,7 @@ const Poker = (): JSX.Element => {
 
       const newCurrentDealerId = getNextTurn(currentDealerId as number, playersCopy);
 
-      console.log('new current dealer id: ', newCurrentDealerId)
+      // console.log('new current dealer id: ', newCurrentDealerId)
 
       playersCopy = giveBlind(playersCopy, smallBlind, newCurrentDealerId);
 
@@ -362,7 +367,12 @@ const Poker = (): JSX.Element => {
     });
   
     newPlayers[turn].hasFolded = true;
-    newPlayers[turn].action = 'FOLD';
+    
+    if (newPlayers[turn].action === 'FOLD') {
+      newPlayers[turn].action = 'fold';
+    } else {
+      newPlayers[turn].action = 'FOLD';
+    }
 
     if (turn === playerThatBegins) {
       setPlayerThatBegins(() => getNextTurn(playerThatBegins as number, newPlayers));
@@ -487,6 +497,7 @@ const Poker = (): JSX.Element => {
                 currentDealerId={currentDealerId as number}
                 turn={turn as number}
                 cardsAreDealt={cardsAreDealt}
+                isShowdown={isShowdown}
               />             
               })}
           </div>

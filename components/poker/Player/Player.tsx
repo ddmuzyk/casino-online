@@ -9,16 +9,18 @@ import ActionMessage from "../ActionMessage/Action";
 //   state: object
 // }
 
-const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, action, smallBlind, bigBlind, bet, biggestBet, cardsAreDealt, won, currentDealerId}) => {
+const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, action, smallBlind, bigBlind, bet, biggestBet, cardsAreDealt, won, currentDealerId, isShowdown}) => {
 
 
   const classname = `player${id}`;
   const actionClass = `action${id}`;
+
+  
   // console.log('player: ', biggestBet)
   // const turnBackground = turn === id ? 'turn' : '';
 
   return (
-    <div className={`${styles[classname]}`}>
+    <div onClick={() => console.log(turn)} className={`${styles[classname]}`}>
         {id === 3 ? <p className={styles.bet} style={{bottom: "30px", width:"10px"}}>{bet}$</p> : null}
         {id === 0 ? <p className={styles.bet}>{bet}$</p> : null}
       <div className={`${styles['player-container']}`}
@@ -26,11 +28,22 @@ const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, action, 
       >
         <div className={styles['imgs-container']}>
           {cards.map((card: string, i) => {
+            // const background = id !== 0 && isShowdown ? `/svg-cards/${card}.svg` : '';
+            let source = '';
+            if (id === 0) {
+              source = `/svg-cards/${card}.svg`;
+            } else {
+              if (isShowdown) {
+                source = `/svg-cards/${card}.svg`;
+              } else {
+                source = "/svg-cards/backside.svg";
+              }
+            }
             return (
-              <img onClick={() => {console.log(biggestBet)}} 
+              <img 
                 className={`${styles.image} ${turn === id && !cardsAreDealt ? styles.turn : ""}  ${won ? styles.won : ""}`} 
                 key={`${card}`} 
-                src={card !== 'null' ? `/svg-cards/${card}.svg` : "/svg-cards/backside.svg"} 
+                src={source} 
                 alt="Playing card" 
                 width={77} 
                 height={154}>
