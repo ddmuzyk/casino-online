@@ -8,8 +8,10 @@ export const getNextTurn = (turn: number, players: Array<PlayerObject>) => {
   // Added a temporary counter to avoid infinite loops
   let productionCounter = 0;
 
-  while ((players[newTurn]?.hasFolded || players[newTurn]?.money === 0) && productionCounter < 5) {
+  while ((players[newTurn]?.hasFolded || (players[newTurn]?.money === 0 && players[newTurn].bet === 0)) && productionCounter < 5) {
+    
     newTurn = newTurn === players.length - 1 ? 0 : newTurn + 1;
+    productionCounter++;
   }
 
   return newTurn;
