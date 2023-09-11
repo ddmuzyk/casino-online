@@ -17,11 +17,12 @@ $borderRadius: 400px;
 }
 
 .tableContainer {
-  height: 74vh;
+  height: 72vh;
   width: 80vw;
   background-color: $tableContainer;
   border: solid 40px $tableContainer;
   border-radius: $borderRadius;
+  margin-top: 20px;
 }
 
 .table {
@@ -39,10 +40,10 @@ $borderRadius: 400px;
 .playerButtons {
   display: flex;
   justify-content: space-around;
-  align-items: center;
+  // align-items: center;
   width: 70%;
-  margin: 0 10%;
-  height: 100px;
+  margin: 15px 10% 0 10%;
+  min-height: 200px;
 }
 
 .playerBtn {

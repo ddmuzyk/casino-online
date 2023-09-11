@@ -83,11 +83,13 @@ $stats-background: rgba(27, 27, 27, 0.89);
   align-items: center;
   font-family: Montserrat, sans-serif;
   color: white;
+  // width: 5px;
+  margin: 10px 30px;
 }
 
-.bet-container {
-  display: flex;
-}
+// .bet-container {
+//   display: flex;
+// }
 
 .turn {
   box-shadow: 0 0px 10px 3px rgba(245, 248, 62, 0.699);
