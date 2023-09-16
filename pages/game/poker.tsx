@@ -58,13 +58,13 @@ const Poker = (): JSX.Element => {
   const [smallBlind, setSmallBlind] = useState<number>(5); // Small blind
   // const [bigBlind, setBigBlind] = useState<number>(2); // Big blind
   const [playerWithBigBlind, setPlayerWithBigBlind] = useState<number>(10); // Id of the player with the big blind 
-  const [biggestBet, setBiggestBet] = useState(0); // Biggest bet on the table
-  const [playerWithBiggestBet, setPlayerWithBiggestBet] = useState<NumOrNull>(null); // Id of the player with the biggest bet
+  // const [biggestBet, setBiggestBet] = useState(0); // Biggest bet on the table
+  // const [playerWithBiggestBet, setPlayerWithBiggestBet] = useState<NumOrNull>(null); // Id of the player with the biggest bet
   // const [playerThatShouldntMove, setPlayerThatShouldntMove] = useState<number>(10); // Id of the player that shouldn't move (the player raised and everyone called him, so he can't do anything anymore)
   const [pot, setPot] = useState(0); // Pot of money on the table
-  const [currentDealerId, setCurrentDealerId] = useState<NumOrNull>(1); // Id of the current dealer
+  const [currentDealerId, setCurrentDealerId] = useState<NumOrNull>(0); // Id of the current dealer
   const [playerThatBegins, setPlayerThatBegins] = useState<NumOrNull>(null); // Id of the player that begins the game (if current dealer has folded)
-  const [tableMoney, setTableMoney] = useState(0); // Money on the table in the current round
+  // const [tableMoney, setTableMoney] = useState(0); // Money on the table in the current round
   const [turn, setTurn] = useState<NumOrNull>(null); // Id of the player whose turn it is, randomly chosen at the start of the game
   const [communityCards, setCommunityCards] = useState<Array<string>>([]); // Community cards on the table
   const [cardsVisible, setCardsVisible] = useState(true); // Boolean that checks if the cards are visible or not
@@ -81,7 +81,9 @@ const Poker = (): JSX.Element => {
   const [betValue, setBetValue] = useState("0"); // Value of the bet
 
   const abilityToMove = useRef(true); // Ref that checks if the player can move or not
-  // const biggestBet = useRef<NumOrNull>(0); // Ref that checks the biggest bet on the table
+  const biggestBet = useRef<number>(0); // Ref that checks the biggest bet on the table
+  const playerWithBiggestBet = useRef<NumOrNull>(null);
+  const tableMoney = useRef<number>(0);
 
   function timeout(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -96,7 +98,7 @@ const Poker = (): JSX.Element => {
 
   useEffect(() => {
     // console.log('players changed to: ', players);
-    if ((turn !== 0 && players.length && !cardsAreDealt)) startGameLoop(players, turn, biggestBet, tableMoney, currentStage, playerWithBiggestBet, pot , playerThatBegins as number);
+    if ((turn !== 0 && players.length && !cardsAreDealt)) startGameLoop(players, turn, biggestBet.current, tableMoney.current, currentStage, playerWithBiggestBet.current, pot , playerThatBegins as number);
   }, [players, cardsAreDealt]);
 
   useEffect(() => {
@@ -110,10 +112,10 @@ const Poker = (): JSX.Element => {
     abilityToMove.current = true;
     setCurrentDealerId(() => newCurrentDealerId);
     setPlayerThatBegins(() => getNextTurn(newCurrentDealerId, players));
-    setPlayerWithBiggestBet(() => null);
+    playerWithBiggestBet.current = null;
     setPot(() => smallBlind*3);
-    setTableMoney(() => smallBlind*3);
-    setBiggestBet(() => smallBlind*2);
+    tableMoney.current = smallBlind*3;
+    biggestBet.current =smallBlind*2;
     setCommunityCards(() => []);
     setCardsVisible(() => true);
     setCurrentStage(() => 'pre-flop');
@@ -262,9 +264,9 @@ const Poker = (): JSX.Element => {
 
   const resetRoundState = (players: Array<PlayerObject>) => {
     // setPot(() => pot + tableMoney);
-    setTableMoney(() => 0);
-    setPlayerWithBiggestBet(() => null);
-    setBiggestBet(() => 0);
+    tableMoney.current = 0;
+    playerWithBiggestBet.current = null;
+    biggestBet.current = 0;
     const newPlayers = players.map((player) => {
       return {
         ...player,
@@ -325,7 +327,7 @@ const Poker = (): JSX.Element => {
   }
 
   // Call the biggest bet if the player has enough money, otherwise call all in
-  const call = (turn: number , players: Array<PlayerObject>, biggestBet: number, moneyToCall: number, tableMoney: number) => {
+  const call = (turn: number , players: Array<PlayerObject>, biggestBet: number, moneyToCall: number, moneyOnTable: number) => {
     const newPlayers = players.map((player) => {
       return {
         ...player,
@@ -333,8 +335,8 @@ const Poker = (): JSX.Element => {
         evaledHand: {...player.evaledHand as EvaledHand}
         }
     });
-    if (playerWithBiggestBet === null) {
-      setPlayerWithBiggestBet(() => turn);
+    if (playerWithBiggestBet.current === null) {
+      playerWithBiggestBet.current = turn;
     }
     const player = newPlayers[turn];
     // console.log('copy of player: ', player);
@@ -353,7 +355,7 @@ const Poker = (): JSX.Element => {
 
     player.action = currentAction;
     // setPlayers(() => newPlayers);
-    setTableMoney(() => tableMoney + moneyToCall);
+    tableMoney.current = moneyOnTable + moneyToCall;
     setPot(() => pot + moneyToCall);
    
     return newPlayers;
@@ -383,7 +385,7 @@ const Poker = (): JSX.Element => {
     return newPlayers;
   }
 
-  const playerRaise = (turn: number, players: Array<PlayerObject>, biggestBet: number, moneyToRaise: string, tableMoney: number, pot: number) => {
+  const playerRaise = (turn: number, players: Array<PlayerObject>, highestBet: number, moneyToRaise: string, moneyOnTable: number, pot: number) => {
     
     let betValue = parseInt(moneyToRaise);
     
@@ -406,10 +408,10 @@ const Poker = (): JSX.Element => {
 
     player.money -= betValue;
     player.bet += betValue;
-    setTableMoney(() => tableMoney + betValue);
+    tableMoney.current = moneyOnTable + betValue;
     setPot(() => pot + betValue);
-    setBiggestBet(() => player.bet);
-    setPlayerWithBiggestBet(() => turn);
+    biggestBet.current = player.bet;
+    playerWithBiggestBet.current = turn;
 
     return newPlayers;
   }
@@ -526,7 +528,7 @@ const Poker = (): JSX.Element => {
                 bigBlind={player.bigBlind}
                 bet={player.bet}
                 hasFolded={player.hasFolded}
-                biggestBet={biggestBet}
+                biggestBet={biggestBet.current}
                 currentDealerId={currentDealerId as number}
                 turn={turn as number}
                 cardsAreDealt={cardsAreDealt}
@@ -542,7 +544,7 @@ const Poker = (): JSX.Element => {
             <button onClick={() => {
               if (turn === 0 && abilityToMove.current) {
                 const newPlayers = fold(turn as number, players, playerThatBegins) as Array<PlayerObject>;
-                makeUserMove(turn as number, newPlayers, biggestBet, tableMoney, playerWithBiggestBet, currentStage, pot)
+                makeUserMove(turn as number, newPlayers, biggestBet.current, tableMoney.current, playerWithBiggestBet.current, currentStage, pot)
               }
             }
             }
@@ -551,8 +553,8 @@ const Poker = (): JSX.Element => {
           <div>
             <button onClick={() => {
               if (turn === 0 && abilityToMove.current) {
-                const newPlayers = check(turn as number, players, playerWithBiggestBet, currentStage);
-                makeUserMove(turn as number, newPlayers, biggestBet, tableMoney, playerWithBiggestBet, currentStage, pot)
+                const newPlayers = check(turn as number, players, playerWithBiggestBet.current, currentStage);
+                makeUserMove(turn as number, newPlayers, biggestBet.current, tableMoney.current, playerWithBiggestBet.current, currentStage, pot)
               };
             }} className={styles.playerBtn}>Check</button>
 
@@ -560,8 +562,8 @@ const Poker = (): JSX.Element => {
           <div>
             <button onClick={() => {
               if (turn === 0 && abilityToMove.current) {
-                const newPlayers = call(turn as number, players, biggestBet, biggestBet - players[turn as number].bet, tableMoney)
-                makeUserMove(turn as number, newPlayers, biggestBet, tableMoney, playerWithBiggestBet, currentStage, pot)
+                const newPlayers = call(turn as number, players, biggestBet.current, biggestBet.current - players[turn as number].bet, tableMoney.current)
+                makeUserMove(turn as number, newPlayers, biggestBet.current, tableMoney.current, playerWithBiggestBet.current, currentStage, pot)
               }
             }} className={styles.playerBtn}>Call</button>
 
@@ -569,8 +571,8 @@ const Poker = (): JSX.Element => {
           <div>
             <button onClick={() => {
             if (turn === 0 && abilityToMove.current) {
-              const newPlayers = playerRaise(turn as number, players, biggestBet, betValue, tableMoney, pot);
-              makeUserMove(turn as number, newPlayers, biggestBet, tableMoney, playerWithBiggestBet, currentStage, pot)
+              const newPlayers = playerRaise(turn as number, players, biggestBet.current, betValue, tableMoney.current, pot);
+              makeUserMove(turn as number, newPlayers, biggestBet.current, tableMoney.current, playerWithBiggestBet.current, currentStage, pot)
             }
           }}
             className={styles.playerBtn}>Raise</button>

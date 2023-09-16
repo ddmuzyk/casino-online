@@ -6,9 +6,7 @@ export const checkIfOnePlayerLeft = (players: Array<PlayerObject>) => {
     if (player.money === 0) brokePlayers++;
   }
 
-  if (brokePlayers === players.length - 1) {
-    return true;
-  }
+  return brokePlayers === players.length - 1;    
 }
 
 export const checkIfUserLoses = (players: Array<PlayerObject>) => {
