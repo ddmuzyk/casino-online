@@ -63,7 +63,7 @@ const Poker = (): JSX.Element => {
   // const [playerThatShouldntMove, setPlayerThatShouldntMove] = useState<number>(10); // Id of the player that shouldn't move (the player raised and everyone called him, so he can't do anything anymore)
   const [pot, setPot] = useState(0); // Pot of money on the table
   const [currentDealerId, setCurrentDealerId] = useState<NumOrNull>(0); // Id of the current dealer
-  const [playerThatBegins, setPlayerThatBegins] = useState<NumOrNull>(null); // Id of the player that begins the game (if current dealer has folded)
+  // const [playerThatBegins, setPlayerThatBegins] = useState<NumOrNull>(null); // Id of the player that begins the game (if current dealer has folded)
   // const [tableMoney, setTableMoney] = useState(0); // Money on the table in the current round
   const [turn, setTurn] = useState<NumOrNull>(null); // Id of the player whose turn it is, randomly chosen at the start of the game
   const [communityCards, setCommunityCards] = useState<Array<string>>([]); // Community cards on the table
@@ -84,6 +84,7 @@ const Poker = (): JSX.Element => {
   const biggestBet = useRef<number>(0); // Ref that checks the biggest bet on the table
   const playerWithBiggestBet = useRef<NumOrNull>(null);
   const tableMoney = useRef<number>(0);
+  const playerThatBegins = useRef<NumOrNull>(null);
 
   function timeout(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -98,7 +99,7 @@ const Poker = (): JSX.Element => {
 
   useEffect(() => {
     // console.log('players changed to: ', players);
-    if ((turn !== 0 && players.length && !cardsAreDealt)) startGameLoop(players, turn, biggestBet.current, tableMoney.current, currentStage, playerWithBiggestBet.current, pot , playerThatBegins as number);
+    if ((turn !== 0 && players.length && !cardsAreDealt)) startGameLoop(players, turn, biggestBet.current, tableMoney.current, currentStage, playerWithBiggestBet.current, pot , playerThatBegins.current as number);
   }, [players, cardsAreDealt]);
 
   useEffect(() => {
@@ -111,7 +112,7 @@ const Poker = (): JSX.Element => {
   const setInitialValues = (players: Array<PlayerObject>, smallBlind: number, newCurrentDealerId: number) => {
     abilityToMove.current = true;
     setCurrentDealerId(() => newCurrentDealerId);
-    setPlayerThatBegins(() => getNextTurn(newCurrentDealerId, players));
+    playerThatBegins.current = getNextTurn(newCurrentDealerId, players);
     playerWithBiggestBet.current = null;
     setPot(() => smallBlind*3);
     tableMoney.current = smallBlind*3;
@@ -146,10 +147,10 @@ const Poker = (): JSX.Element => {
     player.evaledHand = evaledHand;
 
     const nextTurn = getNextTurn(turn as number, players);
-    const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney, playerWithBiggestBet, playerThatBegins as number, playersCopy);
+    const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney, playerWithBiggestBet, playerThatBegins.current as number, playersCopy);
 
     if (cardsShouldBeDealt) {
-      onRoundEnd(playersCopy, stage, pot, playerThatBegins);   
+      onRoundEnd(playersCopy, stage, pot, playerThatBegins.current);   
     } 
     else {
       setTurnAndPlayers(playersCopy, nextTurn);
@@ -361,7 +362,7 @@ const Poker = (): JSX.Element => {
     return newPlayers;
   }
 
-  const fold = (turn: number, players: Array<PlayerObject>, playerThatBegins: NumOrNull) => {
+  const fold = (turn: number, players: Array<PlayerObject>, currPlayerThatBegins: NumOrNull) => {
     const newPlayers = players.map((player) => {
       return {
         ...player,
@@ -378,8 +379,8 @@ const Poker = (): JSX.Element => {
       newPlayers[turn].action = 'FOLD';
     }
 
-    if (turn === playerThatBegins) {
-      setPlayerThatBegins(() => getNextTurn(playerThatBegins as number, newPlayers));
+    if (turn === currPlayerThatBegins) {
+      playerThatBegins.current = getNextTurn(currPlayerThatBegins as number, newPlayers);
     }
   
     return newPlayers;
@@ -481,6 +482,7 @@ const Poker = (): JSX.Element => {
         <div className={styles.tableContainer}>
           <div onClick={() => {
               console.log(players);
+              console.log(communityCards);
             }} 
             className={styles.table}>
             <div className={styles.pot}>Pot: <span className={styles.potValue} key={pot}>{pot}$</span></div>
@@ -501,7 +503,6 @@ const Poker = (): JSX.Element => {
                 }
                 key={id}
                 appear={true}
-                // unmountOnExit={true}
                 >
                   <img 
                   className={`${styles.image}`} 
@@ -514,7 +515,6 @@ const Poker = (): JSX.Element => {
               })} 
             </div>
               {players.map((player) => {
-              // console.log(player)
                 return <Player 
                 id={player.id} 
                 name={player.name}
@@ -523,7 +523,6 @@ const Poker = (): JSX.Element => {
                 cards={player.cards}
                 action={player.action}
                 won={player.won}
-                // actionVisible={actionVisibility[player.id]}
                 smallBlind={player.smallBlind}
                 bigBlind={player.bigBlind}
                 bet={player.bet}
@@ -537,13 +536,11 @@ const Poker = (): JSX.Element => {
               })}
           </div>
         </div>
-        {/* Write me a div that contains player buttons: check, call, raise, all in */}
-        {/* ISSUE IS WITH THE FUNCTION FROM PLAYER I GUESS */}
         <div className={styles.playerButtons}>
           <div>
             <button onClick={() => {
               if (turn === 0 && abilityToMove.current) {
-                const newPlayers = fold(turn as number, players, playerThatBegins) as Array<PlayerObject>;
+                const newPlayers = fold(turn as number, players, playerThatBegins.current) as Array<PlayerObject>;
                 makeUserMove(turn as number, newPlayers, biggestBet.current, tableMoney.current, playerWithBiggestBet.current, currentStage, pot)
               }
             }

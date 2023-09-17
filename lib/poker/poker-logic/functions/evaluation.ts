@@ -52,8 +52,6 @@ export const getArrayOfWinners = (players: Array<PlayerObject>) => {
     }
   }
 
-  // setWinners(() => highestHands);
-
   return highestHands;
 }
 
@@ -62,7 +60,8 @@ export const giveMoneyToWinners = (players: Array<PlayerObject>, winners: Array<
     return {
       ...player,
       cards: [...player.cards],
-      evaledHand: {...player.evaledHand as EvaledHand}
+      evaledHand: {...player.evaledHand as EvaledHand},
+      bet: 0,
     }
   });
   const moneyToGive = Math.floor(tableMoney / winners.length);
