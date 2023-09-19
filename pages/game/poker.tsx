@@ -10,7 +10,7 @@ import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { get } from "http";
 import { getNextTurn, getPreviousTurn } from "@/lib/poker/poker-logic/functions/turns";
 import { giveBlind } from "@/lib/poker/poker-logic/functions/blind";
-import { getEvaluation, giveMoneyToWinners, getArrayOfWinners } from "@/lib/poker/poker-logic/functions/evaluation";
+import { getEvaluation, giveMoneyToWinners, getArrayOfWinners, getResponse } from "@/lib/poker/poker-logic/functions/evaluation";
 import { check} from "@/lib/poker/poker-logic/functions/actions";
 import { checkIfCardsShouldBeDealt, checkIfOnePlayerLeft, checkIfUserLoses } from "@/lib/poker/poker-logic/functions/checks";
 
@@ -480,9 +480,9 @@ const Poker = (): JSX.Element => {
     <Layout siteTitle="Poker">
       <div className={styles.game}>
         <div className={styles.tableContainer}>
-          <div onClick={() => {
-              console.log(players);
-              console.log(communityCards);
+          <div onClick={async () => {
+              const data = await getResponse(['Td', 'Ts', '2c']);
+              console.log(data)
             }} 
             className={styles.table}>
             <div className={styles.pot}>Pot: <span className={styles.potValue} key={pot}>{pot}$</span></div>
