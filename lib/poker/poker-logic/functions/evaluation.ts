@@ -82,3 +82,18 @@ export const giveMoneyToWinners = (players: Array<PlayerObject>, winners: Array<
   
   return newPlayers;
 }
+
+export const getResponse = async (cards: Array<string>) => {
+  const response = await fetch('/api/eval', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      cards,
+    })
+  });
+  const data = await response.json();
+
+  return data;
+}
