@@ -59,3 +59,23 @@ export const checkForCalls = (players: Array<PlayerObject>) => {
 
   return false;
 }
+
+export const checkForPossibleAction = (players: Array<PlayerObject>) => {
+
+  let impossibleBets = 0
+
+  for (let player of players) {
+    if (player.hasFolded || player.money === 0) impossibleBets++;
+  }
+
+  return impossibleBets === players.length;
+}
+
+export const checkForFolds = (players: Array<PlayerObject>) => {
+  let folds = 0;
+  for (let player of players) {
+    if (player.hasFolded) folds++;
+  }
+
+  return folds === players.length - 1;
+}

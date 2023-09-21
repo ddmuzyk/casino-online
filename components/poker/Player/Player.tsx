@@ -20,7 +20,7 @@ const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, action, 
   // const turnBackground = turn === id ? 'turn' : '';
 
   return (
-    <div onClick={() => console.log(turn)} className={`${styles[classname]}`}>
+    <div className={`${styles[classname]}`}>
         {id === 3 ? <p className={styles.bet} style={{bottom: "30px", width:"10px"}}>{bet}$</p> : null}
         {id === 0 ? <p className={styles.bet}>{bet}$</p> : null}
       <div className={`${styles['player-container']}`}
