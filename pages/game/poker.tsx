@@ -8,11 +8,12 @@ import { shuffleCards, cards, decky, SUITS, VALUES } from "@/lib/poker/poker-log
 import { time } from "console";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { get } from "http";
-import { getNextTurn, getPreviousTurn } from "@/lib/poker/poker-logic/functions/turns";
 import { giveBlind } from "@/lib/poker/poker-logic/functions/blind";
+import { getNextTurn, getPreviousTurn } from "@/lib/poker/poker-logic/functions/turns";
 import { getEvaluation, giveMoneyToWinners, getArrayOfWinners, getResponse } from "@/lib/poker/poker-logic/functions/evaluation";
 import { check} from "@/lib/poker/poker-logic/functions/actions";
 import { checkIfCardsShouldBeDealt, checkIfOnePlayerLeft, checkIfUserLoses } from "@/lib/poker/poker-logic/functions/checks";
+import { timeout, sleep } from "@/lib/poker/poker-logic/functions/sleep";
 
 export interface PlayerObject {
 id: number,
@@ -26,6 +27,7 @@ hasFolded: boolean,
 action: string,
 // actionVisible?: boolean,
 won: boolean,
+out: boolean,
 evaledHand?: EvaledHand,
 biggestBet?: number,
 currentDealerId?: number
@@ -86,12 +88,7 @@ const Poker = (): JSX.Element => {
   const tableMoney = useRef<number>(0);
   const playerThatBegins = useRef<NumOrNull>(null);
 
-  function timeout(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-  async function sleep(ms: number) {
-    await timeout(ms);
-  }
+  
   // Populate the table with players (later with possibility to choose how many players to play against
   useEffect(() => {
     if (!gameInitialized) initializeGame(deck);
@@ -105,10 +102,7 @@ const Poker = (): JSX.Element => {
   useEffect(() => {
     // console.log('isComputerMove changed to: ', isComputerMove)
   }, [isComputerMove]);
-
   
-  
-
   const setInitialValues = (players: Array<PlayerObject>, smallBlind: number, newCurrentDealerId: number) => {
     abilityToMove.current = true;
     setCurrentDealerId(() => newCurrentDealerId);
@@ -186,7 +180,6 @@ const Poker = (): JSX.Element => {
     } 
   }
   
-
   const startGameLoop = async (
     players: Array<PlayerObject>, 
     turn: NumOrNull, 
@@ -302,16 +295,12 @@ const Poker = (): JSX.Element => {
       setDeck(() => newDeck);
 
       const newCurrentDealerId = getNextTurn(currentDealerId as number, playersCopy);
-
-      // console.log('new current dealer id: ', newCurrentDealerId)
-
       playersCopy = giveBlind(playersCopy, smallBlind, newCurrentDealerId);
 
       for (let player of playersCopy) {
         player.won = false;
       }
 
-  
       await sleep(5000);
       setCardsVisible(() => false);
       await sleep(1000);
@@ -323,7 +312,6 @@ const Poker = (): JSX.Element => {
       await sleep(1000);
       setTurn(() => newTurn);
       setCardsAreDealt(false);
-      // setCardsAreDealt(() => false);
 
   }
 
@@ -340,7 +328,6 @@ const Poker = (): JSX.Element => {
       playerWithBiggestBet.current = turn;
     }
     const player = newPlayers[turn];
-    // console.log('copy of player: ', player);
     player.money -= moneyToCall;
     player.bet += moneyToCall;
 
@@ -424,8 +411,6 @@ const Poker = (): JSX.Element => {
     const cardsToDeal = stage === 'pre-flop' ? 3 : stage === 'flop' || 'turn' ? 1 : 0;
     const nextStage = stage === 'pre-flop' ? 'flop' : stage === 'flop' ? 'turn' : stage === 'turn' ? 'river' : 'pre-flop';
 
-    // console.log('cards to deal: ',cardsToDeal)
-
     for (let i = 0; i < cardsToDeal; i++) {
       communityCardsCopy.push(deckCopy.pop() as string);
     }
@@ -454,6 +439,7 @@ const Poker = (): JSX.Element => {
         bet: 0,
         hasFolded: false,
         won: false,
+        out: false,
       })
       actions.push(false);
     }
@@ -481,8 +467,13 @@ const Poker = (): JSX.Element => {
       <div className={styles.game}>
         <div className={styles.tableContainer}>
           <div onClick={async () => {
-              const data = await getResponse(['Td', 'Ts', '2c']);
-              console.log(data)
+              // const data = await getResponse(['As', 'Kd', 'Jc', 'Th', '9s', '7s', '3c']);
+              // console.log(data.value)
+              // const data2 = await getResponse(['As', 'Kd', 'Jc', 'Th', '8s', '6s', '3c']);
+              // console.log(data2.value)
+              console.log('table money: ',tableMoney.current)
+              console.log(players);
+              console.log(communityCards);
             }} 
             className={styles.table}>
             <div className={styles.pot}>Pot: <span className={styles.potValue} key={pot}>{pot}$</span></div>
@@ -523,6 +514,7 @@ const Poker = (): JSX.Element => {
                 cards={player.cards}
                 action={player.action}
                 won={player.won}
+                out={player.out}
                 smallBlind={player.smallBlind}
                 bigBlind={player.bigBlind}
                 bet={player.bet}

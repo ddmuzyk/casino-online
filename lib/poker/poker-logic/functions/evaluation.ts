@@ -35,6 +35,7 @@ export const getEvaluation = async(player: PlayerObject, communityCards: Array<s
 export const getArrayOfWinners = (players: Array<PlayerObject>) => {
   // This array will contain the index of the players with the highest hand, there can be more than one if they have the same hand
 
+  // The evaluation doesn't recognize player's hand (kickers) so I have to do it myself
 
   const highestHands: Array<number> = [];
   let highestValue = 0;
