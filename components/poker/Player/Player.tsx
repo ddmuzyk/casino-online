@@ -9,7 +9,7 @@ import ActionMessage from "../ActionMessage/Action";
 //   state: object
 // }
 
-const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, action, smallBlind, bigBlind, bet, biggestBet, cardsAreDealt, won, currentDealerId, isShowdown}) => {
+const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, action, smallBlind, bigBlind, bet, biggestBet, cardsAreDealt, won, currentDealerId, isShowdown, hasFolded}) => {
 
 
   const classname = `player${id}`;
@@ -40,14 +40,18 @@ const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, action, 
               }
             }
             return (
-              <img 
-                className={`${styles.image} ${turn === id && !cardsAreDealt ? styles.turn : ""}  ${won ? styles.won : ""}`} 
-                key={`${card}`} 
-                src={source} 
-                alt="Playing card" 
-                width={77} 
-                height={154}>
-              </img>
+              <div className={styles.imgContainer}>
+                <img 
+                  className={`${styles.image} ${turn === id && !cardsAreDealt ? styles.turn : ""}  ${won ? styles.won : ""}`} 
+                  key={`${card}`} 
+                  src={source} 
+                  alt="Playing card" 
+                  width={77} 
+                  height={154}>
+                </img>
+                <div className={`${styles.overlay} ${hasFolded ? styles.visible : styles.hidden}`}></div>
+
+              </div>
             )
           })}
         </div>
