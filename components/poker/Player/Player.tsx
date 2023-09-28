@@ -40,10 +40,9 @@ const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, action, 
               }
             }
             return (
-              <div className={styles.imgContainer}>
+              <div className={styles.imgContainer} key={`${card}`}>
                 <img 
                   className={`${styles.image} ${turn === id && !cardsAreDealt ? styles.turn : ""}  ${won ? styles.won : ""}`} 
-                  key={`${card}`} 
                   src={source} 
                   alt="Playing card" 
                   width={77} 
