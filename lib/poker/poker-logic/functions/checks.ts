@@ -9,8 +9,8 @@ export const checkIfOnePlayerLeft = (players: Array<PlayerObject>) => {
   return brokePlayers === players.length - 1;    
 }
 
-export const checkIfUserLoses = (players: Array<PlayerObject>) => {
-  return players[0].money === 0;
+export const checkIfUserLoses = (player: PlayerObject) => {
+  return player.money === 0;
 }
 
 

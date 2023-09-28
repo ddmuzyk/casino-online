@@ -96,7 +96,7 @@ const Poker = (): JSX.Element => {
 
   useEffect(() => {
     // console.log('players changed to: ', players);
-    if ((turn !== 0 && players.length && !cardsAreDealt)) startGameLoop(players, turn, biggestBet.current, tableMoney.current, currentStage, playerWithBiggestBet.current, pot , playerThatBegins.current as number);
+    if ((turn !== 0 && players.length && !cardsAreDealt)) startGameLoop(players, turn, biggestBet.current, tableMoney.current, currentStage, playerWithBiggestBet.current, pot,);
   }, [players, cardsAreDealt]);
 
   useEffect(() => {
@@ -190,7 +190,7 @@ const Poker = (): JSX.Element => {
     pot: number,
     // currentDealerId: number,
     // playerWithBigBlind: number,
-    playerThatBegins: number,
+    // playerThatBegins: number,
     ) => {
       abilityToMove.current = true;
       
@@ -206,9 +206,9 @@ const Poker = (): JSX.Element => {
       }
       
       const nextTurn = getNextTurn(turn as number, players);
-      const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney, playerWithBiggestBet, playerThatBegins as number, playersCopy);
+      const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney, playerWithBiggestBet, playerThatBegins.current as number, playersCopy);
       if (cardsShouldBeDealt) {
-        onRoundEnd(playersCopy, stage, pot, playerThatBegins);
+        onRoundEnd(playersCopy, stage, pot, playerThatBegins.current);
       } 
       else {
         setTurnAndPlayers(playersCopy, nextTurn);
@@ -327,16 +327,19 @@ const Poker = (): JSX.Element => {
     if (playerWithBiggestBet.current === null) {
       playerWithBiggestBet.current = turn;
     }
+    moneyToCall = moneyToCall > players[turn].money ? players[turn].money : moneyToCall;
     const player = newPlayers[turn];
     player.money -= moneyToCall;
     player.bet += moneyToCall;
+
+    if (player.money === 0) {
+      playerThatBegins.current = getNextTurn(turn, newPlayers);
+    }
 
     let currentAction = newPlayers[turn].action;
 
     if (currentAction === 'CALL') {
       currentAction = 'call';
-    } else if (currentAction === 'call') {
-      currentAction = 'CALL';
     } else {
       currentAction = 'CALL';
     }
@@ -471,9 +474,10 @@ const Poker = (): JSX.Element => {
               // console.log(data.value)
               // const data2 = await getResponse(['As', 'Kd', 'Jc', 'Th', '8s', '6s', '3c']);
               // console.log(data2.value)
-              console.log('table money: ',tableMoney.current)
-              console.log(players);
-              console.log(communityCards);
+              console.log(playerThatBegins.current)
+              // console.log('table money: ',tableMoney.current)
+              // console.log(players);
+              // console.log(communityCards);
             }} 
             className={styles.table}>
             <div className={styles.pot}>Pot: <span className={styles.potValue} key={pot}>{pot}$</span></div>
