@@ -62,7 +62,7 @@ const Poker = (): JSX.Element => {
   // const [playerWithBiggestBet, setPlayerWithBiggestBet] = useState<NumOrNull>(null); // Id of the player with the biggest bet
   // const [playerThatShouldntMove, setPlayerThatShouldntMove] = useState<number>(10); // Id of the player that shouldn't move (the player raised and everyone called him, so he can't do anything anymore)
   const [pot, setPot] = useState(0); // Pot of money on the table
-  const [currentDealerId, setCurrentDealerId] = useState<NumOrNull>(0); // Id of the current dealer
+  const [currentDealerId, setCurrentDealerId] = useState<NumOrNull>(1); // Id of the current dealer
   // const [playerThatBegins, setPlayerThatBegins] = useState<NumOrNull>(null); // Id of the player that begins the game (if current dealer has folded)
   // const [tableMoney, setTableMoney] = useState(0); // Money on the table in the current round
   const [turn, setTurn] = useState<NumOrNull>(null); // Id of the player whose turn it is, randomly chosen at the start of the game
@@ -247,6 +247,7 @@ const Poker = (): JSX.Element => {
         setTurn(() => null)
         // await sleep(1000);
         setTurn(playerThatBegins);
+        abilityToMove.current = true;
         setCardsAreDealt(() => false);
       }
   }
@@ -463,14 +464,14 @@ const Poker = (): JSX.Element => {
   // Function that starts the game
   const initializeGame = (deck: Array<string>) => {
     const newDeck = [...deck]
-    const newPlayers: Array<PlayerObject> = giveBlind(createPlayers(newDeck, 4), smallBlind, currentDealerId as number);
-    let newTurn = 0;
+    const newPlayers: Array<PlayerObject> = giveBlind(createPlayers(newDeck, 2), smallBlind, currentDealerId as number);
+    let newTurn = getNextTurn(currentDealerId as number, newPlayers);
     let activePlayers = getNumberOfPlayersInGame(newPlayers);
     if (activePlayers === 2) {
       newTurn = currentDealerId as number;
     } else {
     while (newPlayers[newTurn].bet > 0) {
-      newTurn = getNextTurn(currentDealerId as number, newPlayers);
+      newTurn = getNextTurn(newTurn as number, newPlayers);
     }
   }
     setPlayers(() => newPlayers);
