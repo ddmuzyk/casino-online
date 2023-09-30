@@ -79,3 +79,12 @@ export const checkForFolds = (players: Array<PlayerObject>) => {
 
   return folds === players.length - 1;
 }
+
+export const getNumberOfPlayersInGame = (players: Array<PlayerObject>) => {
+  let activePlayers = 0;
+  for (let player of players) {
+    if (!player.out) activePlayers++;
+  }
+
+  return activePlayers;
+}

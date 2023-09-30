@@ -9,7 +9,7 @@ import ActionMessage from "../ActionMessage/Action";
 //   state: object
 // }
 
-const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, action, smallBlind, bigBlind, bet, biggestBet, cardsAreDealt, won, currentDealerId, isShowdown, hasFolded}) => {
+const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, action, smallBlind, bigBlind, bet, biggestBet, cardsAreDealt, won, currentDealerId, isShowdown, hasFolded, out}) => {
 
 
   const classname = `player${id}`;
@@ -33,7 +33,7 @@ const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, action, 
             if (id === 0) {
               source = `/svg-cards/${card}.svg`;
             } else {
-              if (isShowdown) {
+              if (isShowdown && !out && !hasFolded) {
                 source = `/svg-cards/${card}.svg`;
               } else {
                 source = "/svg-cards/backside.svg";
@@ -48,7 +48,7 @@ const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, action, 
                   width={77} 
                   height={154}>
                 </img>
-                <div className={`${styles.overlay} ${hasFolded ? styles.visible : styles.hidden}`}></div>
+                <div className={`${styles.overlay} ${hasFolded || out ? styles.visible : styles.hidden}`}></div>
 
               </div>
             )

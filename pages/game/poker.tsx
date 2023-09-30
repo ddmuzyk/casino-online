@@ -12,7 +12,7 @@ import { giveBlind } from "@/lib/poker/poker-logic/functions/blind";
 import { getNextTurn, getPreviousTurn } from "@/lib/poker/poker-logic/functions/turns";
 import { getEvaluation, giveMoneyToWinners, getArrayOfWinners, getResponse } from "@/lib/poker/poker-logic/functions/evaluation";
 import { check} from "@/lib/poker/poker-logic/functions/actions";
-import { checkIfCardsShouldBeDealt, checkIfOnePlayerLeft, checkIfUserLoses } from "@/lib/poker/poker-logic/functions/checks";
+import { checkIfCardsShouldBeDealt, checkIfOnePlayerLeft, checkIfUserLoses, getNumberOfPlayersInGame } from "@/lib/poker/poker-logic/functions/checks";
 import { timeout, sleep } from "@/lib/poker/poker-logic/functions/sleep";
 
 export interface PlayerObject {
@@ -49,8 +49,6 @@ export type Stage = 'pre-flop' | 'flop' | 'turn' | 'river';
 export type NumOrNull = number | null;
 
 const Poker = (): JSX.Element => {
-
-  // Change some state variables to normal variables, because they don't need to be re-rendered!!!
 
   const [gameInitialized, setGameInitialized] = useState(false); // Boolean that checks if the game has started
   const [baseDeck, setBaseDeck] = useState<Array<string>>(cards); // Base deck of cards
@@ -96,7 +94,7 @@ const Poker = (): JSX.Element => {
 
   useEffect(() => {
     // console.log('players changed to: ', players);
-    if ((turn !== 0 && players.length && !cardsAreDealt)) startGameLoop(players, turn, biggestBet.current, tableMoney.current, currentStage, playerWithBiggestBet.current, pot,);
+    if ((turn !== 0 && players.length && !cardsAreDealt)) startGameLoop(players, turn, biggestBet.current, tableMoney.current, currentStage, pot,);
   }, [players, cardsAreDealt]);
 
   useEffect(() => {
@@ -186,7 +184,6 @@ const Poker = (): JSX.Element => {
     biggestBet: number, 
     tableMoney: number,
     stage: Stage,
-    playerWithBiggestBet: NumOrNull,
     pot: number,
     // currentDealerId: number,
     // playerWithBigBlind: number,
@@ -202,11 +199,11 @@ const Poker = (): JSX.Element => {
         }
       });
       if (turn && players.length > 0) {
-        playersCopy = await makeComputerMove(turn as number, playersCopy, biggestBet, tableMoney, playerWithBiggestBet, stage);
+        playersCopy = await makeComputerMove(turn as number, playersCopy, biggestBet, tableMoney, playerWithBiggestBet.current, stage);
       }
       
       const nextTurn = getNextTurn(turn as number, players);
-      const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney, playerWithBiggestBet, playerThatBegins.current as number, playersCopy);
+      const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney, playerWithBiggestBet.current, playerThatBegins.current as number, playersCopy);
       if (cardsShouldBeDealt) {
         onRoundEnd(playersCopy, stage, pot, playerThatBegins.current);
       } 
@@ -281,14 +278,19 @@ const Poker = (): JSX.Element => {
           evaledHand: {} as EvaledHand,
           hasFolded: false,
           bet: 0,
-
+          won: false,
         }
       });
 
       const newDeck = shuffleCards(baseDeck);
 
       for (let player of playersCopy) {
-         if (player.money > 0) player.cards = [newDeck.pop() as string, newDeck.pop() as string];
+        if (player.money > 0) {
+          player.cards = [newDeck.pop() as string, newDeck.pop() as string]
+        }
+        else {
+          player.out = true;
+        }
       }
 
       // Add this to setInitialValues
@@ -297,17 +299,25 @@ const Poker = (): JSX.Element => {
       const newCurrentDealerId = getNextTurn(currentDealerId as number, playersCopy);
       playersCopy = giveBlind(playersCopy, smallBlind, newCurrentDealerId);
 
-      for (let player of playersCopy) {
-        player.won = false;
-      }
+      // for (let player of playersCopy) {
+      //   player.won = false;
+      // }
 
       await sleep(5000);
       setCardsVisible(() => false);
       await sleep(1000);
       setInitialValues(playersCopy, smallBlind, newCurrentDealerId);
-      let newTurn = getNextTurn(newCurrentDealerId, playersCopy);
-      while (playersCopy[newTurn].bet > 0) {
-        newTurn = getNextTurn(newTurn, playersCopy);
+      let activePlayers = getNumberOfPlayersInGame(playersCopy);
+
+
+      
+      let newTurn = 0;
+      if (activePlayers === 2) {
+        newTurn = newCurrentDealerId as number;
+      } else {
+        while (playersCopy[newTurn].bet > 0) {
+          newTurn = getNextTurn(newTurn, playersCopy);
+        }
       }
       await sleep(1000);
       setTurn(() => newTurn);
@@ -454,10 +464,15 @@ const Poker = (): JSX.Element => {
   const initializeGame = (deck: Array<string>) => {
     const newDeck = [...deck]
     const newPlayers: Array<PlayerObject> = giveBlind(createPlayers(newDeck, 4), smallBlind, currentDealerId as number);
-    let newTurn = getNextTurn(currentDealerId as number, newPlayers);
+    let newTurn = 0;
+    let activePlayers = getNumberOfPlayersInGame(newPlayers);
+    if (activePlayers === 2) {
+      newTurn = currentDealerId as number;
+    } else {
     while (newPlayers[newTurn].bet > 0) {
-      newTurn = getNextTurn(newTurn, newPlayers);
+      newTurn = getNextTurn(currentDealerId as number, newPlayers);
     }
+  }
     setPlayers(() => newPlayers);
     setInitialValues(newPlayers, smallBlind, currentDealerId as number);
     setGameInitialized(() => true);
@@ -474,10 +489,10 @@ const Poker = (): JSX.Element => {
               // console.log(data.value)
               // const data2 = await getResponse(['As', 'Kd', 'Jc', 'Th', '8s', '6s', '3c']);
               // console.log(data2.value)
-              console.log(playerThatBegins.current)
+              // console.log(playerThatBegins.current)
               // console.log('table money: ',tableMoney.current)
-              // console.log(players);
-              // console.log(communityCards);
+              console.log(players);
+              console.log(communityCards);
             }} 
             className={styles.table}>
             <div className={styles.pot}>Pot: <span className={styles.potValue} key={pot}>{pot}$</span></div>
