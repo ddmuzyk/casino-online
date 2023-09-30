@@ -1,5 +1,6 @@
 import { Stage, PlayerObject, NumOrNull, EvaledHand } from "@/pages/game/poker";
 import { getNextTurn } from "./turns";
+import { getNumberOfPlayersInGame } from "./checks";
 
 export const giveBlind = (players: Array<PlayerObject>, smallBlind: number, currentDealerId: number) => {
 
@@ -11,7 +12,9 @@ export const giveBlind = (players: Array<PlayerObject>, smallBlind: number, curr
     }
   })
 
-  const smallBlindTurn = getNextTurn(currentDealerId, newPlayers);
+  const activePlayers = getNumberOfPlayersInGame(newPlayers);
+
+  const smallBlindTurn = activePlayers > 2 ? getNextTurn(currentDealerId, newPlayers) : currentDealerId;
   const bigBlindTurn = getNextTurn(smallBlindTurn, newPlayers);
 
   newPlayers[smallBlindTurn].money -= smallBlind;
