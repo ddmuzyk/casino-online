@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ReactComponentElement, useState, useEffect, useRef } from "react";
+import { ReactComponentElement, useState, useEffect, useRef, use } from "react";
 import styles from './poker.module.scss';
 import Layout from "@/components/layout";
 import Player from "@/components/poker/Player/Player";
@@ -94,12 +94,16 @@ const Poker = (): JSX.Element => {
 
   useEffect(() => {
     // console.log('players changed to: ', players);
-    if ((turn !== 0 && players.length && !cardsAreDealt)) startGameLoop(players, turn, biggestBet.current, tableMoney.current, currentStage, pot,);
+    if ((turn !== 0 && players.length && !cardsAreDealt)) startGameLoop(players, turn, currentStage,);
   }, [players, cardsAreDealt]);
 
   useEffect(() => {
     // console.log('isComputerMove changed to: ', isComputerMove)
   }, [isComputerMove]);
+
+  useEffect(() => {
+    console.log('pot changed to: ', pot);
+  }, [pot]);
   
   const setInitialValues = (players: Array<PlayerObject>, smallBlind: number, newCurrentDealerId: number) => {
     abilityToMove.current = true;
@@ -142,7 +146,7 @@ const Poker = (): JSX.Element => {
     const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney, playerWithBiggestBet, playerThatBegins.current as number, playersCopy);
 
     if (cardsShouldBeDealt) {
-      onRoundEnd(playersCopy, stage, pot, playerThatBegins.current);   
+      onRoundEnd(playersCopy, stage, playerThatBegins.current);   
     } 
     else {
       setTurnAndPlayers(playersCopy, nextTurn);
@@ -150,8 +154,6 @@ const Poker = (): JSX.Element => {
   }
   
   const makeComputerMove = async(turn: number, players: Array<PlayerObject>, biggestBet: number, tableMoney: number, playerWithBiggestBet: NumOrNull, stage: Stage) => {
-    // setIsComputerMove(() => true);
-    // abilityToMove.current = true;
 
     const playersCopy = players.map((player) => {
       return {
@@ -165,12 +167,8 @@ const Poker = (): JSX.Element => {
     const evaledHand = await getEvaluation(player, communityCards);
     player.evaledHand = evaledHand;
     
-    // console.log(playersCopy)
-    await sleep(1000);
-
-    // console.log('Hand: ', player.evaledHand);
-
     const moneyToCall = biggestBet - player.bet;
+    await sleep(1000);
     if (moneyToCall > 0) {
       return call(turn, playersCopy, biggestBet, moneyToCall, tableMoney);
     } else {
@@ -181,10 +179,10 @@ const Poker = (): JSX.Element => {
   const startGameLoop = async (
     players: Array<PlayerObject>, 
     turn: NumOrNull, 
-    biggestBet: number, 
-    tableMoney: number,
+    // biggestBet: number, 
+    // tableMoney: number,
     stage: Stage,
-    pot: number,
+    // pot: number,
     // currentDealerId: number,
     // playerWithBigBlind: number,
     // playerThatBegins: number,
@@ -199,13 +197,13 @@ const Poker = (): JSX.Element => {
         }
       });
       if (turn && players.length > 0) {
-        playersCopy = await makeComputerMove(turn as number, playersCopy, biggestBet, tableMoney, playerWithBiggestBet.current, stage);
+        playersCopy = await makeComputerMove(turn as number, playersCopy, biggestBet.current, tableMoney.current, playerWithBiggestBet.current, stage);
       }
       
       const nextTurn = getNextTurn(turn as number, players);
-      const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney, playerWithBiggestBet.current, playerThatBegins.current as number, playersCopy);
+      const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney.current, playerWithBiggestBet.current, playerThatBegins.current as number, playersCopy);
       if (cardsShouldBeDealt) {
-        onRoundEnd(playersCopy, stage, pot, playerThatBegins.current);
+        await onRoundEnd(playersCopy, stage, playerThatBegins.current);
       } 
       else {
         setTurnAndPlayers(playersCopy, nextTurn);
@@ -213,8 +211,7 @@ const Poker = (): JSX.Element => {
 
   }
 
-  const onRoundEnd = async (players: Array<PlayerObject>, stage: Stage, 
-    pot: number, playerThatBegins: NumOrNull,
+  const onRoundEnd = async (players: Array<PlayerObject>, stage: Stage, playerThatBegins: NumOrNull,
     ) => {
 
       let playersCopy = players.map((player) => {
@@ -228,8 +225,10 @@ const Poker = (): JSX.Element => {
       setBetValue(() => "0");
 
       if (stage === 'river') {
+        console.log(pot);
         setIsShowdown(() => true);
         setCardsAreDealt(() => true);
+        setPlayers(() => playersCopy);
         await sleep(1000);
         const winners = getArrayOfWinners(playersCopy);
         playersCopy = giveMoneyToWinners(playersCopy, winners, pot);
@@ -494,6 +493,7 @@ const Poker = (): JSX.Element => {
               // console.log('table money: ',tableMoney.current)
               console.log(players);
               console.log(communityCards);
+              console.log('pot: ', pot);
             }} 
             className={styles.table}>
             <div className={styles.pot}>Pot: <span className={styles.potValue} key={pot}>{pot}$</span></div>
