@@ -56,7 +56,7 @@ export const getArrayOfWinners = (players: Array<PlayerObject>) => {
   return highestHands;
 }
 
-export const giveMoneyToWinners = (players: Array<PlayerObject>, winners: Array<number>, tableMoney: number) => {
+export const giveMoneyToWinners = (players: Array<PlayerObject>, winners: Array<number>, pot: number) => {
   const newPlayers = players.map((player) => {
     return {
       ...player,
@@ -65,8 +65,9 @@ export const giveMoneyToWinners = (players: Array<PlayerObject>, winners: Array<
       bet: 0,
     }
   });
-  const moneyToGive = Math.floor(tableMoney / winners.length);
-  const moneyLeft = tableMoney % winners.length;
+  const moneyToGive = Math.floor(pot / winners.length);
+  console.log('money to give: ',moneyToGive)
+  const moneyLeft = pot % winners.length;
 
   for (let i = 0; i < winners.length; i++) {
     newPlayers[winners[i]].money += moneyToGive;
