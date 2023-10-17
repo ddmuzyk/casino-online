@@ -15,10 +15,6 @@ const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, action, 
   const classname = `player${id}`;
   const actionClass = `action${id}`;
 
-  
-  // console.log('player: ', biggestBet)
-  // const turnBackground = turn === id ? 'turn' : '';
-
   return (
     <div className={`${styles[classname]}`}>
         {id === 3 ? <p className={styles.bet} style={{bottom: "30px", width:"10px"}}>{bet}$</p> : null}
