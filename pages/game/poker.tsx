@@ -98,9 +98,9 @@ const Poker = (): JSX.Element => {
     if ((turn !== 0 && players.length && !cardsAreDealt)) startGameLoop(players, turn, currentStage,);
   }, [players, cardsAreDealt]);
 
-  useEffect(() => {
-    // console.log('isComputerMove changed to: ', isComputerMove)
-  }, [isComputerMove]);
+  // useEffect(() => {
+  //   // console.log('isComputerMove changed to: ', isComputerMove)
+  // }, [isComputerMove]);
   
   const setInitialValues = (players: Array<PlayerObject>, smallBlind: number, newCurrentDealerId: number) => {
     abilityToMove.current = true;
@@ -126,7 +126,6 @@ const Poker = (): JSX.Element => {
 
     abilityToMove.current = false;
 
-    // setIsComputerMove(() => false);
     let playersCopy = players.map((player) => {
       return {
         ...player,
@@ -176,13 +175,7 @@ const Poker = (): JSX.Element => {
   const startGameLoop = async (
     players: Array<PlayerObject>, 
     turn: NumOrNull, 
-    // biggestBet: number, 
-    // tableMoney: number,
     stage: Stage,
-    // pot: number,
-    // currentDealerId: number,
-    // playerWithBigBlind: number,
-    // playerThatBegins: number,
     ) => {
       abilityToMove.current = true;
       
@@ -222,7 +215,7 @@ const Poker = (): JSX.Element => {
       setBetValue(() => "0");
 
       if (stage === 'river') {
-        console.log(pot);
+        // console.log(pot);
         setIsShowdown(() => true);
         setCardsAreDealt(() => true);
         setPlayers(() => playersCopy);
@@ -247,8 +240,6 @@ const Poker = (): JSX.Element => {
         setCardsAreDealt(() => false);
       }
   }
-
-  // 
 
   const resetRoundState = (players: Array<PlayerObject>) => {
     // setPot(() => pot + tableMoney);
@@ -395,8 +386,12 @@ const Poker = (): JSX.Element => {
         }
     });
 
-
+    
     const player = newPlayers[turn];
+    
+    if (betValue > player.money) {
+      betValue = player.money;
+    }
 
     if (player.action === 'RAISE') {
       player.action = 'raise';
@@ -466,9 +461,9 @@ const Poker = (): JSX.Element => {
     if (activePlayers === 2) {
       newTurn = currentDealerId as number;
     } else {
-    while (newPlayers[newTurn].bet > 0) {
-      newTurn = getNextTurn(newTurn as number, newPlayers);
-    }
+      while (newPlayers[newTurn].bet > 0) {
+        newTurn = getNextTurn(newTurn as number, newPlayers);
+      }
   }
     setPlayers(() => newPlayers);
     setInitialValues(newPlayers, smallBlind, currentDealerId as number);
