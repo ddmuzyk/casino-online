@@ -15,7 +15,21 @@ const Slider: React.FC<SliderProps> = ({step, max, betValue, setBetValue}) => {
     setBetValue(e.target.value);
   }
 
-  
+  const handlebtnClick = (operator: string, betValue: string, step: string, max: number) => {
+    if (operator === '-') {
+      if (Number(betValue) - Number(step) >= 0) {
+        setBetValue(String(Number(betValue) - Number(step)));
+      } else {
+        setBetValue('0');
+      }
+    } else if (operator === '+') {
+      if (Number(betValue) + Number(step) <= max) {
+        setBetValue(String(Number(betValue) + Number(step)));
+      } else {
+        setBetValue(String(max));
+      }
+    }
+  }
 
 
   return (
@@ -24,8 +38,8 @@ const Slider: React.FC<SliderProps> = ({step, max, betValue, setBetValue}) => {
       <div className={styles.valuesContainer}>
         <p className={styles.value}>{betValue}$</p>
         <span className={styles.row}>
-          <p className={`${styles.value} ${styles.btn}`} onClick={() => setBetValue(String(parseInt(betValue) - parseInt(step)))}>-</p>
-          <p className={`${styles.value} ${styles.btn}`} onClick={() => setBetValue(String(parseInt(betValue) + parseInt(step)))}>+</p>
+          <p className={`${styles.value} ${styles.btn}`} onClick={() => handlebtnClick('-', betValue, step, max)}>-</p>
+          <p className={`${styles.value} ${styles.btn}`} onClick={() => handlebtnClick('+', betValue, step, max)}>+</p>
         </span>
       </div>
     </div>
