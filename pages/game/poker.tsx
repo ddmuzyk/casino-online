@@ -12,7 +12,7 @@ import { giveBlind } from "@/lib/poker/poker-logic/functions/blind";
 import { getNextTurn, getPreviousTurn } from "@/lib/poker/poker-logic/functions/turns";
 import { getEvaluation, giveMoneyToWinners, getArrayOfWinners, getResponse } from "@/lib/poker/poker-logic/functions/evaluation";
 import { check} from "@/lib/poker/poker-logic/functions/actions";
-import { checkIfCardsShouldBeDealt, checkIfOnePlayerLeft, checkIfUserLoses, getNumberOfPlayersInGame } from "@/lib/poker/poker-logic/functions/checks";
+import { checkIfCardsShouldBeDealt, checkIfOnePlayerLeft, checkIfUserLoses, getNumberOfPlayersInGame, getNumberOfActivePlayers } from "@/lib/poker/poker-logic/functions/checks";
 import { timeout, sleep } from "@/lib/poker/poker-logic/functions/sleep";
 
 export interface PlayerObject {
@@ -299,7 +299,7 @@ const Poker = (): JSX.Element => {
 
 
       
-      let newTurn = 0;
+      let newTurn = getNextTurn(newCurrentDealerId, playersCopy);
       if (activePlayers === 2) {
         newTurn = newCurrentDealerId as number;
       } else {
@@ -368,7 +368,10 @@ const Poker = (): JSX.Element => {
     }
 
     if (turn === currPlayerThatBegins) {
-      playerThatBegins.current = getNextTurn(currPlayerThatBegins as number, newPlayers);
+      let activePlayers = getNumberOfActivePlayers(newPlayers);
+      if (activePlayers > 1) {
+        playerThatBegins.current = getNextTurn(currPlayerThatBegins as number, newPlayers);
+      }
     }
   
     return newPlayers;
@@ -455,7 +458,7 @@ const Poker = (): JSX.Element => {
   // Function that starts the game
   const initializeGame = (deck: Array<string>) => {
     const newDeck = [...deck]
-    const newPlayers: Array<PlayerObject> = giveBlind(createPlayers(newDeck, 2), smallBlind, currentDealerId as number);
+    const newPlayers: Array<PlayerObject> = giveBlind(createPlayers(newDeck, 3), smallBlind, currentDealerId as number);
     let newTurn = getNextTurn(currentDealerId as number, newPlayers);
     let activePlayers = getNumberOfPlayersInGame(newPlayers);
     if (activePlayers === 2) {

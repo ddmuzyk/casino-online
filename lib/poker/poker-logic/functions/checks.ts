@@ -88,3 +88,16 @@ export const getNumberOfPlayersInGame = (players: Array<PlayerObject>) => {
 
   return activePlayers;
 }
+
+export const getNumberOfActivePlayers = (players: Array<PlayerObject>) => {
+  let activePlayers = players.length;
+  for (let player of players) {
+    if (player.hasFolded && player.out) activePlayers--;
+  }
+
+  return activePlayers;
+}
+
+export const checkIfThereIsAWinner = (players: Array<PlayerObject>) => {
+  return getNumberOfActivePlayers(players) === 1;
+}
