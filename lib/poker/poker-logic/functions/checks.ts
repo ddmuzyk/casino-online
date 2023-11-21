@@ -1,16 +1,20 @@
 import { Stage, PlayerObject, NumOrNull, EvaledHand } from "@/pages/game/poker";
 
-export const checkIfOnePlayerLeft = (players: Array<PlayerObject>) => {
-  let brokePlayers = 0;
-  for (let player of players) {
-    if (player.money === 0) brokePlayers++;
-  }
+// export const checkIfOnePlayerLeft = (players: Array<PlayerObject>) => {
+//   let brokePlayers = 0;
+//   for (let player of players) {
+//     if (player.money === 0) brokePlayers++;
+//   }
 
-  return brokePlayers === players.length - 1;    
-}
+//   return brokePlayers === players.length - 1;    
+// }
 
 export const checkIfUserLoses = (player: PlayerObject) => {
-  return player.money === 0;
+  return player.out;
+}
+
+export const checkIfUserWins = (players: Array<PlayerObject>) => {
+  return checkIfThereIsAWinner(players) && !players[0].hasFolded && !players[0].out;
 }
 
 
@@ -92,7 +96,7 @@ export const getNumberOfPlayersInGame = (players: Array<PlayerObject>) => {
 export const getNumberOfActivePlayers = (players: Array<PlayerObject>) => {
   let activePlayers = players.length;
   for (let player of players) {
-    if (player.hasFolded && player.out) activePlayers--;
+    if (player.hasFolded || player.out) activePlayers--;
   }
 
   return activePlayers;

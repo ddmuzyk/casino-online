@@ -10,9 +10,9 @@ import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { get } from "http";
 import { giveBlind } from "@/lib/poker/poker-logic/functions/blind";
 import { getNextTurn, getPreviousTurn } from "@/lib/poker/poker-logic/functions/turns";
-import { getEvaluation, giveMoneyToWinners, getArrayOfWinners, getResponse } from "@/lib/poker/poker-logic/functions/evaluation";
+import { getEvaluation, giveMoneyToWinners, getArrayOfWinners, getResponse, getTheWinner } from "@/lib/poker/poker-logic/functions/evaluation";
 import { check} from "@/lib/poker/poker-logic/functions/actions";
-import { checkIfCardsShouldBeDealt, checkIfOnePlayerLeft, checkIfUserLoses, getNumberOfPlayersInGame, getNumberOfActivePlayers, checkForPossibleAction, checkIfThereIsAWinner } from "@/lib/poker/poker-logic/functions/checks";
+import { checkIfCardsShouldBeDealt, checkIfUserLoses, checkIfUserWins, getNumberOfPlayersInGame, getNumberOfActivePlayers, checkForPossibleAction, checkIfThereIsAWinner } from "@/lib/poker/poker-logic/functions/checks";
 import { timeout, sleep } from "@/lib/poker/poker-logic/functions/sleep";
 
 export interface PlayerObject {
@@ -135,6 +135,15 @@ const Poker = (): JSX.Element => {
     });
     const player = playersCopy[turn];
 
+    let thereIsAWinner = checkIfThereIsAWinner(playersCopy);
+    let actionIsPossible = checkForPossibleAction(playersCopy);
+
+    if (thereIsAWinner) {
+      await onRoundEnd(playersCopy, stage, playerThatBegins.current, thereIsAWinner, actionIsPossible);
+    } else if (!actionIsPossible) {
+      await onRoundEnd(playersCopy, stage, playerThatBegins.current, thereIsAWinner, actionIsPossible);
+    } 
+
     const evaledHand = await getEvaluation(player, communityCards);
     player.evaledHand = evaledHand;
 
@@ -142,7 +151,7 @@ const Poker = (): JSX.Element => {
     const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney, playerWithBiggestBet, playerThatBegins.current as number, playersCopy);
 
     if (cardsShouldBeDealt) {
-      onRoundEnd(playersCopy, stage, playerThatBegins.current);   
+      onRoundEnd(playersCopy, stage, playerThatBegins.current, thereIsAWinner, actionIsPossible);   
     } 
     else {
       setTurnAndPlayers(playersCopy, nextTurn);
@@ -177,10 +186,17 @@ const Poker = (): JSX.Element => {
     turn: NumOrNull, 
     stage: Stage,
     ) => {
-
-
-
+      
       abilityToMove.current = true;
+
+      let thereIsAWinner = checkIfThereIsAWinner(players);
+      let actionIsPossible = checkForPossibleAction(players);
+
+      if (thereIsAWinner) {
+        await onRoundEnd(players, stage, playerThatBegins.current, thereIsAWinner, actionIsPossible);
+      } else if (!actionIsPossible) {
+        await onRoundEnd(players, stage, playerThatBegins.current, thereIsAWinner, actionIsPossible);
+      }
      
       let playersCopy: Array<PlayerObject> = players.map((player) => {
         return {
@@ -189,14 +205,25 @@ const Poker = (): JSX.Element => {
           evaledHand: {...player.evaledHand as EvaledHand}
         }
       });
+      // HERE COMPUTER MAKES A MOVE
       if (turn && players.length > 0) {
         playersCopy = await makeComputerMove(turn as number, playersCopy, biggestBet.current, tableMoney.current, playerWithBiggestBet.current, stage);
+      }
+      // HERE COMPUTER MAKES A MOVE
+
+      thereIsAWinner = checkIfThereIsAWinner(players);
+      actionIsPossible = checkForPossibleAction(players);
+
+      if (thereIsAWinner) {
+        await onRoundEnd(playersCopy, stage, playerThatBegins.current, thereIsAWinner, actionIsPossible);
+      } else if (!actionIsPossible) {
+        await onRoundEnd(playersCopy, stage, playerThatBegins.current, thereIsAWinner, actionIsPossible);
       }
       
       const nextTurn = getNextTurn(turn as number, players);
       const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney.current, playerWithBiggestBet.current, playerThatBegins.current as number, playersCopy);
       if (cardsShouldBeDealt) {
-        await onRoundEnd(playersCopy, stage, playerThatBegins.current);
+        await onRoundEnd(playersCopy, stage, playerThatBegins.current, thereIsAWinner, actionIsPossible);
       } 
       else {
         setTurnAndPlayers(playersCopy, nextTurn);
@@ -204,7 +231,7 @@ const Poker = (): JSX.Element => {
 
   }
 
-  const onRoundEnd = async (players: Array<PlayerObject>, stage: Stage, playerThatBegins: NumOrNull,
+  const onRoundEnd = async (players: Array<PlayerObject>, stage: Stage, playerThatBegins: NumOrNull, thereIsAWinner: boolean, actionIsPossible: boolean
     ) => {
 
       let playersCopy = players.map((player) => {
@@ -217,26 +244,40 @@ const Poker = (): JSX.Element => {
 
       setBetValue(() => "0");
 
-      if (stage === 'river') {
-        // console.log(pot);
+      if (thereIsAWinner) {
+        setCardsAreDealt(() => true);
+        const winner = getTheWinner(playersCopy) as Array<number>;
+        playersCopy = giveMoneyToWinners(playersCopy, winner, pot.current);
+        pot.current = 0;
+        setTurn(() => null);
+        setPlayers(() => playersCopy);
+        resetGameState(playersCopy);
+      } else if (stage === 'river') {
         setIsShowdown(() => true);
         setCardsAreDealt(() => true);
         setPlayers(() => playersCopy);
         await sleep(1000);
-        const winners = getArrayOfWinners(playersCopy);
+        const winners = getArrayOfWinners(playersCopy) ;
         playersCopy = giveMoneyToWinners(playersCopy, winners, pot.current);
         pot.current = 0;
         setTurn(() => null);
         setPlayers(() => playersCopy);
-        // console.log('winners: ', winners);
         resetGameState(playersCopy);
+      } else if (!actionIsPossible) {
+        console.log('HERE')
+        setCardsAreDealt(() => true);
+        setTurn(() => null);
+        dealCommunityCards(communityCards, deck, currentStage);
+        await sleep(1000);
+        abilityToMove.current = true;
+        setCardsAreDealt(() => false);
       } else {
         setCardsAreDealt(() => true);
         playersCopy = resetRoundState(playersCopy);
         setPlayers(() => playersCopy);
         dealCommunityCards(communityCards, deck, currentStage);
         await sleep(1000);
-        setTurn(() => null)
+        // setTurn(() => null)
         // await sleep(1000);
         setTurn(playerThatBegins);
         abilityToMove.current = true;
@@ -273,6 +314,14 @@ const Poker = (): JSX.Element => {
         }
       });
 
+      if (checkIfUserLoses(playersCopy[0])) {
+        console.log('You lost');
+        return
+      } else if (checkIfUserWins(playersCopy)) {
+        console.log('You won');
+        return
+      }
+
       const newDeck = shuffleCards(baseDeck);
 
       for (let player of playersCopy) {
@@ -290,18 +339,12 @@ const Poker = (): JSX.Element => {
       const newCurrentDealerId = getNextTurn(currentDealerId as number, playersCopy);
       playersCopy = giveBlind(playersCopy, smallBlind, newCurrentDealerId);
 
-      // for (let player of playersCopy) {
-      //   player.won = false;
-      // }
-
       await sleep(5000);
       setCardsVisible(() => false);
       await sleep(1000);
       setInitialValues(playersCopy, smallBlind, newCurrentDealerId);
       let activePlayers = getNumberOfPlayersInGame(playersCopy);
 
-
-      
       let newTurn = getNextTurn(newCurrentDealerId, playersCopy);
       if (activePlayers === 2) {
         newTurn = newCurrentDealerId as number;
