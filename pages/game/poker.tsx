@@ -12,7 +12,7 @@ import { giveBlind } from "@/lib/poker/poker-logic/functions/blind";
 import { getNextTurn, getPreviousTurn } from "@/lib/poker/poker-logic/functions/turns";
 import { getEvaluation, giveMoneyToWinners, getArrayOfWinners, getResponse } from "@/lib/poker/poker-logic/functions/evaluation";
 import { check} from "@/lib/poker/poker-logic/functions/actions";
-import { checkIfCardsShouldBeDealt, checkIfOnePlayerLeft, checkIfUserLoses, getNumberOfPlayersInGame, getNumberOfActivePlayers } from "@/lib/poker/poker-logic/functions/checks";
+import { checkIfCardsShouldBeDealt, checkIfOnePlayerLeft, checkIfUserLoses, getNumberOfPlayersInGame, getNumberOfActivePlayers, checkForPossibleAction, checkIfThereIsAWinner } from "@/lib/poker/poker-logic/functions/checks";
 import { timeout, sleep } from "@/lib/poker/poker-logic/functions/sleep";
 
 export interface PlayerObject {
@@ -177,8 +177,11 @@ const Poker = (): JSX.Element => {
     turn: NumOrNull, 
     stage: Stage,
     ) => {
+
+
+
       abilityToMove.current = true;
-      
+     
       let playersCopy: Array<PlayerObject> = players.map((player) => {
         return {
           ...player,

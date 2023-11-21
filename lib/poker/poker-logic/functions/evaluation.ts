@@ -64,7 +64,7 @@ export const giveMoneyToWinners = (players: Array<PlayerObject>, winners: Array<
     }
   });
   const moneyToGive = Math.floor(pot / winners.length);
-  console.log('money to give: ',moneyToGive)
+  console.log('money to give: ', moneyToGive)
   const moneyLeft = pot % winners.length;
 
   for (let i = 0; i < winners.length; i++) {
