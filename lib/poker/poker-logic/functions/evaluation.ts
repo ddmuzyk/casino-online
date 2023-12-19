@@ -1,36 +1,36 @@
 import { PlayerObject, EvaledHand } from "@/pages/game/poker";
 import { SUITS, VALUES } from "../poker";
 
-export const getEvaluation = async(player: PlayerObject, communityCards: Array<string>) => {
+// export const getEvaluation = async(player: PlayerObject, communityCards: Array<string>) => {
 
-  const playerCards: Array<string> = [...player.cards];
-  if (!communityCards.length) {
-    // Here I have to make a pseudo card so that the server can evaluate the hand (it can't evaluate 2 cards hand)
-    const suit = SUITS[Math.floor(Math.random() * SUITS.length)];
-    for (let i  = Math.floor(Math.random() * 10); i < VALUES.length; i++) {
-      if (VALUES[i] !== playerCards[0][0] && VALUES[i] !== playerCards[1][0]) {
-        const card = VALUES[i] + suit;
-        playerCards.push(card); 
-        break;
-      }
-    }
-  } else {
-    playerCards.push(...communityCards);
-  }
+//   const playerCards: Array<string> = [...player.cards];
+//   if (!communityCards.length) {
+//     // Here I have to make a pseudo card so that the server can evaluate the hand (it can't evaluate 2 cards hand)
+//     const suit = SUITS[Math.floor(Math.random() * SUITS.length)];
+//     for (let i  = Math.floor(Math.random() * 10); i < VALUES.length; i++) {
+//       if (VALUES[i] !== playerCards[0][0] && VALUES[i] !== playerCards[1][0]) {
+//         const card = VALUES[i] + suit;
+//         playerCards.push(card); 
+//         break;
+//       }
+//     }
+//   } else {
+//     playerCards.push(...communityCards);
+//   }
 
-  const response = await fetch('/api/eval', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      cards: playerCards,
-    })
-  });
-  const data = await response.json();
+//   const response = await fetch('/api/eval', {
+//     method: 'POST',
+//     headers: {
+//       'Content-Type': 'application/json'
+//     },
+//     body: JSON.stringify({
+//       cards: playerCards,
+//     })
+//   });
+//   const data = await response.json();
 
-  return data;
-}
+//   return data;
+// }
 
 const addPseudoCard = (playerCards: Array<string>) => {
   const suit = SUITS[Math.floor(Math.random() * SUITS.length)];
@@ -43,7 +43,7 @@ const addPseudoCard = (playerCards: Array<string>) => {
   }
 }
 
-export const getEvaluationProto = async(players: Array<PlayerObject>, communityCards: Array<string>) => {
+export const getEvaluation = async(players: Array<PlayerObject>, communityCards: Array<string>) => {
   const cards = players.map((player) => {
     return [...player.cards];
   });
@@ -58,7 +58,26 @@ export const getEvaluationProto = async(players: Array<PlayerObject>, communityC
     }
   }
 
-  return cards;
+  const response = await fetch('/api/eval', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(cards)
+  });
+  const data = await response.json();
+
+  return data;
+}
+
+export const assignEvaluations = (players: Array<PlayerObject>, evaluations: Array<EvaledHand>) => {
+  return players.map((player, i) => {
+    return {
+      ...player,
+      cards: [...player.cards],
+      evaledHand: evaluations[i],
+    }
+  });
 }
 
 export const getArrayOfWinners = (players: Array<PlayerObject>) => {
