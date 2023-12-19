@@ -202,10 +202,10 @@ const Poker = (): JSX.Element => {
         if (thereIsAWinner) {
           await onRoundEnd(playersCopy, stage, playerThatBegins.current, thereIsAWinner, actionIsPossible);
         } else if (!actionIsPossible) {
-          console.log('ACTION IS NOT POSSIBLE')
+          // console.log('ACTION IS NOT POSSIBLE')
           await onRoundEnd(playersCopy, stage, playerThatBegins.current, thereIsAWinner, actionIsPossible);
         } else {
-          console.log('GOT HERE')
+          // console.log('GOT HERE')
           const nextTurn = getNextTurn(turn as number, players);
           const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney.current, playerWithBiggestBet.current, playerThatBegins.current as number, playersCopy);
           if (cardsShouldBeDealt) {
@@ -254,7 +254,7 @@ const Poker = (): JSX.Element => {
         resetGameState(playersCopy);
       } else if (!actionIsPossible) {
         setIsShowdown(() => true);
-        console.log('HERE')
+        // console.log('HERE')
         setCardsAreDealt(() => true);
         playersCopy = resetRoundState(playersCopy);
         setPlayers(() => playersCopy);

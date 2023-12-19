@@ -94,7 +94,7 @@ export const getArrayOfWinners = (players: Array<PlayerObject>) => {
   for (let i = 0; i < players.length; i++) {
     let playersHand = players[i].evaledHand as EvaledHand;
 
-    if (!players[i].hasFolded && !players[i].out &&playersHand.value === highestValue) {
+    if (!players[i].hasFolded && !players[i].out && playersHand.value === highestValue) {
       highestHands.push(i);
     }
   }
