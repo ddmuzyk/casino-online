@@ -10,7 +10,7 @@ import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { get } from "http";
 import { giveBlind } from "@/lib/poker/poker-logic/functions/blind";
 import { getNextTurn, getPreviousTurn } from "@/lib/poker/poker-logic/functions/turns";
-import { getEvaluation, getEvaluationProto, giveMoneyToWinners, getArrayOfWinners, getResponse, getTheWinner } from "@/lib/poker/poker-logic/functions/evaluation";
+import { getEvaluation, assignEvaluations, giveMoneyToWinners, getArrayOfWinners, getResponse, getTheWinner } from "@/lib/poker/poker-logic/functions/evaluation";
 import { check} from "@/lib/poker/poker-logic/functions/actions";
 import { checkIfCardsShouldBeDealt, checkIfUserLoses, checkIfUserWins, getNumberOfPlayersInGame, getNumberOfActivePlayers, checkForPossibleAction, checkIfThereIsAWinner } from "@/lib/poker/poker-logic/functions/checks";
 import { timeout, sleep } from "@/lib/poker/poker-logic/functions/sleep";
@@ -128,8 +128,8 @@ const Poker = (): JSX.Element => {
     } else if (!actionIsPossible) {
       await onRoundEnd(playersCopy, stage, playerThatBegins.current, thereIsAWinner, actionIsPossible);
     } else {
-      const evaledHand = await getEvaluation(player, communityCards);
-      player.evaledHand = evaledHand;
+      // const evaledHand = await getEvaluation(players, communityCards);
+      // player.evaledHand = evaledHand;
   
       const nextTurn = getNextTurn(turn as number, players);
       const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney, playerWithBiggestBet, playerThatBegins.current as number, playersCopy);
@@ -154,8 +154,8 @@ const Poker = (): JSX.Element => {
     });
     const player = playersCopy[turn];
     
-    const evaledHand = await getEvaluation(player, communityCards);
-    player.evaledHand = evaledHand;
+    // const evaledHand = await getEvaluation(players, communityCards);
+    // player.evaledHand = evaledHand;
     
     const moneyToCall = biggestBet - player.bet;
     await sleep(1000);
@@ -241,6 +241,8 @@ const Poker = (): JSX.Element => {
       } else if (stage === 'river') {
         setIsShowdown(() => true);
         setCardsAreDealt(() => true);
+        const evaluations = await getEvaluation(playersCopy, communityCards);
+        playersCopy = assignEvaluations(playersCopy, evaluations);
         setPlayers(() => playersCopy);
         await sleep(1000);
         const winners = getArrayOfWinners(playersCopy) ;
@@ -263,10 +265,13 @@ const Poker = (): JSX.Element => {
         setCardsAreDealt(() => true);
         playersCopy = resetRoundState(playersCopy);
         setPlayers(() => playersCopy);
-        dealCommunityCards(communityCards, deck, currentStage);
+        const newCommunityCards = dealCommunityCards(communityCards, deck, currentStage);
+        const evaluations = await getEvaluation(playersCopy, newCommunityCards);
         await sleep(1000);
         // setTurn(() => null)
         // await sleep(1000);
+        playersCopy = assignEvaluations(playersCopy, evaluations);
+        setPlayers(() => playersCopy);
         setTurn(playerThatBegins);
         abilityToMove.current = true;
         setCardsAreDealt(() => false);
@@ -459,6 +464,8 @@ const Poker = (): JSX.Element => {
     setDeck(() => deckCopy);
     setCurrentStage(() => nextStage);
 
+    return communityCardsCopy;
+
   }
   
   const createPlayers = (deck: Array<string>, numOfPlayers: number) => {
@@ -504,7 +511,7 @@ const Poker = (): JSX.Element => {
     setInitialValues(newPlayers, smallBlind, currentDealerId as number);
     setGameInitialized(() => true);
     setTurn(() => newTurn);
-    // setCardsAreDealt(() => false);
+    setCardsAreDealt(() => false);
     // UNCOMMENT THIS TO START THE GAME
   }
 
@@ -519,11 +526,11 @@ const Poker = (): JSX.Element => {
               // console.log(data2.value)
               // console.log(playerThatBegins.current)
               // console.log('table money: ',tableMoney.current)
-              // console.log(players);
-              // console.log(communityCards);
+              console.log(players);
+              console.log(communityCards);
               // console.log('pot: ', pot);
-              const data = await getEvaluationProto(players, communityCards);
-              for (let arr of data) console.log(arr);
+              const data = await getEvaluation(players, communityCards);
+              console.log(data);
             }} 
             className={styles.table}>
             <div className={styles.pot}>Pot: <span className={styles.potValue} key={pot.current}>{pot.current}$</span></div>
