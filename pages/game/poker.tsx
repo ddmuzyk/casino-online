@@ -252,6 +252,7 @@ const Poker = (): JSX.Element => {
       } else if (!actionIsPossible) {
         console.log('HERE')
         setCardsAreDealt(() => true);
+        playersCopy = resetRoundState(playersCopy);
         setPlayers(() => playersCopy);
         setTurn(() => null);
         dealCommunityCards(communityCards, deck, currentStage);
