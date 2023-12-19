@@ -138,24 +138,26 @@ const Poker = (): JSX.Element => {
     let thereIsAWinner = checkIfThereIsAWinner(playersCopy);
     let actionIsPossible = checkForPossibleAction(playersCopy);
 
+
     if (thereIsAWinner) {
       await onRoundEnd(playersCopy, stage, playerThatBegins.current, thereIsAWinner, actionIsPossible);
     } else if (!actionIsPossible) {
       await onRoundEnd(playersCopy, stage, playerThatBegins.current, thereIsAWinner, actionIsPossible);
-    } 
-
-    const evaledHand = await getEvaluation(player, communityCards);
-    player.evaledHand = evaledHand;
-
-    const nextTurn = getNextTurn(turn as number, players);
-    const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney, playerWithBiggestBet, playerThatBegins.current as number, playersCopy);
-
-    if (cardsShouldBeDealt) {
-      onRoundEnd(playersCopy, stage, playerThatBegins.current, thereIsAWinner, actionIsPossible);   
-    } 
-    else {
-      setTurnAndPlayers(playersCopy, nextTurn);
+    } else {
+      const evaledHand = await getEvaluation(player, communityCards);
+      player.evaledHand = evaledHand;
+  
+      const nextTurn = getNextTurn(turn as number, players);
+      const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney, playerWithBiggestBet, playerThatBegins.current as number, playersCopy);
+  
+      if (cardsShouldBeDealt) {
+        onRoundEnd(playersCopy, stage, playerThatBegins.current, thereIsAWinner, actionIsPossible);   
+      } 
+      else {
+        setTurnAndPlayers(playersCopy, nextTurn);
+      }
     }
+
   }
   
   const makeComputerMove = async(turn: number, players: Array<PlayerObject>, biggestBet: number, tableMoney: number, playerWithBiggestBet: NumOrNull, stage: Stage) => {
@@ -196,39 +198,39 @@ const Poker = (): JSX.Element => {
         await onRoundEnd(players, stage, playerThatBegins.current, thereIsAWinner, actionIsPossible);
       } else if (!actionIsPossible) {
         await onRoundEnd(players, stage, playerThatBegins.current, thereIsAWinner, actionIsPossible);
-      }
-     
-      let playersCopy: Array<PlayerObject> = players.map((player) => {
-        return {
-          ...player,
-          cards: [...player.cards],
-          evaledHand: {...player.evaledHand as EvaledHand}
+      } else {
+        let playersCopy: Array<PlayerObject> = players.map((player) => {
+          return {
+            ...player,
+            cards: [...player.cards],
+            evaledHand: {...player.evaledHand as EvaledHand}
+          }
+        });
+        // HERE COMPUTER MAKES A MOVE
+        if (turn && players.length > 0) {
+          playersCopy = await makeComputerMove(turn as number, playersCopy, biggestBet.current, tableMoney.current, playerWithBiggestBet.current, stage);
         }
-      });
-      // HERE COMPUTER MAKES A MOVE
-      if (turn && players.length > 0) {
-        playersCopy = await makeComputerMove(turn as number, playersCopy, biggestBet.current, tableMoney.current, playerWithBiggestBet.current, stage);
+        // HERE COMPUTER MAKES A MOVE
+  
+        thereIsAWinner = checkIfThereIsAWinner(players);
+        actionIsPossible = checkForPossibleAction(players);
+  
+        if (thereIsAWinner) {
+          await onRoundEnd(playersCopy, stage, playerThatBegins.current, thereIsAWinner, actionIsPossible);
+        } else if (!actionIsPossible) {
+          await onRoundEnd(playersCopy, stage, playerThatBegins.current, thereIsAWinner, actionIsPossible);
+        } else {
+          const nextTurn = getNextTurn(turn as number, players);
+          const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney.current, playerWithBiggestBet.current, playerThatBegins.current as number, playersCopy);
+          if (cardsShouldBeDealt) {
+            await onRoundEnd(playersCopy, stage, playerThatBegins.current, thereIsAWinner, actionIsPossible);
+          } 
+          else {
+            setTurnAndPlayers(playersCopy, nextTurn);
+          }
+        }
+        
       }
-      // HERE COMPUTER MAKES A MOVE
-
-      thereIsAWinner = checkIfThereIsAWinner(players);
-      actionIsPossible = checkForPossibleAction(players);
-
-      if (thereIsAWinner) {
-        await onRoundEnd(playersCopy, stage, playerThatBegins.current, thereIsAWinner, actionIsPossible);
-      } else if (!actionIsPossible) {
-        await onRoundEnd(playersCopy, stage, playerThatBegins.current, thereIsAWinner, actionIsPossible);
-      }
-      
-      const nextTurn = getNextTurn(turn as number, players);
-      const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney.current, playerWithBiggestBet.current, playerThatBegins.current as number, playersCopy);
-      if (cardsShouldBeDealt) {
-        await onRoundEnd(playersCopy, stage, playerThatBegins.current, thereIsAWinner, actionIsPossible);
-      } 
-      else {
-        setTurnAndPlayers(playersCopy, nextTurn);
-      }
-
   }
 
   const onRoundEnd = async (players: Array<PlayerObject>, stage: Stage, playerThatBegins: NumOrNull, thereIsAWinner: boolean, actionIsPossible: boolean
