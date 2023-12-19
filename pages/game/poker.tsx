@@ -10,7 +10,7 @@ import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { get } from "http";
 import { giveBlind } from "@/lib/poker/poker-logic/functions/blind";
 import { getNextTurn, getPreviousTurn } from "@/lib/poker/poker-logic/functions/turns";
-import { getEvaluation, giveMoneyToWinners, getArrayOfWinners, getResponse, getTheWinner } from "@/lib/poker/poker-logic/functions/evaluation";
+import { getEvaluation, getEvaluationProto, giveMoneyToWinners, getArrayOfWinners, getResponse, getTheWinner } from "@/lib/poker/poker-logic/functions/evaluation";
 import { check} from "@/lib/poker/poker-logic/functions/actions";
 import { checkIfCardsShouldBeDealt, checkIfUserLoses, checkIfUserWins, getNumberOfPlayersInGame, getNumberOfActivePlayers, checkForPossibleAction, checkIfThereIsAWinner } from "@/lib/poker/poker-logic/functions/checks";
 import { timeout, sleep } from "@/lib/poker/poker-logic/functions/sleep";
@@ -93,7 +93,7 @@ const Poker = (): JSX.Element => {
     playerWithBiggestBet.current = null;
     pot.current = smallBlind*3;
     tableMoney.current = smallBlind*3;
-    biggestBet.current =smallBlind*2;
+    biggestBet.current = smallBlind*2;
     setCommunityCards(() => []);
     setCardsVisible(() => true);
     setCurrentStage(() => 'pre-flop');
@@ -319,11 +319,6 @@ const Poker = (): JSX.Element => {
         return
       }
 
-      // console.log('END')
-      // return
-
-
-
       // Add this to setInitialValues
       setDeck(() => newDeck);
 
@@ -475,7 +470,7 @@ const Poker = (): JSX.Element => {
       newPlayers.push({
         id: i,
         name: `Player${i}`,
-        money: 1000,
+        money: i == 0 ? 2000 : 1000,
         cards: playerCards as Array<string>,
         action: '-',
         evaledHand: {} as EvaledHand,
@@ -495,7 +490,7 @@ const Poker = (): JSX.Element => {
   // Function that starts the game
   const initializeGame = (deck: Array<string>) => {
     const newDeck = [...deck]
-    const newPlayers: Array<PlayerObject> = giveBlind(createPlayers(newDeck, 3), smallBlind, currentDealerId as number);
+    const newPlayers: Array<PlayerObject> = giveBlind(createPlayers(newDeck, 2), smallBlind, currentDealerId as number);
     let newTurn = getNextTurn(currentDealerId as number, newPlayers);
     let activePlayers = getNumberOfPlayersInGame(newPlayers);
     if (activePlayers === 2) {
@@ -509,7 +504,8 @@ const Poker = (): JSX.Element => {
     setInitialValues(newPlayers, smallBlind, currentDealerId as number);
     setGameInitialized(() => true);
     setTurn(() => newTurn);
-    setCardsAreDealt(() => false);
+    // setCardsAreDealt(() => false);
+    // UNCOMMENT THIS TO START THE GAME
   }
 
   return (
@@ -523,9 +519,11 @@ const Poker = (): JSX.Element => {
               // console.log(data2.value)
               // console.log(playerThatBegins.current)
               // console.log('table money: ',tableMoney.current)
-              console.log(players);
-              console.log(communityCards);
-              console.log('pot: ', pot);
+              // console.log(players);
+              // console.log(communityCards);
+              // console.log('pot: ', pot);
+              const data = await getEvaluationProto(players, communityCards);
+              for (let arr of data) console.log(arr);
             }} 
             className={styles.table}>
             <div className={styles.pot}>Pot: <span className={styles.potValue} key={pot.current}>{pot.current}$</span></div>
