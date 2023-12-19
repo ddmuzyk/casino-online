@@ -56,27 +56,15 @@ const Poker = (): JSX.Element => {
   const [activePlayers, setActivePlayers] = useState<Array<PlayerObject>>([]); // Players that didn't fold yet
   const [deck, setDeck] = useState(decky); // Deck of cards in play
   const [smallBlind, setSmallBlind] = useState<number>(5); // Small blind
-  // const [bigBlind, setBigBlind] = useState<number>(2); // Big blind
   const [playerWithBigBlind, setPlayerWithBigBlind] = useState<number>(10); // Id of the player with the big blind 
-  // const [biggestBet, setBiggestBet] = useState(0); // Biggest bet on the table
-  // const [playerWithBiggestBet, setPlayerWithBiggestBet] = useState<NumOrNull>(null); // Id of the player with the biggest bet
-  // const [playerThatShouldntMove, setPlayerThatShouldntMove] = useState<number>(10); // Id of the player that shouldn't move (the player raised and everyone called him, so he can't do anything anymore)
-  // const [pot, setPot] = useState(0); // Pot of money on the table
-  const [currentDealerId, setCurrentDealerId] = useState<NumOrNull>(1); // Id of the current dealer
-  // const [playerThatBegins, setPlayerThatBegins] = useState<NumOrNull>(null); // Id of the player that begins the game (if current dealer has folded)
-  // const [tableMoney, setTableMoney] = useState(0); // Money on the table in the current round
+  const [currentDealerId, setCurrentDealerId] = useState<NumOrNull>(0); // Id of the current dealer
   const [turn, setTurn] = useState<NumOrNull>(null); // Id of the player whose turn it is, randomly chosen at the start of the game
   const [communityCards, setCommunityCards] = useState<Array<string>>([]); // Community cards on the table
   const [cardsVisible, setCardsVisible] = useState(true); // Boolean that checks if the cards are visible or not
   const [currentStage, setCurrentStage] = useState<Stage>('pre-flop'); // Current stage of the game
   const [isShowdown, setIsShowdown] = useState(false); // Boolean that checks if the game is in the showdown stage
-  // const [didGameStart, setDidGameStart] = useState(false); // Boolean that checks if the game has started
-  // const [cardsClassname, setCardsClassname] = useState('hidden'); // Classname of the cards (hidden or visible)
-  // const [isVisible, setIsVisible] = useState(false); 
   const [cardsAreDealt, setCardsAreDealt] = useState(true); // Boolean that checks if the cards are dealt or not
-  // const [triggerStartGameLoop, setTriggerStartGameLoop] = useState(false); // Boolean that triggers the game loop
   const [isComputerMove, setIsComputerMove] = useState(turn === 0 ? false : true); // Boolean that checks if the computer is making a move
-  // const [winners, setWinners] = useState<Array<number>>([]); // Id of the winner of the game
   const [actionVisibility, setActionVisibility] = useState<Array<boolean>>([]); // Boolean that checks if the actions are visible or not
   const [betValue, setBetValue] = useState("0"); // Value of the bet
 
@@ -97,10 +85,6 @@ const Poker = (): JSX.Element => {
     // console.log('players changed to: ', players);
     if ((turn !== 0 && players.length && !cardsAreDealt)) startGameLoop(players, turn, currentStage,);
   }, [players, cardsAreDealt]);
-
-  // useEffect(() => {
-  //   // console.log('isComputerMove changed to: ', isComputerMove)
-  // }, [isComputerMove]);
   
   const setInitialValues = (players: Array<PlayerObject>, smallBlind: number, newCurrentDealerId: number) => {
     abilityToMove.current = true;
@@ -157,7 +141,6 @@ const Poker = (): JSX.Element => {
         setTurnAndPlayers(playersCopy, nextTurn);
       }
     }
-
   }
   
   const makeComputerMove = async(turn: number, players: Array<PlayerObject>, biggestBet: number, tableMoney: number, playerWithBiggestBet: NumOrNull, stage: Stage) => {
@@ -212,14 +195,16 @@ const Poker = (): JSX.Element => {
         }
         // HERE COMPUTER MAKES A MOVE
   
-        thereIsAWinner = checkIfThereIsAWinner(players);
-        actionIsPossible = checkForPossibleAction(players);
+        thereIsAWinner = checkIfThereIsAWinner(playersCopy);
+        actionIsPossible = checkForPossibleAction(playersCopy);
   
         if (thereIsAWinner) {
           await onRoundEnd(playersCopy, stage, playerThatBegins.current, thereIsAWinner, actionIsPossible);
         } else if (!actionIsPossible) {
+          console.log('ACTION IS NOT POSSIBLE')
           await onRoundEnd(playersCopy, stage, playerThatBegins.current, thereIsAWinner, actionIsPossible);
         } else {
+          console.log('GOT HERE')
           const nextTurn = getNextTurn(turn as number, players);
           const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney.current, playerWithBiggestBet.current, playerThatBegins.current as number, playersCopy);
           if (cardsShouldBeDealt) {
@@ -229,7 +214,6 @@ const Poker = (): JSX.Element => {
             setTurnAndPlayers(playersCopy, nextTurn);
           }
         }
-        
       }
   }
 
@@ -268,6 +252,7 @@ const Poker = (): JSX.Element => {
       } else if (!actionIsPossible) {
         console.log('HERE')
         setCardsAreDealt(() => true);
+        setPlayers(() => playersCopy);
         setTurn(() => null);
         dealCommunityCards(communityCards, deck, currentStage);
         await sleep(1000);
@@ -288,7 +273,6 @@ const Poker = (): JSX.Element => {
   }
 
   const resetRoundState = (players: Array<PlayerObject>) => {
-    // setPot(() => pot + tableMoney);
     tableMoney.current = 0;
     playerWithBiggestBet.current = null;
     biggestBet.current = 0;
@@ -316,16 +300,7 @@ const Poker = (): JSX.Element => {
         }
       });
 
-      if (checkIfUserLoses(playersCopy[0])) {
-        console.log('You lost');
-        return
-      } else if (checkIfUserWins(playersCopy)) {
-        console.log('You won');
-        return
-      }
-
       const newDeck = shuffleCards(baseDeck);
-
       for (let player of playersCopy) {
         if (player.money > 0) {
           player.cards = [newDeck.pop() as string, newDeck.pop() as string]
@@ -334,6 +309,19 @@ const Poker = (): JSX.Element => {
           player.out = true;
         }
       }
+
+      if (checkIfUserLoses(playersCopy[0])) {
+        console.log('You lost');
+        return
+      } else if (checkIfUserWins(playersCopy)) {
+        console.log('You won');
+        return
+      }
+
+      // console.log('END')
+      // return
+
+
 
       // Add this to setInitialValues
       setDeck(() => newDeck);
