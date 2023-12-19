@@ -120,7 +120,7 @@ const Poker = (): JSX.Element => {
     const player = playersCopy[turn];
 
     let thereIsAWinner = checkIfThereIsAWinner(playersCopy);
-    let actionIsPossible = checkForPossibleAction(playersCopy);
+    let actionIsPossible = checkForPossibleAction(playersCopy, biggestBet);
 
 
     if (thereIsAWinner) {
@@ -175,7 +175,7 @@ const Poker = (): JSX.Element => {
       abilityToMove.current = true;
 
       let thereIsAWinner = checkIfThereIsAWinner(players);
-      let actionIsPossible = checkForPossibleAction(players);
+      let actionIsPossible = checkForPossibleAction(players, biggestBet.current);
 
       if (thereIsAWinner) {
         await onRoundEnd(players, stage, playerThatBegins.current, thereIsAWinner, actionIsPossible);
@@ -196,7 +196,7 @@ const Poker = (): JSX.Element => {
         // HERE COMPUTER MAKES A MOVE
   
         thereIsAWinner = checkIfThereIsAWinner(playersCopy);
-        actionIsPossible = checkForPossibleAction(playersCopy);
+        actionIsPossible = checkForPossibleAction(playersCopy, biggestBet.current);
   
         if (thereIsAWinner) {
           await onRoundEnd(playersCopy, stage, playerThatBegins.current, thereIsAWinner, actionIsPossible);

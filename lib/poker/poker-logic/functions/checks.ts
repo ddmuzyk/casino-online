@@ -64,20 +64,23 @@ export const checkForCalls = (players: Array<PlayerObject>) => {
   return false;
 }
 
-export const checkForPossibleAction = (players: Array<PlayerObject>) => {
+export const checkForPossibleAction = (players: Array<PlayerObject>, biggestBet: number) => {
 
-  let possibleBets = 0
-  let placedBets = 0;
+  let playersWithMoney = 0
+  let possibleCalls = 0;
+  let allInPlayers = 0;
+  let activePlayers = getNumberOfActivePlayers(players);
 
   for (let player of players) {
-    if (!player.hasFolded && player.money > 0 && !player.out) possibleBets++;
-    if (player.bet > 0) placedBets++;
+    if (!player.hasFolded && player.money > 0 && !player.out) playersWithMoney++;
+    if (player.money === 0 && player.bet > 0) allInPlayers++;
+    if (player.money > 0 && player.bet < biggestBet && !player.hasFolded && !player.out) possibleCalls++;
   }
 
-  if (placedBets > 0) {
-    return possibleBets > 0;
+  if (possibleCalls) {
+    return true;
   } else {
-    return possibleBets > 1;
+    return playersWithMoney > 1;
   }
 }
 
