@@ -24,12 +24,41 @@ export const getEvaluation = async(player: PlayerObject, communityCards: Array<s
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      cards: playerCards, 
+      cards: playerCards,
     })
   });
   const data = await response.json();
 
   return data;
+}
+
+const addPseudoCard = (playerCards: Array<string>) => {
+  const suit = SUITS[Math.floor(Math.random() * SUITS.length)];
+  for (let i  = Math.floor(Math.random() * 10); i < VALUES.length; i++) {
+    if (VALUES[i] !== playerCards[0][0] && VALUES[i] !== playerCards[1][0]) {
+      const card = VALUES[i] + suit;
+      playerCards.push(card); 
+      break;
+    }
+  }
+}
+
+export const getEvaluationProto = async(players: Array<PlayerObject>, communityCards: Array<string>) => {
+  const cards = players.map((player) => {
+    return [...player.cards];
+  });
+
+  if (!communityCards.length) {
+    for (let i = 0; i < cards.length; i++) {
+      addPseudoCard(cards[i]);
+    }
+  } else {
+    for (let i = 0; i < cards.length; i++) {
+      cards[i].push(...communityCards);
+    }
+  }
+
+  return cards;
 }
 
 export const getArrayOfWinners = (players: Array<PlayerObject>) => {
