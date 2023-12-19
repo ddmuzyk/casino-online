@@ -67,6 +67,7 @@ const Poker = (): JSX.Element => {
   const [isComputerMove, setIsComputerMove] = useState(turn === 0 ? false : true); // Boolean that checks if the computer is making a move
   const [actionVisibility, setActionVisibility] = useState<Array<boolean>>([]); // Boolean that checks if the actions are visible or not
   const [betValue, setBetValue] = useState("0"); // Value of the bet
+  const [numberOfPlayers, setNumberOfPlayers] = useState(3); // Number of players in the game
 
   const abilityToMove = useRef(true); // Ref that checks if the player can move or not
   const biggestBet = useRef<number>(0); // Ref that checks the biggest bet on the table
@@ -201,10 +202,10 @@ const Poker = (): JSX.Element => {
         if (thereIsAWinner) {
           await onRoundEnd(playersCopy, stage, playerThatBegins.current, thereIsAWinner, actionIsPossible);
         } else if (!actionIsPossible) {
-          console.log('ACTION IS NOT POSSIBLE')
+          // console.log('ACTION IS NOT POSSIBLE')
           await onRoundEnd(playersCopy, stage, playerThatBegins.current, thereIsAWinner, actionIsPossible);
         } else {
-          console.log('GOT HERE')
+          // console.log('GOT HERE')
           const nextTurn = getNextTurn(turn as number, players);
           const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney.current, playerWithBiggestBet.current, playerThatBegins.current as number, playersCopy);
           if (cardsShouldBeDealt) {
@@ -252,7 +253,8 @@ const Poker = (): JSX.Element => {
         setPlayers(() => playersCopy);
         resetGameState(playersCopy);
       } else if (!actionIsPossible) {
-        console.log('HERE')
+        setIsShowdown(() => true);
+        // console.log('HERE')
         setCardsAreDealt(() => true);
         playersCopy = resetRoundState(playersCopy);
         setPlayers(() => playersCopy);
@@ -497,7 +499,7 @@ const Poker = (): JSX.Element => {
   // Function that starts the game
   const initializeGame = (deck: Array<string>) => {
     const newDeck = [...deck]
-    const newPlayers: Array<PlayerObject> = giveBlind(createPlayers(newDeck, 2), smallBlind, currentDealerId as number);
+    const newPlayers: Array<PlayerObject> = giveBlind(createPlayers(newDeck, numberOfPlayers), smallBlind, currentDealerId as number);
     let newTurn = getNextTurn(currentDealerId as number, newPlayers);
     let activePlayers = getNumberOfPlayersInGame(newPlayers);
     if (activePlayers === 2) {
