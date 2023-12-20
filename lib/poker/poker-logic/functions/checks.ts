@@ -17,8 +17,6 @@ export const checkIfUserWins = (players: Array<PlayerObject>) => {
   return checkIfThereIsAWinner(players) && !players[0].hasFolded && !players[0].out;
 }
 
-
-
 export const checkIfCardsShouldBeDealt = (
   turn: number, 
   stage: Stage, 
@@ -69,7 +67,6 @@ export const checkForPossibleAction = (players: Array<PlayerObject>, biggestBet:
   let playersWithMoney = 0
   let possibleCalls = 0;
   let allInPlayers = 0;
-  let activePlayers = getNumberOfActivePlayers(players);
 
   for (let player of players) {
     if (!player.hasFolded && player.money > 0 && !player.out) playersWithMoney++;
