@@ -33,14 +33,18 @@ import { SUITS, VALUES } from "../poker";
 // }
 
 const addPseudoCard = (playerCards: Array<string>) => {
+  const cardsCopy = [...playerCards];
   const suit = SUITS[Math.floor(Math.random() * SUITS.length)];
   for (let i  = Math.floor(Math.random() * 10); i < VALUES.length; i++) {
     if (VALUES[i] !== playerCards[0][0] && VALUES[i] !== playerCards[1][0]) {
       const card = VALUES[i] + suit;
-      playerCards.push(card); 
+      console.log('pseudo cards: ', cardsCopy);
+      cardsCopy.push(card); 
       break;
     }
   }
+
+  return cardsCopy;
 }
 
 export const getEvaluation = async(players: Array<PlayerObject>, communityCards: Array<string>) => {
@@ -50,7 +54,7 @@ export const getEvaluation = async(players: Array<PlayerObject>, communityCards:
 
   if (!communityCards.length) {
     for (let i = 0; i < cards.length; i++) {
-      addPseudoCard(cards[i]);
+      cards[i] = addPseudoCard(cards[i]);
     }
   } else {
     for (let i = 0; i < cards.length; i++) {

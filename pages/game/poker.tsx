@@ -118,7 +118,6 @@ const Poker = (): JSX.Element => {
         evaledHand: {...player.evaledHand as EvaledHand}
       }
     });
-    const player = playersCopy[turn];
 
     let thereIsAWinner = checkIfThereIsAWinner(playersCopy);
     let actionIsPossible = checkForPossibleAction(playersCopy, biggestBet);
@@ -129,8 +128,6 @@ const Poker = (): JSX.Element => {
     } else if (!actionIsPossible) {
       await onRoundEnd(playersCopy, stage, playerThatBegins.current, thereIsAWinner, actionIsPossible);
     } else {
-      // const evaledHand = await getEvaluation(players, communityCards);
-      // player.evaledHand = evaledHand;
   
       const nextTurn = getNextTurn(turn as number, players);
       const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney, playerWithBiggestBet, playerThatBegins.current as number, playersCopy);
@@ -155,9 +152,6 @@ const Poker = (): JSX.Element => {
     });
     const player = playersCopy[turn];
     
-    // const evaledHand = await getEvaluation(players, communityCards);
-    // player.evaledHand = evaledHand;
-    
     const moneyToCall = biggestBet - player.bet;
     await sleep(1000);
     if (moneyToCall > 0) {
@@ -175,7 +169,6 @@ const Poker = (): JSX.Element => {
       
       abilityToMove.current = true;
 
-      
       let playersCopy: Array<PlayerObject> = players.map((player) => {
         return {
           ...player,
@@ -195,10 +188,8 @@ const Poker = (): JSX.Element => {
       if (thereIsAWinner) {
         await onRoundEnd(playersCopy, stage, playerThatBegins.current, thereIsAWinner, actionIsPossible);
       } else if (!actionIsPossible) {
-        // console.log('ACTION IS NOT POSSIBLE')
         await onRoundEnd(playersCopy, stage, playerThatBegins.current, thereIsAWinner, actionIsPossible);
       } else {
-        // console.log('GOT HERE')
         const nextTurn = getNextTurn(turn as number, players);
         const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney.current, playerWithBiggestBet.current, playerThatBegins.current as number, playersCopy);
         if (cardsShouldBeDealt) {
@@ -263,8 +254,6 @@ const Poker = (): JSX.Element => {
         const newCommunityCards = dealCommunityCards(communityCards, deck, currentStage);
         const evaluations = await getEvaluation(playersCopy, newCommunityCards);
         await sleep(1000);
-        // setTurn(() => null)
-        // await sleep(1000);
         playersCopy = assignEvaluations(playersCopy, evaluations);
         setPlayers(() => playersCopy);
         setTurn(playerThatBegins);
@@ -323,7 +312,8 @@ const Poker = (): JSX.Element => {
       setDeck(() => newDeck);
 
       const newCurrentDealerId = getNextTurn(currentDealerId as number, playersCopy);
-      playersCopy = giveBlind(playersCopy, smallBlind, newCurrentDealerId);
+      const evaluations = await getEvaluation(playersCopy, []);
+      playersCopy = assignEvaluations(giveBlind(playersCopy, smallBlind, newCurrentDealerId), evaluations);
 
       await sleep(5000);
       setCardsVisible(() => false);
@@ -490,9 +480,11 @@ const Poker = (): JSX.Element => {
   }
 
   // Function that starts the game
-  const initializeGame = (deck: Array<string>) => {
+  const initializeGame = async(deck: Array<string>) => {
     const newDeck = [...deck]
-    const newPlayers: Array<PlayerObject> = giveBlind(createPlayers(newDeck, numberOfPlayers), smallBlind, currentDealerId as number);
+    let newPlayers: Array<PlayerObject> = giveBlind(createPlayers(newDeck, numberOfPlayers), smallBlind, currentDealerId as number);
+    const evaluations = await getEvaluation(newPlayers, communityCards);
+    newPlayers = assignEvaluations(newPlayers, evaluations);
     let newTurn = getNextTurn(currentDealerId as number, newPlayers);
     let activePlayers = getNumberOfPlayersInGame(newPlayers);
     if (activePlayers === 2) {
@@ -515,15 +507,8 @@ const Poker = (): JSX.Element => {
       <div className={styles.game}>
         <div className={styles.tableContainer}>
           <div onClick={async () => {
-              // const data = await getResponse(['As', 'Kd', 'Jc', 'Th', '9s', '7s', '3c']);
-              // console.log(data.value)
-              // const data2 = await getResponse(['As', 'Kd', 'Jc', 'Th', '8s', '6s', '3c']);
-              // console.log(data2.value)
-              // console.log(playerThatBegins.current)
-              // console.log('table money: ',tableMoney.current)
               console.log(players);
               console.log(communityCards);
-              // console.log('pot: ', pot);
               const data = await getEvaluation(players, communityCards);
               console.log(data);
             }} 
@@ -588,8 +573,7 @@ const Poker = (): JSX.Element => {
                 makeUserMove(turn as number, newPlayers, biggestBet.current, tableMoney.current, playerWithBiggestBet.current, currentStage, pot.current)
               }
             }
-            }
-            className={styles.playerBtn}>Fold</button>
+            } className={styles.playerBtn}>Fold</button>
           </div>
           <div>
             <button onClick={() => {
@@ -598,7 +582,6 @@ const Poker = (): JSX.Element => {
                 makeUserMove(turn as number, newPlayers, biggestBet.current, tableMoney.current, playerWithBiggestBet.current, currentStage, pot.current)
               };
             }} className={styles.playerBtn}>Check</button>
-
           </div>
           <div>
             <button onClick={() => {
@@ -607,7 +590,6 @@ const Poker = (): JSX.Element => {
                 makeUserMove(turn as number, newPlayers, biggestBet.current, tableMoney.current, playerWithBiggestBet.current, currentStage, pot.current)
               }
             }} className={styles.playerBtn}>Call</button>
-
           </div>
           <div>
             <button onClick={() => {
