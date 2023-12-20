@@ -57,7 +57,7 @@ const Poker = (): JSX.Element => {
   const [deck, setDeck] = useState(decky); // Deck of cards in play
   const [smallBlind, setSmallBlind] = useState<number>(5); // Small blind
   const [playerWithBigBlind, setPlayerWithBigBlind] = useState<number>(10); // Id of the player with the big blind 
-  const [currentDealerId, setCurrentDealerId] = useState<NumOrNull>(0); // Id of the current dealer
+  const [currentDealerId, setCurrentDealerId] = useState<NumOrNull>(2); // Id of the current dealer
   const [turn, setTurn] = useState<NumOrNull>(null); // Id of the player whose turn it is, randomly chosen at the start of the game
   const [communityCards, setCommunityCards] = useState<Array<string>>([]); // Community cards on the table
   const [cardsVisible, setCardsVisible] = useState(true); // Boolean that checks if the cards are visible or not
@@ -577,7 +577,7 @@ const Poker = (): JSX.Element => {
           </div>
           <div>
             <button onClick={() => {
-              if (turn === 0 && abilityToMove.current) {
+              if (turn === 0 && abilityToMove.current && players[0].bet === biggestBet.current) {
                 const newPlayers = check(turn as number, players, playerWithBiggestBet.current, currentStage);
                 makeUserMove(turn as number, newPlayers, biggestBet.current, tableMoney.current, playerWithBiggestBet.current, currentStage, pot.current)
               };
@@ -585,7 +585,7 @@ const Poker = (): JSX.Element => {
           </div>
           <div>
             <button onClick={() => {
-              if (turn === 0 && abilityToMove.current) {
+              if (turn === 0 && abilityToMove.current && players[0].bet < biggestBet.current) {
                 const newPlayers = call(turn as number, players, biggestBet.current, biggestBet.current - players[turn as number].bet, tableMoney.current)
                 makeUserMove(turn as number, newPlayers, biggestBet.current, tableMoney.current, playerWithBiggestBet.current, currentStage, pot.current)
               }
