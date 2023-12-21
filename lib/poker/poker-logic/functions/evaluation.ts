@@ -1,44 +1,12 @@
 import { PlayerObject, EvaledHand } from "@/pages/game/poker";
 import { SUITS, VALUES } from "../poker";
 
-// export const getEvaluation = async(player: PlayerObject, communityCards: Array<string>) => {
-
-//   const playerCards: Array<string> = [...player.cards];
-//   if (!communityCards.length) {
-//     // Here I have to make a pseudo card so that the server can evaluate the hand (it can't evaluate 2 cards hand)
-//     const suit = SUITS[Math.floor(Math.random() * SUITS.length)];
-//     for (let i  = Math.floor(Math.random() * 10); i < VALUES.length; i++) {
-//       if (VALUES[i] !== playerCards[0][0] && VALUES[i] !== playerCards[1][0]) {
-//         const card = VALUES[i] + suit;
-//         playerCards.push(card); 
-//         break;
-//       }
-//     }
-//   } else {
-//     playerCards.push(...communityCards);
-//   }
-
-//   const response = await fetch('/api/eval', {
-//     method: 'POST',
-//     headers: {
-//       'Content-Type': 'application/json'
-//     },
-//     body: JSON.stringify({
-//       cards: playerCards,
-//     })
-//   });
-//   const data = await response.json();
-
-//   return data;
-// }
-
 const addPseudoCard = (playerCards: Array<string>) => {
   const cardsCopy = [...playerCards];
   const suit = SUITS[Math.floor(Math.random() * SUITS.length)];
   for (let i  = Math.floor(Math.random() * 10); i < VALUES.length; i++) {
     if (VALUES[i] !== playerCards[0][0] && VALUES[i] !== playerCards[1][0]) {
       const card = VALUES[i] + suit;
-      console.log('pseudo cards: ', cardsCopy);
       cardsCopy.push(card); 
       break;
     }
@@ -116,7 +84,6 @@ export const giveMoneyToWinners = (players: Array<PlayerObject>, winners: Array<
     }
   });
   const moneyToGive = Math.floor(pot / winners.length);
-  // console.log('money to give: ', moneyToGive)
   const moneyLeft = pot % winners.length;
 
   for (let i = 0; i < winners.length; i++) {
@@ -126,7 +93,6 @@ export const giveMoneyToWinners = (players: Array<PlayerObject>, winners: Array<
   }
 
   if (moneyLeft) {
-    // const moneyToGive = Math.floor(moneyLeft / winners.length);
     for (let i = 0; i < winners.length; i++) {
       newPlayers[winners[i]].money += moneyLeft;
     }

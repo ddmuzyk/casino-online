@@ -1,4 +1,5 @@
 import { Stage, PlayerObject, NumOrNull, EvaledHand } from "@/pages/game/poker";
+import { getNextTurn } from "./turns";
 
 // export const checkIfOnePlayerLeft = (players: Array<PlayerObject>) => {
 //   let brokePlayers = 0;
@@ -22,10 +23,10 @@ export const checkIfCardsShouldBeDealt = (
   stage: Stage, 
   tableMoney: number,
   playerWithBiggestBet: NumOrNull,
-  playerThatBegins: number,
+  currentDealerId: number,
   players: Array<PlayerObject>
   ) => {
-    return (turn === playerWithBiggestBet || (!tableMoney && turn === playerThatBegins));
+    return (turn === playerWithBiggestBet || (!tableMoney && turn === getNextTurn(currentDealerId, players)));
 }
 
 const checkForDuplicates = (deck: Array<string>, players: Array<PlayerObject>) => {
