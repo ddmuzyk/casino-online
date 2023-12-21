@@ -140,22 +140,21 @@ $stats-background: rgba(27, 27, 27, 0.89);
   }
 }
 
-@media screen and (max-width: 1290px) {
-  .image {
-    width: 6vw;
-  }
+// @media screen and (max-width: 1290px) {
+//   .image {
+//     width: 6vw;
+//   }
 
-  .player-container {
-    font-size: 1.2vw;
-    width: auto;
-  }
+//   .player-container {
+//     font-size: 1.2vw;
+//     width: auto;
+//   }
 
-  .bet {
-    font-size: 1.2vw;
-    // height: 10vw;
-  }
+//   .bet {
+//     font-size: 1.2vw;
+//   }
 
-  .player0 {
-    transform: translate(50%, 30%);
-  }
-}
+//   .player0 {
+//     transform: translate(50%, 30%);
+//   }
+// }
