@@ -9,6 +9,8 @@ import { decky } from "@/lib/poker/poker-logic/poker";
 //     expect(1).toBe(1)
 //   })
 // });
-test('', () => {
-  expect(1).toBe(1)
-})
+describe('giveMoneyToWinners', () => {
+  test('', () => {
+    expect(1).toBe(1)
+  })
+})  

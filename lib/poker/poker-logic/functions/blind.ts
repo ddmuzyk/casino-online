@@ -16,11 +16,16 @@ export const giveBlind = (players: Array<PlayerObject>, smallBlind: number, curr
 
   const smallBlindTurn = activePlayers > 2 ? getNextTurn(currentDealerId, newPlayers) : currentDealerId;
   const bigBlindTurn = getNextTurn(smallBlindTurn, newPlayers);
+  const smallBlindPlayer = newPlayers[smallBlindTurn];
+  const bigBlindPlayer = newPlayers[bigBlindTurn];
 
-  newPlayers[smallBlindTurn].money -= smallBlind;
-  newPlayers[smallBlindTurn].bet += smallBlind;
-  newPlayers[bigBlindTurn].money -= smallBlind*2;
-  newPlayers[bigBlindTurn].bet += smallBlind*2;
+  const smallBet = smallBlindPlayer.money >= smallBlind ? smallBlind : smallBlindPlayer.money;
+  const bigBet = bigBlindPlayer.money >= smallBlind*2 ? smallBlind*2 : bigBlindPlayer.money;
+
+  smallBlindPlayer.money -= smallBet;
+  smallBlindPlayer.bet += smallBet;
+  bigBlindPlayer.money -= bigBet;
+  bigBlindPlayer.bet += bigBet;
   
   return newPlayers;
 }

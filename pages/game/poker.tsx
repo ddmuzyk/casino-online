@@ -92,10 +92,12 @@ const Poker = (): JSX.Element => {
     abilityToMove.current = true;
     setCurrentDealerId(() => newCurrentDealerId);
     // playerThatBegins.current = getNextTurn(newCurrentDealerId, players);
+    const currentPot = players.reduce((acc, player) => acc + player.bet, 0);
+    const currentBiggestBet = players.reduce((acc, player) => player.bet > acc ? player.bet : acc, 0);
     playerWithBiggestBet.current = null;
-    pot.current = smallBlind*3;
-    tableMoney.current = smallBlind*3;
-    biggestBet.current = smallBlind*2;
+    pot.current = currentPot;
+    tableMoney.current = currentPot;
+    biggestBet.current = currentBiggestBet;
     setCommunityCards(() => []);
     setCardsVisible(() => true);
     setCurrentStage(() => 'pre-flop');
@@ -463,6 +465,7 @@ const Poker = (): JSX.Element => {
       newPlayers.push({
         id: i,
         name: `Player${i}`,
+        // money: 3,
         money: i == 0 ? 2000 : 1000,
         cards: playerCards as Array<string>,
         action: '-',
