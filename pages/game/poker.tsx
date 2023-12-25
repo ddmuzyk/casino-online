@@ -58,7 +58,7 @@ const Poker = (): JSX.Element => {
   const [deck, setDeck] = useState(decky); // Deck of cards in play
   const [smallBlind, setSmallBlind] = useState<number>(5); // Small blind
   const [playerWithBigBlind, setPlayerWithBigBlind] = useState<number>(10); // Id of the player with the big blind 
-  const [currentDealerId, setCurrentDealerId] = useState<number>(2); // Id of the current dealer
+  const [currentDealerId, setCurrentDealerId] = useState<number>(0); // Id of the current dealer
   const [turn, setTurn] = useState<NumOrNull>(null); // Id of the player whose turn it is, randomly chosen at the start of the game
   const [communityCards, setCommunityCards] = useState<Array<string>>([]); // Community cards on the table
   const [cardsVisible, setCardsVisible] = useState(true); // Boolean that checks if the cards are visible or not
@@ -456,7 +456,7 @@ const Poker = (): JSX.Element => {
   
   const createPlayers = (deck: Array<string>, numOfPlayers: number) => {
     const newDeck = [...deck];
-    const actions: Array<boolean> = [];
+    // const actions: Array<boolean> = [];
     const newPlayers: Array<PlayerObject> = [];
     for (let i = 0; i < numOfPlayers; i++) {
       let playerCards = [newDeck.pop(), newDeck.pop()];
@@ -474,7 +474,6 @@ const Poker = (): JSX.Element => {
         won: false,
         out: false,
       })
-      actions.push(false);
     }
     setDeck(() => newDeck);
     return newPlayers;
@@ -494,7 +493,7 @@ const Poker = (): JSX.Element => {
       while (newPlayers[newTurn].bet > 0) {
         newTurn = getNextTurn(newTurn as number, newPlayers);
       }
-  }
+    }
     setPlayers(() => newPlayers);
     setInitialValues(newPlayers, smallBlind, currentDealerId as number);
     setGameInitialized(() => true);
