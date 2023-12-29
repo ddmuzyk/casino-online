@@ -5,7 +5,7 @@ import { PlayerObject, EvaledHand } from '@/pages/game/poker.tsx';
 import { decky } from "@/lib/poker/poker-logic/poker";
 //
 
-const mockCreatePlayers = (numberOfPlayers: number, currentDealerId: number, moneyAmount: number) => {
+export const mockCreatePlayers = (numberOfPlayers: number, currentDealerId: number, moneyAmount: number) => {
   const mockPlayers: PlayerObject[] = [] 
   const mockDeck = [...decky]
   for (let i = 0; i < numberOfPlayers; i++) {

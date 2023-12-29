@@ -241,6 +241,11 @@ const Poker = (): JSX.Element => {
         resetGameState(playersCopy);
       } else if (!actionIsPossible) {
         setIsShowdown(() => true);
+        if (stage === "river" as Stage) {
+          console.log('HERE')
+          const evaluations = await getEvaluation(playersCopy, communityCards);
+          playersCopy = assignEvaluations(playersCopy, evaluations);
+        }
         // console.log('HERE')
         setCardsAreDealt(() => true);
         playersCopy = resetRoundState(playersCopy);
@@ -523,15 +528,7 @@ const Poker = (): JSX.Element => {
                 <CSSTransition
                 in={communityCards.length > 0}
                 timeout={200}
-                classNames={{
-                  appearDone: styles.imageAppearDone,
-                  enterActive: styles.imageEnterActive,
-                  enterDone: styles.imageEnterDone,
-                  exit: styles.imageExit,
-                  exitActive: styles.imageExitActive,
-                  exitDone: styles.imageExitDone,
-                }
-                }
+                classNames={{appearDone: styles.imageAppearDone, enterActive: styles.imageEnterActive, enterDone: styles.imageEnterDone, exit: styles.imageExit, exitActive: styles.imageExitActive, exitDone: styles.imageExitDone,}}
                 key={id}
                 appear={true}
                 >
