@@ -4,6 +4,7 @@ import styles from './poker.module.scss';
 import Layout from "@/components/layout";
 import Player from "@/components/poker/Player/Player";
 import Slider from "@/components/poker/Slider/Slider";
+import PopUpWindow from "@/components/poker/PopUpWindow/PopUpWindow";
 import { shuffleCards, cards, decky, SUITS, VALUES } from "@/lib/poker/poker-logic/poker.ts";
 import { time } from "console";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
@@ -69,6 +70,7 @@ const Poker = (): JSX.Element => {
   const [actionVisibility, setActionVisibility] = useState<Array<boolean>>([]); // Boolean that checks if the actions are visible or not
   const [betValue, setBetValue] = useState("0"); // Value of the bet
   const [numberOfPlayers, setNumberOfPlayers] = useState(3); // Number of players in the game
+  const [gameOver, setGameOver] = useState(false); // Boolean that checks if the game is over or not
 
   const abilityToMove = useRef(true); // Ref that checks if the player can move or not
   const biggestBet = useRef<number>(0); // Ref that checks the biggest bet on the table
@@ -513,6 +515,7 @@ const Poker = (): JSX.Element => {
   return (
     <Layout siteTitle="Poker">
       <div className={styles.game}>
+        <PopUpWindow gameOver = {gameOver}/>
         <div className={styles.tableContainer}>
           <div onClick={async () => {
               console.log(players);
