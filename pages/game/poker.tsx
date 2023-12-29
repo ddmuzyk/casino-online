@@ -71,6 +71,7 @@ const Poker = (): JSX.Element => {
   const [betValue, setBetValue] = useState("0"); // Value of the bet
   const [numberOfPlayers, setNumberOfPlayers] = useState(3); // Number of players in the game
   const [gameOver, setGameOver] = useState(false); // Boolean that checks if the game is over or not
+  const [userWon, setUserWon] = useState(false); // Boolean that checks if the user won or not
 
   const abilityToMove = useRef(true); // Ref that checks if the player can move or not
   const biggestBet = useRef<number>(0); // Ref that checks the biggest bet on the table
@@ -312,9 +313,13 @@ const Poker = (): JSX.Element => {
 
       if (checkIfUserLoses(playersCopy[0])) {
         console.log('You lost');
+        setUserWon(() => false);
+        setGameOver(() => true);
         return
       } else if (checkIfUserWins(playersCopy)) {
         console.log('You won');
+        setGameOver(() => true);
+        setUserWon(() => true);
         return
       }
 
@@ -504,6 +509,8 @@ const Poker = (): JSX.Element => {
         newTurn = getNextTurn(newTurn as number, newPlayers);
       }
     }
+    setGameOver(() => false);
+    setUserWon(() => false);
     setPlayers(() => newPlayers);
     setInitialValues(newPlayers, smallBlind, currentDealerId as number);
     setGameInitialized(() => true);
@@ -515,7 +522,10 @@ const Poker = (): JSX.Element => {
   return (
     <Layout siteTitle="Poker">
       <div className={styles.game}>
-        <PopUpWindow gameOver = {gameOver}/>
+        {gameOver ? <PopUpWindow 
+        userWon={userWon}
+        initializeGame={initializeGame}
+        /> : null}
         <div className={styles.tableContainer}>
           <div onClick={async () => {
               console.log(players);
@@ -571,7 +581,7 @@ const Poker = (): JSX.Element => {
         <div className={styles.playerButtons}>
           <div>
             <button onClick={() => {
-              if (turn === 0 && abilityToMove.current) {
+              if (turn === 0 && abilityToMove.current && !gameOver) {
                 const newPlayers = fold(turn as number, players,) as Array<PlayerObject>;
                 makeUserMove(turn as number, newPlayers, biggestBet.current, tableMoney.current, playerWithBiggestBet.current, currentStage, pot.current)
               }
@@ -580,7 +590,7 @@ const Poker = (): JSX.Element => {
           </div>
           <div>
             <button onClick={() => {
-              if (turn === 0 && abilityToMove.current && players[0].bet === biggestBet.current) {
+              if (turn === 0 && abilityToMove.current && players[0].bet === biggestBet.current && !gameOver) {
                 const newPlayers = check(turn as number, players, playerWithBiggestBet.current, currentStage);
                 makeUserMove(turn as number, newPlayers, biggestBet.current, tableMoney.current, playerWithBiggestBet.current, currentStage, pot.current)
               };
@@ -588,7 +598,7 @@ const Poker = (): JSX.Element => {
           </div>
           <div>
             <button onClick={() => {
-              if (turn === 0 && abilityToMove.current && players[0].bet < biggestBet.current) {
+              if (turn === 0 && abilityToMove.current && players[0].bet < biggestBet.current && !gameOver) {
                 const newPlayers = call(turn as number, players, biggestBet.current, biggestBet.current - players[turn as number].bet, tableMoney.current)
                 makeUserMove(turn as number, newPlayers, biggestBet.current, tableMoney.current, playerWithBiggestBet.current, currentStage, pot.current)
               }
@@ -596,7 +606,7 @@ const Poker = (): JSX.Element => {
           </div>
           <div>
             <button onClick={() => {
-            if (turn === 0 && abilityToMove.current && parseInt(betValue) + players[0].bet > biggestBet.current) {
+            if (turn === 0 && abilityToMove.current && parseInt(betValue) + players[0].bet > biggestBet.current && !gameOver) {
               const newPlayers = playerRaise(turn as number, players, biggestBet.current, betValue, tableMoney.current, pot.current);
               makeUserMove(turn as number, newPlayers, biggestBet.current, tableMoney.current, playerWithBiggestBet.current, currentStage, pot.current)
             }
