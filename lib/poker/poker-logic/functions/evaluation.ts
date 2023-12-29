@@ -83,8 +83,8 @@ export const giveMoneyToWinners = (players: Array<PlayerObject>, winners: Array<
       bet: 0,
     }
   });
-  const moneyToGive = Math.floor(pot / winners.length);
-  const moneyLeft = pot % winners.length;
+  let moneyLeft = pot % winners.length;
+  const moneyToGive = (pot - moneyLeft) / winners.length;
 
   for (let i = 0; i < winners.length; i++) {
     newPlayers[winners[i]].money += moneyToGive;
@@ -92,10 +92,11 @@ export const giveMoneyToWinners = (players: Array<PlayerObject>, winners: Array<
     newPlayers[winners[i]].action = 'WON';
   }
 
-  if (moneyLeft) {
-    for (let i = 0; i < winners.length; i++) {
-      newPlayers[winners[i]].money += moneyLeft;
-    }
+  let i = 0;
+  while (moneyLeft > 0) {
+    newPlayers[winners[i]].money += 1;
+    moneyLeft--;
+    i = i === winners.length - 1 ? 0 : i + 1;
   }
   
   return newPlayers;
