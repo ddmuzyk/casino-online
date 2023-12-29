@@ -25,6 +25,24 @@ $borderRadius: 400px;
   margin-top: 20px;
 }
 
+// .popUpWindow {
+//   position: absolute;
+//   top: 50%;
+//   left: 50%;
+//   transform: translate(-50%, -50%);
+//   height: 70%;
+//   width: 40%;
+//   background-color: rgba(102, 180, 134, 0.795);
+//   border: solid 1px white;
+//   border-radius: 5px;
+//   display: flex;
+//   flex-direction: column;
+//   justify-content: center;
+//   align-items: center;
+//   z-index: 100;
+
+// }
+
 .table {
   position: relative;
   height: 100%;
@@ -43,7 +61,7 @@ $borderRadius: 400px;
   // align-items: center;
   width: 70%;
   margin: 15px 10% 0 10%;
-  min-height: 200px;
+  min-height: 100px;
 }
 
 .playerBtn {
