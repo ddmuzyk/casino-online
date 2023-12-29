@@ -1,20 +1,23 @@
 import styles from './PopUpWindow.module.scss';
+import { cards, shuffleCards } from '@/lib/poker/poker-logic/poker';
+
 
 type PopUpWindowProps = {
-  gameOver: boolean
+  userWon: boolean,
+  initializeGame: any,
 }
 
-const PopUpWindow: React.FC<PopUpWindowProps> = ({gameOver}) => {
+const PopUpWindow: React.FC<PopUpWindowProps> = ({userWon, initializeGame}) => {
   return (
     <div className={styles.popUpWindow}>
       <h2 className={styles.title}>
-        {gameOver ? "Game Over" : "Congrats!"}
+        {userWon ? "Congrats!" : "Game Over"}
       </h2>
       <p className={styles.result}>
-        {gameOver ? "You lost all your money" : "You won the game!"}
+        {userWon ? "You won the game!" : "You lost all your money"}
       </p>
       <div className={styles.btnsContainer}>
-        <button className={styles.btn}>Play again</button>
+        <button className={styles.btn} onClick={() => initializeGame(shuffleCards(cards))}>Play again</button>
         <button className={styles.btn}>Exit</button>
       </div>
     </div>
