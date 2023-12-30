@@ -313,13 +313,17 @@ const Poker = (): JSX.Element => {
 
       if (checkIfUserLoses(playersCopy[0])) {
         console.log('You lost');
-        setUserWon(() => false);
-        setGameOver(() => true);
+        setTimeout(() => {
+          setUserWon(() => false);
+          setGameOver(() => true);
+        }, 3000)
         return
       } else if (checkIfUserWins(playersCopy)) {
         console.log('You won');
-        setGameOver(() => true);
-        setUserWon(() => true);
+        setTimeout(() => {
+          setUserWon(() => true);
+          setGameOver(() => true);
+        }, 3000)
         return
       }
 
@@ -545,12 +549,7 @@ const Poker = (): JSX.Element => {
                 key={id}
                 appear={true}
                 >
-                  <img 
-                  className={`${styles.image}`} 
-                  src={`/svg-cards/${card}.svg`} 
-                  alt="community card" 
-                  key={card}>
-                  </img>
+                <img className={`${styles.image}`} src={`/svg-cards/${card}.svg`} alt="community card" key={card}></img>
                 </CSSTransition>
                 )
               })} 

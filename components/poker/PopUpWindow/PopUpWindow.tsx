@@ -1,5 +1,6 @@
 import styles from './PopUpWindow.module.scss';
 import { cards, shuffleCards } from '@/lib/poker/poker-logic/poker';
+import Link from 'next/link';
 
 
 type PopUpWindowProps = {
@@ -18,7 +19,9 @@ const PopUpWindow: React.FC<PopUpWindowProps> = ({userWon, initializeGame}) => {
       </p>
       <div className={styles.btnsContainer}>
         <button className={styles.btn} onClick={() => initializeGame(shuffleCards(cards))}>Play again</button>
-        <button className={styles.btn}>Exit</button>
+        <Link href='/' className={styles.btn}>
+          Exit
+        </Link>
       </div>
     </div>
   )
