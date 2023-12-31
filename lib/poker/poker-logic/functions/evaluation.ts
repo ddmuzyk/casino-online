@@ -30,7 +30,7 @@ export const getEvaluation = async(players: Array<PlayerObject>, communityCards:
     }
   }
 
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/eval`, {
+  const response = await fetch(`http://localhost:3000/eval`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
