@@ -30,7 +30,7 @@ export const getEvaluation = async(players: Array<PlayerObject>, communityCards:
     }
   }
 
-  const response = await fetch('/api/eval', {
+  const response = await fetch('http://localhost:3000/eval', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -103,7 +103,7 @@ export const giveMoneyToWinners = (players: Array<PlayerObject>, winners: Array<
 }
 
 export const getResponse = async (cards: Array<string>) => {
-  const response = await fetch('/api/eval', {
+  const response = await fetch('http://localhost:3000/eval', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
