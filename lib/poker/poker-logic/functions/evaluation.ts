@@ -26,11 +26,11 @@ export const getEvaluation = async(players: Array<PlayerObject>, communityCards:
     }
   } else {
     for (let i = 0; i < cards.length; i++) {
-      cards[i].push(...communityCards);
+      cards[i].push(...communityCards);  
     }
   }
 
-  const response = await fetch(`https://casino-api.onrender.com/eval`, {
+  const response = await fetch(`http://localhost:3000/eval`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
