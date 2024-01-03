@@ -11,7 +11,7 @@ export default function Home() {
     <main className={styles.main}>
       <div className={styles.titleContainer}>
         <h1 className={styles.title}>Casino Online</h1>
-        <p className={styles.text}>You're ready</p>
+        <p className={styles.text}>You are ready</p>
       </div>
       <Login/>
       <Link href='./game/poker' className={styles.text}>No account yet?</Link>
