@@ -103,7 +103,7 @@ export const giveMoneyToWinners = (players: Array<PlayerObject>, winners: Array<
 }
 
 export const getResponse = async (cards: Array<string>) => {
-  const response = await fetch('http://localhost:3000/eval', {
+  const response = await fetch('https://casino-api.onrender.com/eval', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
