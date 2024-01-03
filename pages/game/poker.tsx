@@ -606,6 +606,7 @@ const Poker = (): JSX.Element => {
           <div>
             <button onClick={() => {
             if (turn === 0 && abilityToMove.current && parseInt(betValue) + players[0].bet > biggestBet.current && !gameOver) {
+              setBetValue(() => "0");
               const newPlayers = playerRaise(turn as number, players, biggestBet.current, betValue, tableMoney.current, pot.current);
               makeUserMove(turn as number, newPlayers, biggestBet.current, tableMoney.current, playerWithBiggestBet.current, currentStage, pot.current)
             }
