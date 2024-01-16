@@ -59,7 +59,7 @@ const Poker = (): JSX.Element => {
   const [deck, setDeck] = useState(decky); // Deck of cards in play
   const [smallBlind, setSmallBlind] = useState<number>(5); // Small blind
   const [playerWithBigBlind, setPlayerWithBigBlind] = useState<number>(10); // Id of the player with the big blind 
-  const [currentDealerId, setCurrentDealerId] = useState<number>(0); // Id of the current dealer
+  const [currentDealerId, setCurrentDealerId] = useState<number>(2); // Id of the current dealer
   const [turn, setTurn] = useState<NumOrNull>(null); // Id of the player whose turn it is, randomly chosen at the start of the game
   const [communityCards, setCommunityCards] = useState<Array<string>>([]); // Community cards on the table
   const [cardsVisible, setCardsVisible] = useState(true); // Boolean that checks if the cards are visible or not
@@ -128,7 +128,6 @@ const Poker = (): JSX.Element => {
     let thereIsAWinner = checkIfThereIsAWinner(playersCopy);
     let actionIsPossible = checkForPossibleAction(playersCopy, biggestBet);
 
-
     if (thereIsAWinner) {
       await onRoundEnd(playersCopy, stage, thereIsAWinner, actionIsPossible);
     } else if (!actionIsPossible) {
@@ -136,7 +135,10 @@ const Poker = (): JSX.Element => {
     } else {
   
       const nextTurn = getNextTurn(turn as number, players);
+      console.log(nextTurn)
+      console.log(getNextTurn(currentDealerId as number, players))
       const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney, playerWithBiggestBet, currentDealerId, playersCopy);
+      console.log(!tableMoney && nextTurn === getNextTurn(currentDealerId, players))
   
       if (cardsShouldBeDealt) {
         await onRoundEnd(playersCopy, stage, thereIsAWinner, actionIsPossible); 
@@ -534,8 +536,7 @@ const Poker = (): JSX.Element => {
           <div onClick={async () => {
               console.log(players);
               console.log(communityCards);
-              const data = await getEvaluation(players, communityCards);
-              console.log(data);
+              console.log('playerWithBiggestBet: ', playerWithBiggestBet.current);
             }} 
             className={styles.table}>
             <div className={styles.pot}>Pot: <span className={styles.potValue} key={pot.current}>{pot.current}$</span></div>
