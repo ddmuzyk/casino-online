@@ -11,18 +11,20 @@ const ActionMessage: React.FC<ActionMessageProps> = ({action}) => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    setIsVisible(true);
-    setTimeout(() => {
-      setIsVisible(false);
+    if (action !== '-') {
+      setIsVisible(true);
+      setTimeout(() => {
+        setIsVisible(false);
+      }
+      , 2000)
     }
-    , 2000)
   }, [action])
   
 
   return (
     <div className={styles.actionContainer}>
       <CSSTransition
-      in={isVisible && action !== "" && action !== '-'}
+      in={isVisible && action !== '-'}
       appear={true}
       timeout={500}
       classNames={{
@@ -37,7 +39,7 @@ const ActionMessage: React.FC<ActionMessageProps> = ({action}) => {
         exitDone: styles.exitDone,
       }}
       >
-        <p className={styles.action}>{`${action.toUpperCase()}`}</p>
+        <p className={styles.action}>{action !== '' ? action.toUpperCase() : '\u00A0'}</p>
       </CSSTransition>
     </div>
   )

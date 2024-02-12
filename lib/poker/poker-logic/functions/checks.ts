@@ -128,7 +128,7 @@ export const checkForActions = (players: Array<PlayerObject>) => {
   let actions = 0;
   let activePlayers = getNumberOfActivePlayers(players);
   for (let player of players) {
-    if (player.action !== '-' && !player.out && !player.hasFolded) actions++;
+    if (player.action !== '' && !player.out && !player.hasFolded) actions++;
   }
 
   return actions === activePlayers;
