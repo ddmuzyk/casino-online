@@ -26,8 +26,10 @@ export const checkIfCardsShouldBeDealt = (
   currentDealerId: number,
   players: Array<PlayerObject>
   ) => {
-    return (turn === playerWithBiggestBet || (!tableMoney && turn === getNextTurn(currentDealerId, players)));
+    return (turn === playerWithBiggestBet || (!tableMoney && turn === getNextTurn(currentDealerId, players) && checkForActions(players)));  
 }
+
+
 
 const checkForDuplicates = (deck: Array<string>, players: Array<PlayerObject>) => {
   const newDeck = [...deck];
@@ -112,3 +114,25 @@ export const getNumberOfActivePlayers = (players: Array<PlayerObject>) => {
 export const checkIfThereIsAWinner = (players: Array<PlayerObject>) => {
   return getNumberOfActivePlayers(players) === 1;
 }
+
+export const getNumberOfChecks = (players: Array<PlayerObject>) => {
+  let checks = 0;
+  for (let player of players) {
+    if (player.action.toLowerCase() === 'check' && !player.out) checks++;
+  }
+
+  return checks;
+}
+
+export const checkForActions = (players: Array<PlayerObject>) => {
+  let actions = 0;
+  let activePlayers = getNumberOfActivePlayers(players);
+  for (let player of players) {
+    if (player.action !== '-' && !player.out && !player.hasFolded) actions++;
+  }
+
+  return actions === activePlayers;
+
+}
+
+// There needs to be a check for being active in that round - maybe change the action to "" when the round is over
