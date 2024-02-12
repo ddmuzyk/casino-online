@@ -135,10 +135,7 @@ const Poker = (): JSX.Element => {
     } else {
   
       const nextTurn = getNextTurn(turn as number, players);
-      console.log(nextTurn)
-      console.log(getNextTurn(currentDealerId as number, players))
       const cardsShouldBeDealt = checkIfCardsShouldBeDealt(nextTurn, currentStage, tableMoney, playerWithBiggestBet, currentDealerId, playersCopy);
-      console.log(!tableMoney && nextTurn === getNextTurn(currentDealerId, players))
   
       if (cardsShouldBeDealt) {
         await onRoundEnd(playersCopy, stage, thereIsAWinner, actionIsPossible); 
@@ -284,7 +281,8 @@ const Poker = (): JSX.Element => {
         ...player,
         bet: 0,
         cards: [...player.cards],
-        evaledHand: {...player.evaledHand as EvaledHand}
+        evaledHand: {...player.evaledHand as EvaledHand},
+        action: '-',
       }
     })
     return newPlayers;
@@ -298,6 +296,7 @@ const Poker = (): JSX.Element => {
           cards: [...player.cards],
           evaledHand: {} as EvaledHand,
           hasFolded: false,
+          action: "-",
           bet: 0,
           won: false,
         }
