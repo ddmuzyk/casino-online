@@ -282,7 +282,7 @@ const Poker = (): JSX.Element => {
         bet: 0,
         cards: [...player.cards],
         evaledHand: {...player.evaledHand as EvaledHand},
-        action: '-',
+        action: '',
       }
     })
     return newPlayers;
@@ -296,7 +296,7 @@ const Poker = (): JSX.Element => {
           cards: [...player.cards],
           evaledHand: {} as EvaledHand,
           hasFolded: false,
-          action: "-",
+          action: "",
           bet: 0,
           won: false,
         }
