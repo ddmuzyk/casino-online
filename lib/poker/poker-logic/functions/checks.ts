@@ -134,5 +134,3 @@ export const checkForActions = (players: Array<PlayerObject>) => {
   return actions === activePlayers;
 
 }
-
-// There needs to be a check for being active in that round - maybe change the action to "" when the round is over

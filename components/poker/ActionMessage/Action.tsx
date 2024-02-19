@@ -23,7 +23,7 @@ const ActionMessage: React.FC<ActionMessageProps> = ({action}) => {
 
   return (
     <div className={styles.actionContainer}>
-      <CSSTransition
+      {/* <CSSTransition
       in={isVisible && action !== '-'}
       appear={true}
       timeout={500}
@@ -38,9 +38,9 @@ const ActionMessage: React.FC<ActionMessageProps> = ({action}) => {
         exitActive: styles.exitActive,
         exitDone: styles.exitDone,
       }}
-      >
+      > */}
         <p className={styles.action}>{action !== '' ? action.toUpperCase() : '\u00A0'}</p>
-      </CSSTransition>
+      {/* </CSSTransition> */}
     </div>
   )
 }
