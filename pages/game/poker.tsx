@@ -69,7 +69,7 @@ const Poker = (): JSX.Element => {
   const [isComputerMove, setIsComputerMove] = useState(turn === 0 ? false : true); // Boolean that checks if the computer is making a move
   const [actionVisibility, setActionVisibility] = useState<Array<boolean>>([]); // Boolean that checks if the actions are visible or not
   const [betValue, setBetValue] = useState("0"); // Value of the bet
-  const [numberOfPlayers, setNumberOfPlayers] = useState(3); // Number of players in the game
+  const [numberOfPlayers, setNumberOfPlayers] = useState(4); // Number of players in the game
   const [gameOver, setGameOver] = useState(false); // Boolean that checks if the game is over or not
   const [userWon, setUserWon] = useState(false); // Boolean that checks if the user won or not
 
@@ -181,11 +181,10 @@ const Poker = (): JSX.Element => {
           evaledHand: {...player.evaledHand as EvaledHand}
         }
       });
-      // HERE COMPUTER MAKES A MOVE
+
       if (turn && players.length > 0) {
         playersCopy = await makeComputerMove(turn as number, playersCopy, biggestBet.current, tableMoney.current, playerWithBiggestBet.current, stage);
       }
-      // HERE COMPUTER MAKES A MOVE
 
       let thereIsAWinner = checkIfThereIsAWinner(playersCopy);
       let actionIsPossible = checkForPossibleAction(playersCopy, biggestBet.current);
@@ -244,11 +243,9 @@ const Poker = (): JSX.Element => {
       } else if (!actionIsPossible) {
         setIsShowdown(() => true);
         if (stage === "river" as Stage) {
-          console.log('HERE')
           const evaluations = await getEvaluation(playersCopy, communityCards);
           playersCopy = assignEvaluations(playersCopy, evaluations);
         }
-        // console.log('HERE')
         setCardsAreDealt(() => true);
         playersCopy = resetRoundState(playersCopy);
         setPlayers(() => playersCopy);
@@ -259,6 +256,8 @@ const Poker = (): JSX.Element => {
         setCardsAreDealt(() => false);
       } else {
         setCardsAreDealt(() => true);
+        setPlayers(() => playersCopy);
+        await sleep(1000);
         playersCopy = resetRoundState(playersCopy);
         setPlayers(() => playersCopy);
         const newCommunityCards = dealCommunityCards(communityCards, deck, currentStage);
@@ -372,10 +371,6 @@ const Poker = (): JSX.Element => {
     player.money -= moneyToCall;
     player.bet += moneyToCall;
 
-    // if (player.money === 0) {
-    //   playerThatBegins.current = getNextTurn(turn, newPlayers);
-    // }
-
     let currentAction = newPlayers[turn].action;
 
     if (currentAction === 'CALL') {
@@ -385,7 +380,6 @@ const Poker = (): JSX.Element => {
     }
 
     player.action = currentAction;
-    // setPlayers(() => newPlayers);
     tableMoney.current = moneyOnTable + moneyToCall;
     pot.current = pot.current + moneyToCall;
    
@@ -408,13 +402,6 @@ const Poker = (): JSX.Element => {
     } else {
       newPlayers[turn].action = 'FOLD';
     }
-
-    // if (turn === currPlayerThatBegins) {
-    //   let activePlayers = getNumberOfActivePlayers(newPlayers);
-    //   if (activePlayers > 1) {
-    //     playerThatBegins.current = getNextTurn(currPlayerThatBegins as number, newPlayers);
-    //   }
-    // }
   
     return newPlayers;
   }
@@ -475,17 +462,15 @@ const Poker = (): JSX.Element => {
   
   const createPlayers = (deck: Array<string>, numOfPlayers: number) => {
     const newDeck = [...deck];
-    // const actions: Array<boolean> = [];
     const newPlayers: Array<PlayerObject> = [];
     for (let i = 0; i < numOfPlayers; i++) {
       let playerCards = [newDeck.pop(), newDeck.pop()];
       newPlayers.push({
         id: i,
         name: `Player${i}`,
-        // money: 3,
         money: i == 0 ? 2000 : 1000,
         cards: playerCards as Array<string>,
-        action: '-',
+        action: '',
         evaledHand: {} as EvaledHand,
         smallBlind: 0,
         bigBlind: 0,

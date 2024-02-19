@@ -5,10 +5,6 @@ import { CSSTransition, TransitionGroup, SwitchTransition } from "react-transiti
 import Image from "next/image";
 import ActionMessage from "../ActionMessage/Action";
 
-// interface PlayerProps {
-//   state: object
-// }
-
 const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, action, smallBlind, bigBlind, bet, biggestBet, cardsAreDealt, won, currentDealerId, isShowdown, hasFolded, out}) => {
 
 
@@ -20,11 +16,9 @@ const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, action, 
         {id === 3 ? <p className={styles.bet} style={{bottom: "30px", width:"10px"}}>{bet}$</p> : null}
         {id === 0 ? <p className={styles.bet}>{bet}$</p> : null}
       <div className={`${styles['player-container']}`}
-      // style={{height: id === 2 ? "230px" : "200px"}}
       >
         <div className={styles['imgs-container']}>
           {cards.map((card: string, i) => {
-            // const background = id !== 0 && isShowdown ? `/svg-cards/${card}.svg` : '';
             let source = '';
             if (id === 0) {
               source = `/svg-cards/${card}.svg`;
@@ -54,11 +48,9 @@ const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, action, 
           <p className={styles.container}>Player{id} <span>{money}$ <span className={styles.dealerBtn}>{id === currentDealerId ? "D" : null}</span></span></p>
         </div>
         {id === 2 ? <p className={styles.bet}>{bet}$</p> : null}
-        {/* {id !== 2 ? <ActionMessage action={action}/> : null} */}
         <ActionMessage action={action}/>
       </div>
       {id === 1 ? <p className={styles.bet} style={{bottom: "30px", width: '10px'}}>{bet}$</p> : null}
-      {/* {id === 2 ? <ActionMessage action={action}/> : null} */}
     </div>
   )
 }
