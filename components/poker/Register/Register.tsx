@@ -2,6 +2,7 @@ import React, { use } from "react";
 import { useState } from "react";
 import styles from "./Register.module.scss";
 import Close from "./Close/Close";
+import { register } from "@/lib/poker/poker-logic/functions/requests";
 
 import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from "@nextui-org/react";
 
@@ -21,14 +22,15 @@ export default function Register({setIsOpen}: RegisterProps, isOpen: boolean) {
 
   const onButtonClick = () => {
     if (!username || !email || !password || !confirmedPassword) {
-      setMessage("Please fill all the fields");
+      setMessage("Please fill all the fields.");
       return;
     }
     if (password !== confirmedPassword) {
-      setMessage("Passwords do not match");
+      setMessage("Passwords do not match.");
       return;
     }
     setMessage("");
+    register(username, email, password);
   }
 
   return (
