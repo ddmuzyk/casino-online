@@ -1,0 +1,67 @@
+@use "../../../app/page.module.scss" as *;
+
+$backgroundLight: linear-gradient(to right, #141e30cc, #243b55cb);
+$backgroundForm: linear-gradient(to left, #3a578b, #132a44);
+// $backgroundLight: rgba(128, 128, 128, 0.925);
+
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  background: $backgroundLight;
+  position: absolute;
+  opacity: 1;
+}
+
+.visible {
+  opacity: 1;
+  transition: all 1s ease-in-out;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  background: $backgroundForm;
+  height: 500px;
+  width: 400px;
+  border-radius: 10px;
+  position: relative;
+}
+
+.input {
+  width: 300px;
+  height: 50px;
+  font-size: 20px;
+  border: none;
+  outline: none;
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  padding: 2px 10px;
+  &::placeholder {
+    color: #ccc;
+  }
+}
+
+.button {
+  width: 300px;
+  height: 50px;
+  border: none;
+  outline: none;
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+  background-color: #000;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  &:hover {
+    background-color: #1e5169;
+    // color: #000;
+  }
+}
