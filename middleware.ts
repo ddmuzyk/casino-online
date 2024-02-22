@@ -1,11 +1,27 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import cookieParser from 'cookie-parser'
  
+
+// const authenticateToken = (token: string) => {
+//   const secret = process.env.ACCESS_TOKEN_SECRET;
+  
+//   if (!secret) {
+//     throw new Error('ACCESS_TOKEN_SECRET is not defined');
+//   }
+
+//   jwt.verify(token, secret, (err, user) => {
+//     if (err) return false;
+//   })
+//   return true;
+// }
+
 // This function can be marked `async` if using `await` inside
-export function middleware(request: NextRequest) {
-  const authTokens = request.cookies.get('authToken')
+export async function middleware(request: NextRequest) {
+  const authTokens = request.cookies.get('accessToken')
+  console.log(authTokens)
   if (!authTokens) {
-    return NextResponse.redirect(new URL('/', request.url))
+    return NextResponse.redirect(new URL('/', request.url))  
   }
 }
  
