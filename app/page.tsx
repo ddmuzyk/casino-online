@@ -27,8 +27,8 @@ export const getServerSideProps: GetServerSideProps = async () => {
 
 export default function Home({isLoggedIn}: HomeProps) {
 
-  // const [isLoggedIn, setIsLoggedIn] = useState(false);
-  console.log(isLoggedIn);
+  const [isOpen, setIsOpen] = useState(false);
+  
   return (
     <Layout siteTitle="Casino-online">
        <main className={styles.main}>
@@ -37,8 +37,9 @@ export default function Home({isLoggedIn}: HomeProps) {
           <p className={styles.text}>You are ready</p>
         </div>
         <Login/>
+        {isOpen ? <Register setIsOpen={setIsOpen} isOpen={isOpen}/> : null}
         <Link href='./game/poker' className={styles.text}>No account yet?</Link>
-        <button className={styles.button} type='button'>Create a new account</button>
+        <button className={styles.button} onClick={() => {setIsOpen(true)}} type='button'>Create a new account</button>
       </main>      
     </Layout>
   )

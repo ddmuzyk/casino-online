@@ -4,8 +4,8 @@ $backgroundImage: linear-gradient(to right, #141e30, #243b55);
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 6rem;
-  min-height: 100vh;
+  // padding: 6rem;
+  height: 100vh;
   background-image: $backgroundImage;
 }
 
@@ -14,7 +14,7 @@ $backgroundImage: linear-gradient(to right, #141e30, #243b55);
   flex-direction: column;
   align-items: center;
   margin-bottom: 50px;
-
+  margin-top: 6rem;
 }
 
 .title {
