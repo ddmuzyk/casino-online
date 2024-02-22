@@ -16,15 +16,6 @@ interface HomeProps {
   isLoggedIn: boolean
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  const isLoggedIn: boolean = false;
-  return {
-    props: {
-      isLoggedIn
-    }
-  }
-}
-
 export default function Home({isLoggedIn}: HomeProps) {
 
   const [isOpen, setIsOpen] = useState(false);
