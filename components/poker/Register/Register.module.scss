@@ -46,6 +46,8 @@ $backgroundForm: linear-gradient(to left, #3a578b, #132a44);
   &::placeholder {
     color: #ccc;
   }
+  position: relative;
+  top: 20px;
 }
 
 .button {
@@ -61,7 +63,16 @@ $backgroundForm: linear-gradient(to left, #3a578b, #132a44);
   cursor: pointer;
   transition: all 0.3s ease-in-out;
   &:hover {
-    background-color: #1e5169;
+    background-color: #2b7292;
     // color: #000;
   }
+}
+
+.message {
+  color: #e23131;
+  font-size: 20px;
+  font-family: 'Inter', sans-serif;
+  margin-top: 10px;
+  position: relative;
+  top: 25px;
 }
