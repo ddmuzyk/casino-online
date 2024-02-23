@@ -12,11 +12,8 @@ import { redirect } from 'next/dist/server/api-utils';
 import { stat } from 'fs';
 import { Redirect } from 'next';
 
-interface HomeProps {
-  isLoggedIn: boolean
-}
 
-export default function Home({isLoggedIn}: HomeProps) {
+export default function Home() {
 
   const [isOpen, setIsOpen] = useState(false);
   
