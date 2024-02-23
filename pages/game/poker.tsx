@@ -15,6 +15,43 @@ import { check} from "@/lib/poker/poker-logic/functions/actions";
 import { checkIfCardsShouldBeDealt, checkIfUserLoses, checkIfUserWins, getNumberOfPlayersInGame, getNumberOfActivePlayers, checkForPossibleAction, checkIfThereIsAWinner } from "@/lib/poker/poker-logic/functions/checks";
 import { timeout, sleep } from "@/lib/poker/poker-logic/functions/sleep";
 
+export const getServerSideProps = async (context:any) => {
+  const cookies = context.req.cookies;
+  const payload = {
+    cookies,
+    action: 'lookup'
+  }
+  let data = await fetch('http://localhost:3000/takemoney', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify(payload)
+  })
+  const response = await data.json();
+  // if (!data) {
+  //   return {
+  //     redirect: {
+  //       destination: '/',
+  //       permanent: false,
+  //     }
+  //   }
+  // }
+  return {
+    props: {
+      title: 'Yo yo',
+      data: response
+    }
+  }
+
+}
+
+export interface Props {
+  title: string,
+  data: any
+}
+
 export interface PlayerObject {
 id: number,
 name: string,
@@ -48,7 +85,10 @@ export interface EvaledHand {
 export type Stage = 'pre-flop' | 'flop' | 'turn' | 'river';
 export type NumOrNull = number | null;
 
-const Poker = (): JSX.Element => {
+const Poker: React.FunctionComponent<Props> = ({title, data}): JSX.Element => {
+
+  console.log('data: ', data);
+  console.log('title: ', title);
 
   const [gameInitialized, setGameInitialized] = useState(false); // Boolean that checks if the game has started
   const [baseDeck, setBaseDeck] = useState<Array<string>>(cards); // Base deck of cards
@@ -81,7 +121,7 @@ const Poker = (): JSX.Element => {
   
   // Populate the table with players (later with possibility to choose how many players to play against
   useEffect(() => {
-    if (!gameInitialized) initializeGame(deck);
+    // if (!gameInitialized) initializeGame(deck);
   }, [])
 
   useEffect(() => {
@@ -510,8 +550,9 @@ const Poker = (): JSX.Element => {
   return (
     <Layout siteTitle="Poker">
       <div className={styles.game}>
-        {gameOver ? <PopUpWindow 
+        {gameOver || !gameInitialized ? <PopUpWindow 
         userWon={userWon}
+        gameInitialized={gameInitialized}
         initializeGame={initializeGame}
         /> : null}
         <div className={styles.tableContainer}>

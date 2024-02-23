@@ -4,6 +4,7 @@ $background: rgb(51, 56, 51);
 $table: #35654d;
 $tableContainer: rgb(39, 26, 10);
 $borderRadius: 400px;
+$backgroundImage: linear-gradient(to right, #141e30, #243b55);
 
 .game{
   display: flex;
@@ -12,7 +13,7 @@ $borderRadius: 400px;
   align-items: center;
   width: 100%;
   min-height: 100vh;
-  background-color: $background;
+  background: $backgroundImage;
 }
 
 .tableContainer {

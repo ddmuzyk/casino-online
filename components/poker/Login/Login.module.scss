@@ -18,6 +18,7 @@
   padding: 2px 10px;
   &::placeholder {
     color: #ccc;
+    font-weight: 100;
   }
 }
 
@@ -30,6 +31,7 @@
   border-radius: 10px;
   font-family: 'Inter', sans-serif;
   font-size: 20px;
+  font-weight: 200;
   background-color: #000;
   color: #fff;
   cursor: pointer;

@@ -13,7 +13,7 @@ const Login = () => {
     <form className={styles.form}>
       <input onChange={(e) => setEmail(e.target.value)} placeholder='Email' className={styles.input} type="email"/>
       <input onChange={(e) => setPassword(e.target.value)} placeholder='Password' className={styles.input} type="password"/>
-      <button onClick={() => {login(email, password)}} type='button' className={styles.button}>Login</button>
+      <button onClick={() => {login(email, password)}} type='button' className={styles.button}>Log in</button>
     </form>
   )
 }
