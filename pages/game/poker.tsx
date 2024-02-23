@@ -1,21 +1,19 @@
 import Link from "next/link";
-import { ReactComponentElement, useState, useEffect, useRef, use } from "react";
+import { ReactComponentElement, useState, useEffect, useRef,} from "react";
 import styles from './poker.module.scss';
+import './poker.module.scss'
 import Layout from "@/components/layout";
 import Player from "@/components/poker/Player/Player";
 import Slider from "@/components/poker/Slider/Slider";
 import PopUpWindow from "@/components/poker/PopUpWindow/PopUpWindow";
 import { shuffleCards, cards, decky, SUITS, VALUES } from "@/lib/poker/poker-logic/poker.ts";
-import { time } from "console";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
-import { get } from "http";
 import { giveBlind } from "@/lib/poker/poker-logic/functions/blind";
 import { getNextTurn, getPreviousTurn } from "@/lib/poker/poker-logic/functions/turns";
 import { getEvaluation, assignEvaluations, giveMoneyToWinners, getArrayOfWinners, getResponse, getTheWinner } from "@/lib/poker/poker-logic/functions/evaluation";
 import { check} from "@/lib/poker/poker-logic/functions/actions";
 import { checkIfCardsShouldBeDealt, checkIfUserLoses, checkIfUserWins, getNumberOfPlayersInGame, getNumberOfActivePlayers, checkForPossibleAction, checkIfThereIsAWinner } from "@/lib/poker/poker-logic/functions/checks";
 import { timeout, sleep } from "@/lib/poker/poker-logic/functions/sleep";
-import { parse } from "path";
 
 export interface PlayerObject {
 id: number,

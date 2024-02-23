@@ -14,16 +14,21 @@ export const register = async (username: string, email: string, password: string
 }
 
 export const login = async (email: string, password: string) => {
-  let url = 'http://localhost:3000/signin'
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    credentials: 'include',
-    body: JSON.stringify({email, password})
-  })
-  const data = await response.json()
-  console.log(data)
-  return data
+  try {
+    let url = 'http://localhost:3000/signin'
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include',
+      body: JSON.stringify({email, password})
+    })
+    const data = await response.json()
+    if (data === 'Logged in') {
+      window.location.href = '/game/poker'
+    }
+  } catch (error) {
+    console.log(error)
+  }
 }

@@ -19,13 +19,19 @@ import cookieParser from 'cookie-parser'
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
   const authTokens = request.cookies.get('accessToken')
-  console.log(authTokens)
-  if (!authTokens) {
-    return NextResponse.redirect(new URL('/', request.url))  
+  const pathname = new URL(request.url).pathname;
+
+  // if (pathname === '/') {
+  //   if (authTokens) {
+  //     return NextResponse.redirect(new URL('/game/poker', request.url))
+  //   }
+  // }
+  if (pathname.startsWith('/game/poker') && !authTokens) {
+    return NextResponse.redirect(new URL('/', request.url));
   }
 }
  
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: '/game/poker',
+  matcher: ['/','/game/poker']
 }
