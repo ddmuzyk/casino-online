@@ -30,14 +30,14 @@ export const getServerSideProps = async (context:any) => {
     body: JSON.stringify(payload)
   })
   const response = await data.json();
-  // if (!data) {
-  //   return {
-  //     redirect: {
-  //       destination: '/',
-  //       permanent: false,
-  //     }
-  //   }
-  // }
+  if (!response) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      }
+    }
+  }
   return {
     props: {
       title: 'Yo yo',
@@ -87,8 +87,8 @@ export type NumOrNull = number | null;
 
 const Poker: React.FunctionComponent<Props> = ({title, data}): JSX.Element => {
 
-  console.log('data: ', data);
-  console.log('title: ', title);
+  // console.log('data: ', data);
+  // console.log('title: ', title);
 
   const [gameInitialized, setGameInitialized] = useState(false); // Boolean that checks if the game has started
   const [baseDeck, setBaseDeck] = useState<Array<string>>(cards); // Base deck of cards
@@ -503,10 +503,18 @@ const Poker: React.FunctionComponent<Props> = ({title, data}): JSX.Element => {
     const newPlayers: Array<PlayerObject> = [];
     for (let i = 0; i < numOfPlayers; i++) {
       let playerCards = [newDeck.pop(), newDeck.pop()];
+      let coins = 0
+      if (i == 0) {
+        coins = 2000;
+      } else if (i == 1 || i == 2) {
+        coins = 500;
+      } else {
+        coins = 1000;
+      }
       newPlayers.push({
         id: i,
         name: `Player${i}`,
-        money: i == 0 ? 2000 : 1000,
+        money: coins,
         cards: playerCards as Array<string>,
         action: '',
         evaledHand: {} as EvaledHand,
@@ -554,12 +562,14 @@ const Poker: React.FunctionComponent<Props> = ({title, data}): JSX.Element => {
         userWon={userWon}
         gameInitialized={gameInitialized}
         initializeGame={initializeGame}
+        username={data.name}
+        money={data.money}
         /> : null}
         <div className={styles.tableContainer}>
           <div onClick={async () => {
               console.log(players);
               console.log(communityCards);
-              console.log('playerWithBiggestBet: ', playerWithBiggestBet.current);
+              console.log('table money: ', tableMoney.current);
             }} 
             className={styles.table}>
             <div className={styles.pot}>Pot: <span className={styles.potValue} key={pot.current}>{pot.current}$</span></div>

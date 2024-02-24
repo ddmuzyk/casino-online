@@ -124,13 +124,24 @@ export const getNumberOfChecks = (players: Array<PlayerObject>) => {
   return checks;
 }
 
+const getNumberOfPlayersThatCanAct = (players: Array<PlayerObject>) => {
+  let playersThatCanAct = 0;
+  for (let player of players) {
+    if (!player.hasFolded && !player.out && player.money !== 0) playersThatCanAct++;
+  }
+
+  return playersThatCanAct;
+}
+
 export const checkForActions = (players: Array<PlayerObject>) => {
   let actions = 0;
-  let activePlayers = getNumberOfActivePlayers(players);
+  let activePlayers = getNumberOfPlayersThatCanAct(players);
   for (let player of players) {
     if (player.action !== '' && !player.out && !player.hasFolded) actions++;
   }
 
+  console.log('actions: ', actions, 'activePlayers: ', activePlayers);
+
   return actions === activePlayers;
 
-}
+} 
