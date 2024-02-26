@@ -5,6 +5,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { email, password } = req.body;
   const response = await login(email, password);
 
+  console.log("Hello from sign in");
+
   if (!response.accessToken) {
     res.status(401).json(response);
   } else {
