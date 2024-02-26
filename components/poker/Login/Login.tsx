@@ -18,7 +18,11 @@ const Login = () => {
       body: JSON.stringify({email, password})
     })
     const data = await res.json()
-    console.log(data)
+    if (data.success) {
+      window.location.href = '/game/poker'
+    } else {
+      console.log('error')
+    }
   }
 
   return (
