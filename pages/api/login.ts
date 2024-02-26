@@ -9,7 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(401).json(response);
   } else {
     // Ensure you set cookies correctly; consider security flags
-    res.setHeader('Set-Cookie', `accessToken=${response.accessToken}; Path=/; Secure; SameSite=Lax`);
+    res.setHeader('Set-Cookie', `accessToken=${response.accessToken}; Path=/; SameSite=Lax`);
     res.status(200).json({ success: true });
   }
 }
