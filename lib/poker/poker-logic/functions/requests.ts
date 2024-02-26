@@ -28,6 +28,6 @@ export const login = async (email: string, password: string) => {
       return data
     }
   } catch (error) {
-    return 'error'
+    return error
   }
 }

@@ -5,8 +5,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { email, password } = req.body;
   const response = await login(email, password);
 
-  if (response === 'error') {
-    res.status(401).json('error');
+  if (!response.accessToken) {
+    res.status(401).json(response);
   } else {
     // Ensure you set cookies correctly; consider security flags
     res.setHeader('Set-Cookie', `accessToken=${response.accessToken}; Path=/; Secure; SameSite=Lax`);

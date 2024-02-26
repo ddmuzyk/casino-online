@@ -21,7 +21,7 @@ const Login = () => {
     if (data.success) {
       window.location.href = '/game/poker'
     } else {
-      console.log('error')
+      console.log(data)
     }
   }
 
