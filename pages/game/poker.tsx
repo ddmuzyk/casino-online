@@ -17,32 +17,32 @@ import { timeout, sleep } from "@/lib/poker/poker-logic/functions/sleep";
 import { redirect } from "next/dist/server/api-utils";
 
 export const getServerSideProps = async (context:any) => {
-  const cookies = context.req.cookies;
-  const payload = {
-    cookies,
-    action: 'lookup'
-  }
-  let data = await fetch('http://localhost:3000/takemoney', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-    body: JSON.stringify(payload)
-  })
-  const response = await data.json();
-  if (!response) {
-    return {
-      redirect: {
-        destination: '/',
-        permanent: false,
-      }
-    }
-  }
+  // const cookies = context.req.cookies;
+  // const payload = {
+  //   cookies,
+  //   action: 'lookup'
+  // }
+  // let data = await fetch('http://localhost:3000/takemoney', {
+  //   method: 'POST',
+  //   headers: {
+  //     'Content-Type': 'application/json',
+  //   },
+  //   credentials: 'include',
+  //   body: JSON.stringify(payload)
+  // })
+  // const response = await data.json();
+  // if (!response) {
+  //   return {
+  //     redirect: {
+  //       destination: '/',
+  //       permanent: false,
+  //     }
+  //   }
+  // }
   return {
     props: {
       title: 'Yo yo',
-      data: response
+      data: {}
     }
   }
 

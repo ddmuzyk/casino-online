@@ -1,5 +1,5 @@
 export const register = async (username: string, email: string, password: string) => {
-  let url = 'http://localhost:3000/register'
+  let url = 'https://casino-api.onrender.com/register'
   const response = await fetch(url, {
     method: 'POST',
     headers: {
@@ -15,7 +15,7 @@ export const register = async (username: string, email: string, password: string
 
 export const login = async (email: string, password: string) => {
   try {
-    let url = 'http://localhost:3000/signin'
+    let url = 'https://casino-api.onrender.com/signin'
     const response = await fetch(url, {
       method: 'POST',
       headers: {
