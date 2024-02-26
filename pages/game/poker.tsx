@@ -14,6 +14,7 @@ import { getEvaluation, assignEvaluations, giveMoneyToWinners, getArrayOfWinners
 import { check} from "@/lib/poker/poker-logic/functions/actions";
 import { checkIfCardsShouldBeDealt, checkIfUserLoses, checkIfUserWins, getNumberOfPlayersInGame, getNumberOfActivePlayers, checkForPossibleAction, checkIfThereIsAWinner } from "@/lib/poker/poker-logic/functions/checks";
 import { timeout, sleep } from "@/lib/poker/poker-logic/functions/sleep";
+import { redirect } from "next/dist/server/api-utils";
 
 export const getServerSideProps = async (context:any) => {
   const cookies = context.req.cookies;

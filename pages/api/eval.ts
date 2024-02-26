@@ -6,7 +6,7 @@ import path from 'path';
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   
   const cards = req.body;
-  const evaluations = [] as any;
+  const evaluations: Array<any> = [];
   for (let i = 0; i < cards.length; i++) {
     evaluations.push(PokerEvaluator.evalHand(cards[i]));
   }

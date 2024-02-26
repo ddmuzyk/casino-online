@@ -21,14 +21,13 @@ export const login = async (email: string, password: string) => {
       headers: {
         'Content-Type': 'application/json'
       },
-      credentials: 'include',
       body: JSON.stringify({email, password})
     })
     const data = await response.json()
-    if (data === 'Logged in') {
-      window.location.href = '/game/poker'
+    if (data.accessToken) {
+      return data
     }
   } catch (error) {
-    console.log(error)
+    return 'error'
   }
 }
