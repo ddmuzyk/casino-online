@@ -20,6 +20,7 @@ const Login = () => {
     const data = await res.json()
     if (data.success) {
       console.log('success')
+      window.location.href = '/game/poker'
     } else {
       console.log(data)
     }

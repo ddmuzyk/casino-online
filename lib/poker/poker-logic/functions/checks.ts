@@ -61,7 +61,7 @@ export const checkForCalls = (players: Array<PlayerObject>) => {
   for (let player of players) { 
     if (player.money > 0 && player.bet < biggestBet) return true;
   }
-
+  
   return false;
 }
 
@@ -89,7 +89,6 @@ export const checkForFolds = (players: Array<PlayerObject>) => {
   for (let player of players) {
     if (player.hasFolded) folds++;
   }
-
   return folds === players.length - 1;
 }
 
@@ -98,7 +97,6 @@ export const getNumberOfPlayersInGame = (players: Array<PlayerObject>) => {
   for (let player of players) {
     if (!player.out) activePlayers++;
   }
-
   return activePlayers;
 }
 
@@ -107,7 +105,6 @@ export const getNumberOfActivePlayers = (players: Array<PlayerObject>) => {
   for (let player of players) {
     if (player.hasFolded || player.out) activePlayers--;
   }
-
   return activePlayers;
 }
 
@@ -120,7 +117,6 @@ export const getNumberOfChecks = (players: Array<PlayerObject>) => {
   for (let player of players) {
     if (player.action.toLowerCase() === 'check' && !player.out) checks++;
   }
-
   return checks;
 }
 
@@ -129,7 +125,6 @@ const getNumberOfPlayersThatCanAct = (players: Array<PlayerObject>) => {
   for (let player of players) {
     if (!player.hasFolded && !player.out && player.money !== 0) playersThatCanAct++;
   }
-
   return playersThatCanAct;
 }
 
@@ -139,9 +134,5 @@ export const checkForActions = (players: Array<PlayerObject>) => {
   for (let player of players) {
     if (player.action !== '' && !player.out && !player.hasFolded) actions++;
   }
-
-  console.log('actions: ', actions, 'activePlayers: ', activePlayers);
-
   return actions === activePlayers;
-
 } 

@@ -21,11 +21,11 @@ export async function middleware(request: NextRequest) {
   const authTokens = request.cookies.get('accessToken')
   const pathname = new URL(request.url).pathname;
 
-  // if (pathname === '/') {
-  //   if (authTokens) {
-  //     return NextResponse.redirect(new URL('/game/poker', request.url))
-  //   }
-  // }
+  if (pathname === '/') {
+    if (authTokens) {
+      return NextResponse.redirect(new URL('/game/poker', request.url))
+    }
+  }
   if (pathname.startsWith('/game/poker') && !authTokens) {
     return NextResponse.redirect(new URL('/', request.url));
   }
