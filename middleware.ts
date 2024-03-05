@@ -26,9 +26,9 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/game/poker', request.url))
     }
   }
-  if (pathname.startsWith('/game/poker') && !authTokens) {
-    return NextResponse.redirect(new URL('/', request.url));
-  }
+  // if (pathname.startsWith('/game/poker') && !authTokens) {
+  //   return NextResponse.redirect(new URL('/', request.url));
+  // }
 }
  
 // See "Matching Paths" below to learn more

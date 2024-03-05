@@ -17,33 +17,30 @@ import { timeout, sleep } from "@/lib/poker/poker-logic/functions/sleep";
 import { redirect } from "next/dist/server/api-utils";
 
 export const getServerSideProps = async (context:any) => {
-  // const cookies = context.req.cookies;
-  // const payload = {
-  //   cookies,
-  //   action: 'lookup'
-  // }
-  // let data = await fetch('http://localhost:3000/takemoney', {
-  //   method: 'POST',
-  //   headers: {
-  //     'Content-Type': 'application/json',
-  //   },
-  //   credentials: 'include',
-  //   body: JSON.stringify(payload)
-  // })
-  // const response = await data.json();
-  // if (!response) {
-  //   return {
-  //     redirect: {
-  //       destination: '/',
-  //       permanent: false,
-  //     }
-  //   }
-  // }
-  return {
-    props: {
-      title: 'Yo yo',
-      data: {}
+  const cookies = context.req.cookies;
+  const payload = {
+    cookies,
+    action: 'lookup'
+  }
+  try {
+    let data = await fetch('http://localhost:3000/takemoney', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload)
+    })
+    const response = await data.json();
+    return {
+      props: {
+        title: 'Yo yo',
+        data: response
+      }
     }
+  } catch (error) {
+    console.error('Error: ', error);
+    context.res.writeHead(302, { Location: '/' });
+    context.res.end();
   }
 
 }
@@ -87,9 +84,6 @@ export type Stage = 'pre-flop' | 'flop' | 'turn' | 'river';
 export type NumOrNull = number | null;
 
 const Poker: React.FunctionComponent<Props> = ({title, data}): JSX.Element => {
-
-  // console.log('data: ', data);
-  // console.log('title: ', title);
 
   const [gameInitialized, setGameInitialized] = useState(false); // Boolean that checks if the game has started
   const [baseDeck, setBaseDeck] = useState<Array<string>>(cards); // Base deck of cards

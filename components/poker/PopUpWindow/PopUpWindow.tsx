@@ -2,6 +2,7 @@ import React from 'react';
 import styles from './PopUpWindow.module.scss';
 import { cards, shuffleCards } from '@/lib/poker/poker-logic/poker';
 import Link from 'next/link';
+import PopSlider from './PopSlider/PopSlider';
 
 
 type PopUpWindowProps = {
@@ -21,6 +22,7 @@ const PopUpWindow: React.FC<PopUpWindowProps> = ({userWon, gameInitialized , ini
         </h2>
         <p className={styles.result}>Welcome to the game, <span className={styles.bold}>{username}</span>.</p>
         <p className={styles.result}>You have <span className={styles.bold}>{money}</span> coins.</p>
+        <PopSlider />
         <div className={styles.btnsContainer}>
           <button className={styles.btn} onClick={() => initializeGame(shuffleCards(cards))}>Play</button>
           <Link href='/' className={styles.btn}>
