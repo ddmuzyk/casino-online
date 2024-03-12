@@ -14,6 +14,7 @@ type PopUpWindowProps = {
 }
 
 const PopUpWindow: React.FC<PopUpWindowProps> = ({userWon, gameInitialized , initializeGame, username, money}) => {
+  
   if (!gameInitialized) {
     return (
       <div className={styles.popUpWindow}>
@@ -24,11 +25,11 @@ const PopUpWindow: React.FC<PopUpWindowProps> = ({userWon, gameInitialized , ini
         <p className={styles.result}>You have <span className={styles.bold}>{money}</span> coins.</p>
         <div className={styles.slidersContainer}>
           <div className={styles.sliderContainer}>
-            <PopSlider />
+            <PopSlider chips={money} step={5} max={money} min={5}/>
             <p>Choose the amount of chips</p>
           </div>
           <div className={styles.sliderContainer}>
-            <PopSlider />
+            <PopSlider chips={money} step={1} max={4} min={1}/>
             <p>Number of oponents</p>
           </div>
         </div>
