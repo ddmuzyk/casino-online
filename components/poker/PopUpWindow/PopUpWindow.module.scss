@@ -3,8 +3,8 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  height: 50%;
-  width: 40%;
+  height: 60%;
+  width: 50%;
   background-color: rgba(226, 226, 226, 0.884);
   border: solid 1px white;
   border-radius: 5px;
@@ -13,6 +13,7 @@
   // justify-content: space-around;
   align-items: center;
   z-index: 100;
+  font-family: Montserrat, sans-serif;
 }
 
 .btnsContainer {
@@ -60,4 +61,19 @@
 
 .bold {
   font-weight: bold;
+}
+
+.slidersContainer {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  margin-top: 50px;
+}
+
+.sliderContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }

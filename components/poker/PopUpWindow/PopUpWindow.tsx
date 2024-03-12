@@ -22,7 +22,16 @@ const PopUpWindow: React.FC<PopUpWindowProps> = ({userWon, gameInitialized , ini
         </h2>
         <p className={styles.result}>Welcome to the game, <span className={styles.bold}>{username}</span>.</p>
         <p className={styles.result}>You have <span className={styles.bold}>{money}</span> coins.</p>
-        <PopSlider />
+        <div className={styles.slidersContainer}>
+          <div className={styles.sliderContainer}>
+            <PopSlider />
+            <p>Choose the amount of chips</p>
+          </div>
+          <div className={styles.sliderContainer}>
+            <PopSlider />
+            <p>Number of oponents</p>
+          </div>
+        </div>
         <div className={styles.btnsContainer}>
           <button className={styles.btn} onClick={() => initializeGame(shuffleCards(cards))}>Play</button>
           <Link href='/' className={styles.btn}>

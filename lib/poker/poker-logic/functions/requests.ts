@@ -32,3 +32,7 @@ export const login = async (email: string, password: string) => {
     return error
   }
 }
+
+export const getMoney = async () => {
+  
+}
