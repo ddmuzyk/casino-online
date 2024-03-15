@@ -1,5 +1,6 @@
 import './PopSlider.scss';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
+import { PokerContext, PokerContextProps } from '@/pages/game/poker';
 
 interface PopSliderProps {
   chips: number,
@@ -13,9 +14,11 @@ const PopSlider: React.FC<PopSliderProps> = ({chips, step, max, min}) => {
   const [chipAmount, setChipAmount] = useState(chips);
   const [playerAmount, setPlayerAmount] = useState(1);
 
-  // const handleChipChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   setChipAmount(e.target.value);
-  // }
+  const {numberOfPlayers, setNumberOfPlayers, smallBlind, setSmallBlind}: PokerContextProps = useContext(PokerContext);
+
+  const handleChipChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setChipAmount(Number(e.target.value));
+  }
 
   return (
     <div className="slider-container">

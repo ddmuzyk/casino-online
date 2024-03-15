@@ -1,8 +1,9 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import styles from './PopUpWindow.module.scss';
 import { cards, shuffleCards } from '@/lib/poker/poker-logic/poker';
 import Link from 'next/link';
 import PopSlider from './PopSlider/PopSlider';
+import { PokerContext, PokerContextProps } from '@/pages/game/poker';
 
 
 type PopUpWindowProps = {
@@ -14,6 +15,8 @@ type PopUpWindowProps = {
 }
 
 const PopUpWindow: React.FC<PopUpWindowProps> = ({userWon, gameInitialized , initializeGame, username, money}) => {
+
+  const {numberOfPlayers, setNumberOfPlayers, smallBlind, setSmallBlind}: PokerContextProps = useContext(PokerContext);
   
   if (!gameInitialized) {
     return (

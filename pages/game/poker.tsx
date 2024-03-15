@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ReactComponentElement, useState, useEffect, useRef,} from "react";
+import { ReactComponentElement, useState, useEffect, useRef, createContext} from "react";
 import styles from './poker.module.scss';
 import './poker.module.scss'
 import Layout from "@/components/layout";
@@ -33,7 +33,6 @@ export const getServerSideProps = async (context:any) => {
     const response = await data.json();
     return {
       props: {
-        title: 'Yo yo',
         data: response
       }
     }
@@ -42,11 +41,23 @@ export const getServerSideProps = async (context:any) => {
     context.res.writeHead(302, { Location: '/' });
     context.res.end();
   }
+}
 
+export const PokerContext = createContext<PokerContextProps>({
+  numberOfPlayers: 4,
+  setNumberOfPlayers: () => {},
+  smallBlind: 5,
+  setSmallBlind: () => {},
+});
+
+export interface PokerContextProps {
+  numberOfPlayers: number,
+  setNumberOfPlayers: any,
+  smallBlind: number,
+  setSmallBlind: any,
 }
 
 export interface Props {
-  title: string,
   data: any
 }
 
@@ -83,7 +94,7 @@ export interface EvaledHand {
 export type Stage = 'pre-flop' | 'flop' | 'turn' | 'river';
 export type NumOrNull = number | null;
 
-const Poker: React.FunctionComponent<Props> = ({title, data}): JSX.Element => {
+const Poker: React.FunctionComponent<Props> = ({data}): JSX.Element => {
 
   const [gameInitialized, setGameInitialized] = useState(false); // Boolean that checks if the game has started
   const [baseDeck, setBaseDeck] = useState<Array<string>>(cards); // Base deck of cards
@@ -551,106 +562,115 @@ const Poker: React.FunctionComponent<Props> = ({title, data}): JSX.Element => {
   }
 
   return (
-    <Layout siteTitle="Poker">
-      <div className={styles.game}>
-        {gameOver || !gameInitialized ? <PopUpWindow 
-        userWon={userWon}
-        gameInitialized={gameInitialized}
-        initializeGame={initializeGame}
-        username={data.name}
-        money={data.money}
-        /> : null}
-        <div className={styles.tableContainer}>
-          <div onClick={async () => {
-              console.log(players);
-              console.log(communityCards);
-              console.log('table money: ', tableMoney.current);
-            }} 
-            className={styles.table}>
-            <div className={styles.pot}>Pot: <span className={styles.potValue} key={pot.current}>{pot.current}$</span></div>
-            <div className={`${styles.communityCards} ${cardsVisible ? "" : styles.communityCardsHidden}`}>
-              {communityCards.map((card, id) => {
-                return (
-                <CSSTransition
-                in={communityCards.length > 0}
-                timeout={200}
-                classNames={{appearDone: styles.imageAppearDone, enterActive: styles.imageEnterActive, enterDone: styles.imageEnterDone, exit: styles.imageExit, exitActive: styles.imageExitActive, exitDone: styles.imageExitDone,}}
-                key={id}
-                appear={true}
-                >
-                <img className={`${styles.image}`} src={`/svg-cards/${card}.svg`} alt="community card" key={card}></img>
-                </CSSTransition>
-                )
-              })} 
+    <PokerContext.Provider value={
+      {
+        numberOfPlayers,
+        setNumberOfPlayers,
+        smallBlind,
+        setSmallBlind,
+      }   
+    }>
+      <Layout siteTitle="Poker">
+        <div className={styles.game}>
+          {gameOver || !gameInitialized ? <PopUpWindow 
+          userWon={userWon}
+          gameInitialized={gameInitialized}
+          initializeGame={initializeGame}
+          username={data.name}
+          money={data.money}
+          /> : null}
+          <div className={styles.tableContainer}>
+            <div onClick={async () => {
+                console.log(players);
+                console.log(communityCards);
+                console.log('table money: ', tableMoney.current);
+              }} 
+              className={styles.table}>
+              <div className={styles.pot}>Pot: <span className={styles.potValue} key={pot.current}>{pot.current}$</span></div>
+              <div className={`${styles.communityCards} ${cardsVisible ? "" : styles.communityCardsHidden}`}>
+                {communityCards.map((card, id) => {
+                  return (
+                  <CSSTransition
+                  in={communityCards.length > 0}
+                  timeout={200}
+                  classNames={{appearDone: styles.imageAppearDone, enterActive: styles.imageEnterActive, enterDone: styles.imageEnterDone, exit: styles.imageExit, exitActive: styles.imageExitActive, exitDone: styles.imageExitDone,}}
+                  key={id}
+                  appear={true}
+                  >
+                  <img className={`${styles.image}`} src={`/svg-cards/${card}.svg`} alt="community card" key={card}></img>
+                  </CSSTransition>
+                  )
+                })} 
+              </div>
+                {players.map((player) => {
+                  return <Player 
+                  id={player.id} 
+                  name={player.name}
+                  money={player.money}
+                  key={player.name}
+                  cards={player.cards}
+                  action={player.action}
+                  won={player.won}
+                  out={player.out}
+                  smallBlind={player.smallBlind}
+                  bigBlind={player.bigBlind}
+                  bet={player.bet}
+                  hasFolded={player.hasFolded}
+                  biggestBet={biggestBet.current}
+                  currentDealerId={currentDealerId as number}
+                  turn={turn as number}
+                  cardsAreDealt={cardsAreDealt}
+                  isShowdown={isShowdown}
+                />             
+                })}
             </div>
-              {players.map((player) => {
-                return <Player 
-                id={player.id} 
-                name={player.name}
-                money={player.money}
-                key={player.name}
-                cards={player.cards}
-                action={player.action}
-                won={player.won}
-                out={player.out}
-                smallBlind={player.smallBlind}
-                bigBlind={player.bigBlind}
-                bet={player.bet}
-                hasFolded={player.hasFolded}
-                biggestBet={biggestBet.current}
-                currentDealerId={currentDealerId as number}
-                turn={turn as number}
-                cardsAreDealt={cardsAreDealt}
-                isShowdown={isShowdown}
-              />             
-              })}
           </div>
-        </div>
-        <div className={styles.playerButtons}>
-          <div>
-            <button onClick={() => {
-              if (turn === 0 && abilityToMove.current && !gameOver) {
-                const newPlayers = fold(turn as number, players,) as Array<PlayerObject>;
+          <div className={styles.playerButtons}>
+            <div>
+              <button onClick={() => {
+                if (turn === 0 && abilityToMove.current && !gameOver) {
+                  const newPlayers = fold(turn as number, players,) as Array<PlayerObject>;
+                  makeUserMove(turn as number, newPlayers, biggestBet.current, tableMoney.current, playerWithBiggestBet.current, currentStage, pot.current)
+                }
+              }
+              } className={styles.playerBtn}>Fold</button>
+            </div>
+            <div>
+              <button onClick={() => {
+                if (turn === 0 && abilityToMove.current && players[0].bet === biggestBet.current && !gameOver) {
+                  const newPlayers = check(turn as number, players, playerWithBiggestBet.current, currentStage);
+                  makeUserMove(turn as number, newPlayers, biggestBet.current, tableMoney.current, playerWithBiggestBet.current, currentStage, pot.current)
+                };
+              }} className={styles.playerBtn}>Check</button>
+            </div>
+            <div>
+              <button onClick={() => {
+                if (turn === 0 && abilityToMove.current && players[0].bet < biggestBet.current && !gameOver) {
+                  const newPlayers = call(turn as number, players, biggestBet.current, biggestBet.current - players[turn as number].bet, tableMoney.current)
+                  makeUserMove(turn as number, newPlayers, biggestBet.current, tableMoney.current, playerWithBiggestBet.current, currentStage, pot.current)
+                }
+              }} className={styles.playerBtn}>Call</button>
+            </div>
+            <div>
+              <button onClick={() => {
+              if (turn === 0 && abilityToMove.current && parseInt(betValue) + players[0].bet > biggestBet.current && !gameOver) {
+                setBetValue(() => "0");
+                const newPlayers = playerRaise(turn as number, players, biggestBet.current, betValue, tableMoney.current, pot.current);
                 makeUserMove(turn as number, newPlayers, biggestBet.current, tableMoney.current, playerWithBiggestBet.current, currentStage, pot.current)
               }
-            }
-            } className={styles.playerBtn}>Fold</button>
-          </div>
-          <div>
-            <button onClick={() => {
-              if (turn === 0 && abilityToMove.current && players[0].bet === biggestBet.current && !gameOver) {
-                const newPlayers = check(turn as number, players, playerWithBiggestBet.current, currentStage);
-                makeUserMove(turn as number, newPlayers, biggestBet.current, tableMoney.current, playerWithBiggestBet.current, currentStage, pot.current)
-              };
-            }} className={styles.playerBtn}>Check</button>
-          </div>
-          <div>
-            <button onClick={() => {
-              if (turn === 0 && abilityToMove.current && players[0].bet < biggestBet.current && !gameOver) {
-                const newPlayers = call(turn as number, players, biggestBet.current, biggestBet.current - players[turn as number].bet, tableMoney.current)
-                makeUserMove(turn as number, newPlayers, biggestBet.current, tableMoney.current, playerWithBiggestBet.current, currentStage, pot.current)
-              }
-            }} className={styles.playerBtn}>Call</button>
-          </div>
-          <div>
-            <button onClick={() => {
-            if (turn === 0 && abilityToMove.current && parseInt(betValue) + players[0].bet > biggestBet.current && !gameOver) {
-              setBetValue(() => "0");
-              const newPlayers = playerRaise(turn as number, players, biggestBet.current, betValue, tableMoney.current, pot.current);
-              makeUserMove(turn as number, newPlayers, biggestBet.current, tableMoney.current, playerWithBiggestBet.current, currentStage, pot.current)
-            }
-          }}
-            className={styles.playerBtn}>Raise</button>
-            <Slider 
-            step={smallBlind.toString()}
-            max={players[0]?.money ? players[0].money : 1000}
-            betValue={betValue}
-            setBetValue={setBetValue}
-            />
+            }}
+              className={styles.playerBtn}>Raise</button>
+              <Slider 
+              step={smallBlind.toString()}
+              max={players[0]?.money ? players[0].money : 1000}
+              betValue={betValue}
+              setBetValue={setBetValue}
+              />
+            </div>
           </div>
         </div>
-      </div>
-    </Layout>
+      </Layout>
+  </PokerContext.Provider>
   )
 }
 
