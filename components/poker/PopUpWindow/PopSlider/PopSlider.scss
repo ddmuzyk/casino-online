@@ -2,6 +2,7 @@
   width: 300px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 20px;
   flex-direction: row;
 }
@@ -9,7 +10,7 @@
 .slider {
   -webkit-appearance: none;
   appearance: none;
-  width: 90%;
+  width: 200px;
   height: 25px;
   background: #868686;
   outline: none;

@@ -48,6 +48,8 @@ export const PokerContext = createContext<PokerContextProps>({
   setNumberOfPlayers: () => {},
   smallBlind: 5,
   setSmallBlind: () => {},
+  userMoney: 0,
+  setUserMoney: () => {},
 });
 
 export interface PokerContextProps {
@@ -55,6 +57,8 @@ export interface PokerContextProps {
   setNumberOfPlayers: any,
   smallBlind: number,
   setSmallBlind: any,
+  userMoney: number,
+  setUserMoney: any,
 }
 
 export interface Props {
@@ -96,39 +100,42 @@ export type NumOrNull = number | null;
 
 const Poker: React.FunctionComponent<Props> = ({data}): JSX.Element => {
 
-  const [gameInitialized, setGameInitialized] = useState(false); // Boolean that checks if the game has started
-  const [baseDeck, setBaseDeck] = useState<Array<string>>(cards); // Base deck of cards
-  const [players, setPlayers] = useState<Array<PlayerObject>>([]); // Players in the game
-  const [activePlayers, setActivePlayers] = useState<Array<PlayerObject>>([]); // Players that didn't fold yet
-  const [deck, setDeck] = useState(decky); // Deck of cards in play
-  const [smallBlind, setSmallBlind] = useState<number>(5); // Small blind
-  const [playerWithBigBlind, setPlayerWithBigBlind] = useState<number>(10); // Id of the player with the big blind 
-  const [currentDealerId, setCurrentDealerId] = useState<number>(2); // Id of the current dealer
+  const [gameInitialized, setGameInitialized] = useState(false); 
+  const [baseDeck, setBaseDeck] = useState<Array<string>>(cards); 
+  const [players, setPlayers] = useState<Array<PlayerObject>>([]); 
+  const [activePlayers, setActivePlayers] = useState<Array<PlayerObject>>([]); 
+  const [deck, setDeck] = useState(decky); 
+  const [smallBlind, setSmallBlind] = useState<number>(5); 
+  const [playerWithBigBlind, setPlayerWithBigBlind] = useState<number>(10); 
+  const [currentDealerId, setCurrentDealerId] = useState<number>(1); 
   const [turn, setTurn] = useState<NumOrNull>(null); // Id of the player whose turn it is, randomly chosen at the start of the game
-  const [communityCards, setCommunityCards] = useState<Array<string>>([]); // Community cards on the table
-  const [cardsVisible, setCardsVisible] = useState(true); // Boolean that checks if the cards are visible or not
-  const [currentStage, setCurrentStage] = useState<Stage>('pre-flop'); // Current stage of the game
-  const [isShowdown, setIsShowdown] = useState(false); // Boolean that checks if the game is in the showdown stage
-  const [cardsAreDealt, setCardsAreDealt] = useState(true); // Boolean that checks if the cards are dealt or not
-  const [isComputerMove, setIsComputerMove] = useState(turn === 0 ? false : true); // Boolean that checks if the computer is making a move
-  const [actionVisibility, setActionVisibility] = useState<Array<boolean>>([]); // Boolean that checks if the actions are visible or not
-  const [betValue, setBetValue] = useState("0"); // Value of the bet
-  const [numberOfPlayers, setNumberOfPlayers] = useState(4); // Number of players in the game
-  const [gameOver, setGameOver] = useState(false); // Boolean that checks if the game is over or not
-  const [userWon, setUserWon] = useState(false); // Boolean that checks if the user won or not
+  const [communityCards, setCommunityCards] = useState<Array<string>>([]);
+  const [cardsVisible, setCardsVisible] = useState(true); 
+  const [currentStage, setCurrentStage] = useState<Stage>('pre-flop'); 
+  const [isShowdown, setIsShowdown] = useState(false); 
+  const [cardsAreDealt, setCardsAreDealt] = useState(true); 
+  const [isComputerMove, setIsComputerMove] = useState(turn === 0 ? false : true);
+  const [actionVisibility, setActionVisibility] = useState<Array<boolean>>([]); 
+  const [betValue, setBetValue] = useState("0"); 
+  const [numberOfPlayers, setNumberOfPlayers] = useState(3); 
+  const [gameOver, setGameOver] = useState(false); 
+  const [userWon, setUserWon] = useState(false); 
+  const [userMoney, setUserMoney] = useState(() => {
+    let half = Math.floor(data.money/4);
+    let modulo = half % 100;
+    return half - modulo;
+  });
 
-  const abilityToMove = useRef(true); // Ref that checks if the player can move or not
-  const biggestBet = useRef<number>(0); // Ref that checks the biggest bet on the table
+  const abilityToMove = useRef(true); 
+  const biggestBet = useRef<number>(0); 
   const playerWithBiggestBet = useRef<NumOrNull>(null);
   const tableMoney = useRef<number>(0);
-  // const playerThatBegins = useRef<NumOrNull>(null);
   const pot = useRef<number>(0);
 
-  
-  // Populate the table with players (later with possibility to choose how many players to play against
-  useEffect(() => {
-    // if (!gameInitialized) initializeGame(deck);
-  }, [])
+  // useEffect(() => {
+  //   console.log('user money changed to: ', userMoney);
+  //   console.log('number of players changed to: ', numberOfPlayers);
+  // }, [numberOfPlayers, userMoney]);
 
   useEffect(() => {
     // console.log('players changed to: ', players);
@@ -511,7 +518,7 @@ const Poker: React.FunctionComponent<Props> = ({data}): JSX.Element => {
       let playerCards = [newDeck.pop(), newDeck.pop()];
       let coins = 0
       if (i == 0) {
-        coins = 2000;
+        coins = userMoney;
       } else if (i == 1 || i == 2) {
         coins = 500;
       } else {
@@ -568,6 +575,8 @@ const Poker: React.FunctionComponent<Props> = ({data}): JSX.Element => {
         setNumberOfPlayers,
         smallBlind,
         setSmallBlind,
+        userMoney,
+        setUserMoney,
       }   
     }>
       <Layout siteTitle="Poker">
