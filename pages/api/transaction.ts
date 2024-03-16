@@ -1,17 +1,19 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { cookies } from 'next/headers'
-import cookie from 'cookie';
+import { NextApiResponse } from 'next';
+import type { NextRequest } from 'next/server'
+import cookieParser from 'cookie-parser';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const cookieStore = cookies()
+export default async function handler(req: any, res: NextApiResponse) {
+  const cookie = req.cookies.accessToken
   const body = req.body;
-  const cookie = cookieStore.get('accessToken');
   console.log('cookie: ',cookie)
   if (!cookie) {
+    console.log("HERE I AM")
     return res.status(401).json({error: 'Unauthorized'})
   }
-  body.cookie = cookie
-  body.shit = 'shit'
+  
+  body.cookies = {
+    accessToken: cookie
+  }
   try {
     const data = await fetch('http://localhost:3000/takeMoney', {
       method: 'POST',
@@ -21,9 +23,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       body: JSON.stringify(body)
     })
     const response = await data.json()  
-    return response
+    res.status(200).json(response)
   } catch (error) {
     console.log('Error: ', error)
-    return error
+    res.status(401).json(null)
   }
 }

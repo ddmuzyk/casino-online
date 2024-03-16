@@ -42,8 +42,11 @@ const PopUpWindow: React.FC<PopUpWindowProps> = ({userWon, gameInitialized , ini
         <div className={styles.btnsContainer}>
           <button className={styles.btn} onClick={async () => {
             const response = await updateMoney(true, userMoney, money);
-            console.log(response)
-            // initializeGame(shuffleCards(cards))
+            if (response === 'Success') {
+              initializeGame(shuffleCards(cards))
+            } else {
+              console.log('Error: ', response)
+            }
           }
           }>Play</button>
           <Link href='/' className={styles.btn}>
