@@ -33,6 +33,35 @@ export const login = async (email: string, password: string) => {
   }
 }
 
-export const takeMoney = async () => {
-  
+interface updateParams {
+  take: boolean;
+  amount: number;
+  prevAmount: number;
+}
+
+export const updateMoney = async (take: boolean, amount: number, prevAmount: number) => {
+
+  const payload = {
+    action: {
+      type: 'update',
+      take,
+      amount,
+      prevAmount,
+    }
+  }
+  try {
+    const data = await fetch('/api/transaction', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include',
+      body: JSON.stringify(payload)
+    })
+    const response = await data.json()  
+    return response
+  } catch (error) {
+    console.log('Error: ', error)
+    return null
+  }
 }
