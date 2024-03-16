@@ -15,6 +15,7 @@ const addPseudoCard = (playerCards: Array<string>) => {
   return cardsCopy;
 }
 
+// Fix error handling
 export const getEvaluation = async(players: Array<PlayerObject>, communityCards: Array<string>) => {
   const cards = players.map((player) => {
     return [...player.cards];
@@ -29,17 +30,21 @@ export const getEvaluation = async(players: Array<PlayerObject>, communityCards:
       cards[i].push(...communityCards);  
     }
   }
-
-  const response = await fetch(`http://localhost:3000/eval`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(cards)
-  });
-  const data = await response.json();
-
-  return data;
+  try {
+    const response = await fetch(`http://localhost:3000/eval`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(cards)
+    });
+    const data = await response.json();
+  
+    return data;
+  } catch (error) {
+    console.log('Error: ', error);
+    return null;
+  }
 }
 
 export const assignEvaluations = (players: Array<PlayerObject>, evaluations: Array<EvaledHand>) => {

@@ -45,7 +45,7 @@ const Player: React.FC<PlayerObject>  = ({id, name, turn, money, cards, action, 
           })}
         </div>
         <div className={styles.stats}>
-          <p className={styles.container}>Player{id} <span>{money}$ <span className={styles.dealerBtn}>{id === currentDealerId ? "D" : null}</span></span></p>
+          <p className={styles.container}>{id === 0 ? name : `Player${id}`} <span>{money}$ <span className={styles.dealerBtn}>{id === currentDealerId ? "D" : null}</span></span></p>
         </div>
         {id === 2 ? <p className={styles.bet}>{bet}$</p> : null}
         <ActionMessage action={action}/>

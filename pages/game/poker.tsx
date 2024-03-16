@@ -514,7 +514,7 @@ const Poker: React.FunctionComponent<Props> = ({data}): JSX.Element => {
 
   }
   
-  const createPlayers = (deck: Array<string>, numOfPlayers: number) => {
+  const createPlayers = (deck: Array<string>, numOfPlayers: number, username: string) => {
     const newDeck = [...deck];
     const newPlayers: Array<PlayerObject> = [];
     for (let i = 0; i < numOfPlayers; i++) {
@@ -529,7 +529,7 @@ const Poker: React.FunctionComponent<Props> = ({data}): JSX.Element => {
       }
       newPlayers.push({
         id: i,
-        name: `Player${i}`,
+        name: i === 0 ? username : `Player${i}`,
         money: coins,
         cards: playerCards as Array<string>,
         action: '',
@@ -549,7 +549,7 @@ const Poker: React.FunctionComponent<Props> = ({data}): JSX.Element => {
   // Function that starts the game
   const initializeGame = async(deck: Array<string>) => {
     const newDeck = [...deck]
-    let newPlayers: Array<PlayerObject> = giveBlind(createPlayers(newDeck, numberOfPlayers), smallBlind, currentDealerId as number);
+    let newPlayers: Array<PlayerObject> = giveBlind(createPlayers(newDeck, numberOfPlayers, data.name), smallBlind, currentDealerId as number);
     const evaluations = await getEvaluation(newPlayers, communityCards);
     newPlayers = assignEvaluations(newPlayers, evaluations);
     let newTurn = getNextTurn(currentDealerId as number, newPlayers);

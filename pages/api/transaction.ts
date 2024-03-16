@@ -7,7 +7,6 @@ export default async function handler(req: any, res: NextApiResponse) {
   const body = req.body;
   console.log('cookie: ',cookie)
   if (!cookie) {
-    console.log("HERE I AM")
     return res.status(401).json({error: 'Unauthorized'})
   }
   
