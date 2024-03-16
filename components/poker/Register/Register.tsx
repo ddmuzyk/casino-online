@@ -29,7 +29,7 @@ export default function Register({setIsOpen}: RegisterProps, isOpen: boolean) {
       setMessage("Passwords do not match.");
       return;
     }
-    setMessage("");
+    setMessage("User registered successfully.");
     register(username, email, password);
   }
 

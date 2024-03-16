@@ -33,6 +33,6 @@ export const login = async (email: string, password: string) => {
   }
 }
 
-export const getMoney = async () => {
+export const takeMoney = async () => {
   
 }

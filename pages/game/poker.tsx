@@ -20,7 +20,9 @@ export const getServerSideProps = async (context:any) => {
   const cookies = context.req.cookies;
   const payload = {
     cookies,
-    action: 'lookup'
+    action: {
+      type: 'lookup'
+    }
   }
   try {
     let data = await fetch('http://localhost:3000/takemoney', {
@@ -28,6 +30,7 @@ export const getServerSideProps = async (context:any) => {
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify(payload)
     })
     const response = await data.json();

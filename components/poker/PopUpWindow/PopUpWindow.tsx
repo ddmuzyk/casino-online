@@ -4,6 +4,7 @@ import { cards, shuffleCards } from '@/lib/poker/poker-logic/poker';
 import Link from 'next/link';
 import PopSlider from './PopSlider/PopSlider';
 import { PokerContext, PokerContextProps } from '@/pages/game/poker';
+import { user } from '@nextui-org/react';
 
 
 type PopUpWindowProps = {
@@ -37,7 +38,33 @@ const PopUpWindow: React.FC<PopUpWindowProps> = ({userWon, gameInitialized , ini
           </div>
         </div>
         <div className={styles.btnsContainer}>
-          <button className={styles.btn} onClick={() => initializeGame(shuffleCards(cards))}>Play</button>
+          <button className={styles.btn} onClick={async () => {
+            const payload = {
+              action: {
+                type: 'update',
+                take: true,
+                send: false,
+                amount: userMoney,
+                prevAmount: money,
+              }
+            }
+            try {
+              const data = await fetch('http://localhost:3000/takeMoney', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify(payload)
+              })
+              const response = await data.json()  
+              console.log(response)
+              // initializeGame(shuffleCards(cards))
+            } catch (error) {
+              console.log('Error: ', error)
+            }
+          }
+          }>Play</button>
           <Link href='/' className={styles.btn}>
             Exit
           </Link>
