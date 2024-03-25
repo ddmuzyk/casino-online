@@ -66,19 +66,34 @@ export const makeTransaction = async (type: 'lookup' | 'update', take: boolean, 
   }
 }
 
-export const authenticate = async () => {
+export const getUserData = async (context: any) => {
+  const cookies = context.req.cookies;
+  const payload = {
+    cookies,
+    action: {
+      type: 'lookup'
+    }
+  }
   try {
-    const data = await fetch('/api/authenticate', {
-      method: 'GET',
+    let data = await fetch('http://localhost:3000/takeMoney', {
+      method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      credentials: 'include'
+      credentials: 'include',
+      body: JSON.stringify(payload)
     })
-    const response = await data.json()
-    return response
+    const response = await data.json();
+    return {
+      props: {
+        data: response
+      }
+    }
   } catch (error) {
-    console.log('Error: ', error)
-    return null
+    return {
+      props: {
+        data: null
+      }
+    }
   }
 }

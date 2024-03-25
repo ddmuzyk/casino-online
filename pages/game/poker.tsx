@@ -15,36 +15,18 @@ import { check} from "@/lib/poker/poker-logic/functions/actions";
 import { checkIfCardsShouldBeDealt, checkIfUserLoses, checkIfUserWins, getNumberOfPlayersInGame, getNumberOfActivePlayers, checkForPossibleAction, checkIfThereIsAWinner } from "@/lib/poker/poker-logic/functions/checks";
 import { timeout, sleep } from "@/lib/poker/poker-logic/functions/sleep";
 import { redirect } from "next/dist/server/api-utils";
-import { makeTransaction } from "@/lib/poker/poker-logic/functions/requests";
+import { makeTransaction, getUserData } from "@/lib/poker/poker-logic/functions/requests";
 
 export const getServerSideProps = async (context:any) => {
-  const cookies = context.req.cookies;
-  const payload = {
-    cookies,
-    action: {
-      type: 'lookup'
-    }
+  const response = await getUserData(context);
+  if (response.props.data) {
+    return response;
   }
-  try {
-    let data = await fetch('http://localhost:3000/takeMoney', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify(payload)
-    })
-    const response = await data.json();
-    return {
-      props: {
-        data: response
-      }
+  return {
+    redirect: {
+      destination: '/',
+      permanent: false,
     }
-  } catch (error) {
-    console.error('Error: ', error);
-    context.res.writeHead(302, { Location: '/' });
-    context.res.end();
-    return
   }
 }
 
