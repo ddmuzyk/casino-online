@@ -5,7 +5,7 @@ import Link from 'next/link';
 import PopSlider from './PopSlider/PopSlider';
 import { PokerContext, PokerContextProps } from '@/pages/game/poker';
 import { user } from '@nextui-org/react';
-import { updateMoney } from '@/lib/poker/poker-logic/functions/requests';
+import { makeTransaction } from '@/lib/poker/poker-logic/functions/requests';
 
 
 type PopUpWindowProps = {
@@ -41,7 +41,7 @@ const PopUpWindow: React.FC<PopUpWindowProps> = ({userWon, gameInitialized , ini
         </div>
         <div className={styles.btnsContainer}>
           <button className={styles.btn} onClick={async () => {
-            const response = await updateMoney(true, userMoney, money);
+            const response = await makeTransaction('update' ,true, userMoney, money);
             if (response === 'Success') {
               initializeGame(shuffleCards(cards))
             } else {

@@ -39,11 +39,11 @@ interface updateParams {
   prevAmount: number;
 }
 
-export const updateMoney = async (take: boolean, amount: number, prevAmount: number) => {
+export const makeTransaction = async (type: 'lookup' | 'update', take: boolean, amount: number, prevAmount: number) => {
 
   const payload = {
     action: {
-      type: 'update',
+      type,
       take,
       amount,
       prevAmount,
@@ -59,6 +59,23 @@ export const updateMoney = async (take: boolean, amount: number, prevAmount: num
       body: JSON.stringify(payload)
     })
     const response = await data.json()  
+    return response
+  } catch (error) {
+    console.log('Error: ', error)
+    return null
+  }
+}
+
+export const authenticate = async () => {
+  try {
+    const data = await fetch('/api/authenticate', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include'
+    })
+    const response = await data.json()
     return response
   } catch (error) {
     console.log('Error: ', error)
