@@ -66,7 +66,7 @@ export const makeTransaction = async (type: 'lookup' | 'update', take: boolean, 
   }
 }
 
-export const getUserData = async (context: any) => {
+export const getCurrentUserData = async (context: any) => {
   const cookies = context.req.cookies;
   const payload = {
     cookies,

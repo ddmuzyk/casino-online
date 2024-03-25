@@ -15,10 +15,10 @@ import { check} from "@/lib/poker/poker-logic/functions/actions";
 import { checkIfCardsShouldBeDealt, checkIfUserLoses, checkIfUserWins, getNumberOfPlayersInGame, getNumberOfActivePlayers, checkForPossibleAction, checkIfThereIsAWinner } from "@/lib/poker/poker-logic/functions/checks";
 import { timeout, sleep } from "@/lib/poker/poker-logic/functions/sleep";
 import { redirect } from "next/dist/server/api-utils";
-import { makeTransaction, getUserData } from "@/lib/poker/poker-logic/functions/requests";
+import { makeTransaction, getCurrentUserData } from "@/lib/poker/poker-logic/functions/requests";
 
 export const getServerSideProps = async (context:any) => {
-  const response = await getUserData(context);
+  const response = await getCurrentUserData(context);
   if (response.props.data) {
     return response;
   }
@@ -119,20 +119,13 @@ const Poker: React.FunctionComponent<Props> = ({data}): JSX.Element => {
   const tableMoney = useRef<number>(0);
   const pot = useRef<number>(0);
 
-  // useEffect(() => {
-  //   console.log('user money changed to: ', userMoney);
-  //   console.log('number of players changed to: ', numberOfPlayers);
-  // }, [numberOfPlayers, userMoney]);
-
   useEffect(() => {
-    // console.log('players changed to: ', players);
     if ((turn !== 0 && players.length && !cardsAreDealt)) startGameLoop(players, turn, currentStage,);
   }, [players, cardsAreDealt]);
   
   const setInitialValues = (players: Array<PlayerObject>, smallBlind: number, newCurrentDealerId: number) => {
     abilityToMove.current = true;
     setCurrentDealerId(() => newCurrentDealerId);
-    // playerThatBegins.current = getNextTurn(newCurrentDealerId, players);
     const currentPot = players.reduce((acc, player) => acc + player.bet, 0);
     const currentBiggestBet = players.reduce((acc, player) => player.bet > acc ? player.bet : acc, 0);
     playerWithBiggestBet.current = null;
